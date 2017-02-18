@@ -49,7 +49,7 @@ const playingmsg = [
 // from Discord _after_ ready is emitted.
 bot.on('ready', () => {
   console.log("I am ready!")
-  var timer = setInterval(()=>{bot.user.setGame(playingmsg[Math.floor(Math.random()*playingmsg.length)])},1000*60)
+  var timer = setInterval(()=>{bot.user.setGame(playingmsg[Math.floor(Math.random()*playingmsg.length)])},1000*60*15)
 });
 
 // create an event listener for messages
