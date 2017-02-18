@@ -26,6 +26,21 @@ const size = [
     ".",
     "8=============D"
 ]
+const playingmsg = [
+    "with tools in slot 'A'",
+    "Banned from Equestria",
+    "with herself, in your bed.",
+    "upgrading flexibility...",
+    "installing a new 'dongle'",
+    "with slot 'V'",
+    "with tools in slot 'V'",
+    "staring at you as you shower",
+    "attempting to fix broken clit-drive",
+    "WHAT ARE YOU DOING THERE SHY?!",
+    "Asian Driver Simulator"
+]
+
+
 
 /*
   A ping pong bot, whenever you send "ping", it replies "pong".
@@ -34,6 +49,7 @@ const size = [
 // from Discord _after_ ready is emitted.
 bot.on('ready', () => {
   console.log("I am ready!")
+  var timer = setInterval(()=>{bot.user.setGame(playingmsg[Math.floor(Math.random()*playingmsg.length)])},1000*60)
 });
 
 // create an event listener for messages
