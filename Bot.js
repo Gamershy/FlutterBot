@@ -40,6 +40,17 @@ const playingmsg = [
     "Asian Driver Simulator"
 ]
 
+const pingmsg = [
+    "Porn, I mean, Pong!",
+    "Yeah yeah, I'm working.",
+    "Pingpong.",
+    "Yeah, cuz no other command could check that I'm working.",
+    "ERROR: NotAVirus.exe succesfully pinged!",
+    "What do you want.",
+    "Can't you see I have something in slot 'V'??",
+    "You better have a good reason for this.."
+]
+
 
 
 /*
@@ -55,11 +66,19 @@ bot.on('ready', () => {
 // create an event listener for messages
 bot.on('message', message => {
   // if the message is "ping",
-  if (message.content === "/ping") {
-    // send "pong" to the same channel.
-    message.channel.sendMessage("Porn, I mean, Pong!")
-    
-}
+  if (message.content === "/ping"){ 
+  message.channel.sendMessage("Pinging.. " + Date.now())
+
+  }
+   
+if(message.content.split(' ').indexOf("Pinging..") == 0){
+    var time = parseInt(message.content.replace("Pinging.. ",""))
+    message.delete()
+    message.channel.sendMessage(pingmsg[Math.floor(Math.random()*pingmsg.length)]+" `Responded in: " + (Date.now()-time)+ "ms`")
+    }
+
+  
+
 if (message.content === "bip"){
         message.channel.sendMessage("bop")
   }
@@ -69,8 +88,12 @@ if (message.content === "/HDButt"){
 else if (message.content.split(' ').indexOf("/ava") == 0 ){
     var target = message.content.split(' ')[1]
     var targetuser = message.mentions.users.first()
-    message.channel.sendMessage(targetuser.avatarURL)
-}
+    if (targetuser){
+        message.channel.sendMessage(targetuser.avatarURL)
+        }
+        else (message.channel.sendMessage("ERROR: You need to define someone..."))
+
+    }
 if (message.content.split(' ').indexOf("/setgame") == 0 ){
     if (message.author.id == config.ownerID){
         bot.user.setGame(message.content.replace('/setgame ',''))
