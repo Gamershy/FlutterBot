@@ -37,7 +37,11 @@ const playingmsg = [
     "staring at you as you shower",
     "attempting to fix broken clit-drive",
     "WHAT ARE YOU DOING THERE SHY?!",
-    "Asian Driver Simulator"
+    "Asian Driver Simulator",
+    "Minecraft: Cock edition",
+    "with Sweetiebot",
+    "attempting to lick herself",
+    "Robo-sex-horse simulator 2017"
 ]
 
 const pingmsg = [
@@ -48,7 +52,10 @@ const pingmsg = [
     "ERROR: NotAVirus.exe succesfully pinged!",
     "What do you want.",
     "Can't you see I have something in slot 'V'??",
-    "You better have a good reason for this.."
+    "You better have a good reason for this..",
+    "Can you not? I'm a bit... busy...",
+    "Something tells me this isn't because I'm nnot working.",
+    "Pongping."
 ]
 
 
@@ -60,7 +67,7 @@ const pingmsg = [
 // from Discord _after_ ready is emitted.
 bot.on('ready', () => {
   console.log("I am ready!")
-  var timer = setInterval(()=>{bot.user.setGame(playingmsg[Math.floor(Math.random()*playingmsg.length)])},1000*60*15)
+  var timer = setInterval(()=>{bot.user.setGame(playingmsg[Math.floor(Math.random()*playingmsg.length)])},1000*60*60)
 });
 
 // create an event listener for messages
