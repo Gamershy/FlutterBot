@@ -58,6 +58,14 @@ const pingmsg = [
     "Pongping."
 ]
 
+const BoopImg = [
+    "https://cdn.discordapp.com/attachments/270372438825500672/283016843030036481/271618__UNOPT__safe_animated_scrunchy-face_boop_marker-pony_extreme-speed-animation.gif",
+    "https://cdn.discordapp.com/attachments/270372438825500672/283016847522267136/thumb.gif",
+    "https://cdn.discordapp.com/attachments/270372438825500672/283016854698459137/giphy_1.gif",
+    "https://cdn.discordapp.com/attachments/270372438825500672/283016858402160640/515.gif",
+    "https://cdn.discordapp.com/attachments/270372438825500672/283016859014397952/a02.gif"
+]
+
 
 
 /*
@@ -210,6 +218,11 @@ else if (message.content.split(" ").indexOf("/ban") == 0){
         }
     else (message.channel.sendMessage("Nice try."))
     }
+    if (message.content === "/owo"){
+        message.channel.sendFile("https://cdn.discordapp.com/attachments/270372438825500672/283016856770576394/7224116065017216276_account_id8.png")
+    }
+    if (message.content === "/boop")
+        message.channel.sendFile(BoopImg[Math.floor(Math.random()*BoopImg.length)])
 })
 
 bot.login(config.botToken)
