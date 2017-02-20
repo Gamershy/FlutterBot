@@ -245,7 +245,7 @@ else if (message.content.split(" ").indexOf("/ban") == 0){
     }
     else if (message.content.split(" ").indexOf("/createrole") == 0){
         if (message.member.roles.has(config.adminID)){
-        message.guild.createRole({name: message.content.split(" ")[1]})
+        process.nextTick(message.guild.createRole({name: message.content.split(" ")[1]}))
         message.delete()
     }
     else (message.channel.sendMessage("Does it look like you're an admin?"))
