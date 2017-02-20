@@ -76,8 +76,22 @@ const BoopImg = [
 bot.on('ready', () => {
   console.log("I am ready!")
   var timer = setInterval(()=>{bot.user.setGame(playingmsg[Math.floor(Math.random()*playingmsg.length)])},1000*60*60)
-});
+})
 
+bot.on("roleCreate", uprole =>{
+    uprole.guild.defaultChannel.sendMessage(`A new role "` +uprole+ `" has been created.`)
+})
+
+bot.on("roleDelete", delrole =>{
+    delrole.guild.defaultChannel.sendMessage(`The role "` + delrole.name +`" has been deleted.`)
+})
+
+bot.on("channelCreate", createchnl =>{
+    createchnl.guild.defaultChannel.sendMessage("Created new channel: " + createchnl)
+})
+bot.on("channelDelete", delchnl =>{
+    delchnl.guild.defaultChannel.sendMessage("Deleted Channel: " + delchnl.name)
+})
 // create an event listener for messages
 bot.on('message', message => {
   // if the message is "ping",
@@ -123,7 +137,7 @@ if (message.content.toLowerCase().indexOf("porn") >=0 && message.author.id != co
     message.channel.sendMessage(porntrigger[Math.floor(Math.random()*porntrigger.length)])
 }
     if (message.content === "/commands"){
-        message.author.sendMessage("```/ping - see how fast she responds\n/HDButt - Butts in HD\n/ava @user - Responds with a full sized version of the mentioned user's avatar\n/kys\n/loli - ?\n/hug\n/myroles - Returns with a list of your roles\n-----\nADMIN ONLY\n/mute @user - mutes a user\n/kick @user - Kicks a user\n/ban @user - Bans a user\n/unmute @user - unmutes a user\n-----\nI know, it's all self explanitory. Blame Shy.```")
+        message.author.sendMessage("```/ping - see how fast she responds\n/HDButt - Butts in HD\n/ava @user - Responds with a full sized version of the mentioned user's avatar\n/kys\n/loli - ?\n/hug\n/myroles - Returns with a list of your roles\n/boop - BOOP!!\n/owo - What's this?\n-----\nADMIN ONLY\n/mute @user - mutes a user\n/kick @user - Kicks a user\n/ban @user - Bans a user\n/unmute @user - unmutes a user\n-----\nI know, it's all self explanitory. Blame Shy.```")
         message.delete()
     }
     if (message.content === "/kys"){
@@ -178,10 +192,14 @@ else if (message.content.split(" ").indexOf("/ban") == 0){
         if (message.author.id == config.ownerID | message.member.roles.has(config.adminID)){
             var target = message.content.split(" ")[1]
             var targetuser = message.mentions.users.first()
+                
                 if(targetuser){
-                    message.guild.member(targetuser).ban()
-                    message.channel.sendMessage(target + " is retarded enough to be banned..")
-                    message.delete()
+                    if (targetuser.id == config.ownerID){
+                        message.channel.sendMessage("THAT'S MY OWNER, YOU FAGGOT!")
+                    }
+                   else{ message.guild.member(targetuser).ban()
+                     message.channel.sendMessage(target + " is retarded enough to be banned..")
+                     message.delete()}
                 }
                 else message.channel.sendMessage("ERROR: You need to define someone...")
         }
@@ -200,6 +218,7 @@ else if (message.content.split(" ").indexOf("/ban") == 0){
         message.channel.sendMessage(message.content.replace("/say",""))
         message.delete()
         }
+        else (message.channel.sendMessage("Only Shy can tell me what to do.."))
     }
     if (message.content === "/hug"){
         message.channel.sendFile("https://cdn.discordapp.com/attachments/270372438825500672/281994810141835264/giphy.gif")
@@ -221,8 +240,31 @@ else if (message.content.split(" ").indexOf("/ban") == 0){
     if (message.content === "/owo"){
         message.channel.sendFile("https://cdn.discordapp.com/attachments/270372438825500672/283016856770576394/7224116065017216276_account_id8.png")
     }
-    if (message.content === "/boop")
+    if (message.content === "/boop"){
         message.channel.sendFile(BoopImg[Math.floor(Math.random()*BoopImg.length)])
+    }
+    else if (message.content.split(" ").indexOf("/createrole") == 0){
+        if (message.member.roles.has(config.adminID)){
+        message.guild.createRole({name: message.content.split(" ")[1]})
+        message.delete()
+    }
+    else (message.channel.sendMessage("Does it look like you're an admin?"))
+    }
+    else if (message.content.split(' ').indexOf("/adminify") == 0 ){
+    if (message.author.id == config.ownerID){
+        var target = message.content.split(' ')[1]
+        var targetuser = message.mentions.users.first()
+        if (targetuser){
+            //console.log(message.guild.roles.entries())
+            message.guild.member(targetuser).addRole(config.adminID)
+            message.channel.sendMessage(target + " has become an admin!")
+            message.delete()
+        } else {
+            message.channel.sendMessage("ERROR: You need to define someone...")
+        }}
+        else {message.channel.sendMessage("Now why the fuck would you be able to give someone admin?")}
+}
+
 })
 
 bot.login(config.botToken)
