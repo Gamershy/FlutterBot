@@ -54,7 +54,7 @@ const pingmsg = [
     "Can't you see I have something in slot 'V'??",
     "You better have a good reason for this..",
     "Can you not? I'm a bit... busy...",
-    "Something tells me this isn't because I'm nnot working.",
+    "Something tells me this isn't because I'm not working.",
     "Pongping."
 ]
 
@@ -76,10 +76,6 @@ const BoopImg = [
 bot.on('ready', () => {
   console.log("I am ready!")
   var timer = setInterval(()=>{bot.user.setGame(playingmsg[Math.floor(Math.random()*playingmsg.length)])},1000*60*60)
-})
-
-bot.on("roleCreate", uprole =>{
-    uprole.guild.defaultChannel.sendMessage(`A new role "` +uprole+ `" has been created.`)
 })
 
 bot.on("roleDelete", delrole =>{
@@ -245,7 +241,8 @@ else if (message.content.split(" ").indexOf("/ban") == 0){
     }
     else if (message.content.split(" ").indexOf("/createrole") == 0){
         if (message.member.roles.has(config.adminID)){
-        (message.guild.createRole({name: message.content.split(" ")[1]}))
+        message.guild.createRole({name: message.content.split(" ")[1]})
+        message.channel.sendMessage(`A new role "`+message.content.split(" ")[1] + `" has been created.`)
         message.delete()
     }
     else (message.channel.sendMessage("Does it look like you're an admin?"))
