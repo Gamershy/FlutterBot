@@ -271,7 +271,7 @@ else if (message.content.split(" ").indexOf("/ban") == 0){
         }else message.channel.sendMessage("Do you look like an Admin?")
     }
     if (message.content === "/serverinfo"){
-        message.channel.sendMessage("Name: " + message.guild.name + "\nOwner: " + message.guild.owner + "\nID: " + message.guild.id + "\nMembers: " + message.guild.memberCount + "\nIcon URL: <" + message.guild.iconURL + ">\nCreated: " + message.guild.createdAt + "\nFeatures: " +  message.guild.features + "\nRegion: " + message.guild.region + "\nVerification LVL: " + message.guild.verificationLevel)
+        message.channel.sendMessage("Name: " + message.guild.name + "\nOwner: " + message.guild.owner + "\nID: " + message.guild.id + "\nMembers: " + message.guild.memberCount + "\nIcon URL: <" + message.guild.iconURL + ">\nCreated: " + message.guild.createdAt + "\nFeatures: " +  message.guild.features + "\nRegion: " + message.guild.region + "\nVerification LVL: " + message.guild.verificationLevel + "Thanks to <@268199636253147137> for teaching me how to bot.")
     }
     if (message.content === "/spin"){
         message.channel.sendMessage("Can't you read? This feature is a WIP.")
