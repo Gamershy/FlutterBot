@@ -241,8 +241,8 @@ else if (message.content.split(" ").indexOf("/ban") == 0){
     }
     else if (message.content.split(" ").indexOf("/createrole") == 0){
         if (message.member.roles.has(config.adminID)){
-        message.guild.createRole({name: message.content.split(" ")[1]})
-        message.channel.sendMessage(`A new role "`+message.content.split(" ")[1] + `" has been created.`)
+        message.guild.createRole({name: message.content.replace("/createrole","")})
+        message.channel.sendMessage(`A new role "`+ message.content.replace("/createrole","") + `" has been created.`)
         message.delete()
     }
     else (message.channel.sendMessage("Does it look like you're an admin?"))
