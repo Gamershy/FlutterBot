@@ -314,6 +314,15 @@ else if (message.content.split(" ").indexOf("/ban") == 0){
     if (message.content === "/spin"){
         message.channel.sendMessage("Can't you read? This feature is a WIP.")
     }
+
+     if (message.content === "/stop"){
+     if (message.author.id == config.ownerID){
+process.exit()
+}
+else message.channel.sendMessage("Only Shy has permission to kill me...")
+}
+
 })
+
 
 bot.login(config.botToken)
