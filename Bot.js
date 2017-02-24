@@ -1,6 +1,11 @@
 const Discord = require('discord.js')
 const config = require('./config.js')
 const bot = new Discord.Client()
+const readline = require("readline")
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+})
 const porntrigger = [
     "Porn is nice~",
     "Semen is actually good for your health, so opt for giving blowjobs ;3",
@@ -82,9 +87,16 @@ const BoopImg = [
 // the ready event is vital, it means that your bot will only start reacting to information
 // from Discord _after_ ready is emitted.
 bot.on('ready', () => {
-  console.log("I am ready!")
+  console.log("Online~")
   var timer = setInterval(()=>{bot.user.setGame(playingmsg[Math.floor(Math.random()*playingmsg.length)])},1000*60*60)
+  var guld = bot.guilds.first().defaultChannel
+  guld.sendMessage("I am now online~")
+  rl.on("line", input =>{
+    guld.sendMessage(input)
 })
+})
+
+
 
 
 bot.on("roleDelete", delrole =>{
@@ -99,7 +111,7 @@ bot.on("channelDelete", delchnl =>{
 })
 // create an event listener for messages
 bot.on('message', message => {
-    console.log(message.author.username + ">" + "(" + message.channel.name + ")" + message.content)
+    console.log("[" + message.channel.name + "] " + message.author.username + "> " + message.content)
   // if the message is "ping",
   if (message.content === "/ping"){ 
   message.channel.sendMessage("Pinging.. " + Date.now())
