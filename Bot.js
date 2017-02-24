@@ -16,7 +16,10 @@ const porntrigger = [
     "Horses have tight butts!",
     "It's Cock O' Clock",
     "OwO What's this? *pokes bulge*",
-    "Don't forget the fags!"
+    "Don't forget the fags!",
+    "Rimjobs may sound gross, but they feel amazing..~",
+    "Fun fact: Amethyst technically classifies as a transexual.",
+    "These messages appear whenever you say the word 'porn'"
 ]
 const size = [
     "8================D",
@@ -24,7 +27,8 @@ const size = [
     "8=D",
     "8========D",
     ".",
-    "8=============D"
+    "8=============D",
+    "8==============================D"
 ]
 const playingmsg = [
     "with tools in slot 'A'",
@@ -41,7 +45,13 @@ const playingmsg = [
     "Minecraft: Cock edition",
     "with Sweetiebot",
     "attempting to lick herself",
-    "Robo-sex-horse simulator 2017"
+    "Robo-sex-horse simulator 2017",
+    "Initializing pornhub.js",
+    "with your cock",
+    "with your pussy",
+    "with a hotdog in slot `V`",
+    "with a hotdog in slot 'A'",
+    "with a gloryhole"
 ]
 
 const pingmsg = [
@@ -66,8 +76,6 @@ const BoopImg = [
     "https://cdn.discordapp.com/attachments/270372438825500672/283016859014397952/a02.gif"
 ]
 
-
-
 /*
   A ping pong bot, whenever you send "ping", it replies "pong".
 */
@@ -77,6 +85,7 @@ bot.on('ready', () => {
   console.log("I am ready!")
   var timer = setInterval(()=>{bot.user.setGame(playingmsg[Math.floor(Math.random()*playingmsg.length)])},1000*60*60)
 })
+
 
 bot.on("roleDelete", delrole =>{
     delrole.guild.defaultChannel.sendMessage(`The role "` + delrole.name +`" has been deleted.`)
@@ -90,11 +99,13 @@ bot.on("channelDelete", delchnl =>{
 })
 // create an event listener for messages
 bot.on('message', message => {
+    console.log(message.author.username + ">" + "(" + message.channel.name + ")" + message.content)
   // if the message is "ping",
   if (message.content === "/ping"){ 
   message.channel.sendMessage("Pinging.. " + Date.now())
 
   }
+
    
 if(message.content.split(' ').indexOf("Pinging..") == 0){
     var time = parseInt(message.content.replace("Pinging.. ",""))
