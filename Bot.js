@@ -105,9 +105,24 @@ bot.on('message', message => {
   message.channel.sendMessage("Pinging.. " + Date.now())
 
   }
+else if (message.content.split(" ").indexOf("ai;") == 0){
+        repeat = message.content.split(" ")
+        if (message.author.id == config.ownerID){
+        message.guild.defaultChannel.sendMessage(message.content.replace("ai;",""))
+        message.delete()
+        }
+    }
+
+if (message.content === "/randgame"){
+    if (message.author.id == config.ownerID){
+        bot.user.setGame(playingmsg[Math.floor(Math.random()*playingmsg.length)],1000*60*60)
+        message.delete()
+    }
+    else message.channel.sendMessage("Only Shy can play with me...")
+}
 
    
-if(message.content.split(' ').indexOf("Pinging..") == 0){
+if (message.content.split(' ').indexOf("Pinging..") == 0){
     var time = parseInt(message.content.replace("Pinging.. ",""))
     message.delete()
     message.channel.sendMessage(pingmsg[Math.floor(Math.random()*pingmsg.length)]+" `Responded in: " + (Date.now()-time)+ "ms`")
