@@ -96,6 +96,10 @@ bot.on('ready', () => {
 })
 })
 
+bot.on("reconnecting", rcnct =>{
+rcnct.defaultChannel.sendMessage("Lost connection, reconnecting..")
+})
+
 
 
 
