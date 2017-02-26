@@ -325,6 +325,9 @@ process.exit()
 }
 else message.channel.sendMessage("Only Shy has permission to kill me...")
 }
+if (message.content == "/cat"){
+    message.channel.sendMessage("http://thecatapi.com/api/images/get?format=src&type=gif&timestamp=" + Math.floor(Math.random()*9999999999999))
+}
 
 })
 
