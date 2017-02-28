@@ -108,8 +108,9 @@ bot.on("roleDelete", delrole =>{
 })
 
 bot.on("channelCreate", createchnl =>{
+    if (createchnl.guild){
     createchnl.guild.defaultChannel.sendMessage("Created new channel: " + createchnl)
-})
+}})
 bot.on("channelDelete", delchnl =>{
     delchnl.guild.defaultChannel.sendMessage("Deleted Channel: " + delchnl.name)
 })
@@ -321,6 +322,7 @@ else if (message.content.split(" ").indexOf("/ban") == 0){
 
      if (message.content === "/stop"){
      if (message.author.id == config.ownerID){
+         message.channel.sendMessage("Shutting Down...")
 process.exit()
 }
 else message.channel.sendMessage("Only Shy has permission to kill me...")
