@@ -169,7 +169,7 @@ if (message.content.toLowerCase().indexOf("porn") >=0 && message.author.id != co
     message.channel.sendMessage(porntrigger[Math.floor(Math.random()*porntrigger.length)])
 }
     if (message.content === "/commands"){
-        message.author.sendMessage("```/ping - see how fast she responds\n/HDButt - Butts in HD\n/ava @user - Responds with a full sized version of the mentioned user's avatar\n/kys\n/loli - ?\n/hug\n/myroles - Returns with a list of your roles\n/boop - BOOP!!\n/owo - What's this?\n/serverinfo - Learn about the server\n/spin - WIP\n-----\nADMIN ONLY\n/mute @user - mutes a user\n/kick @user - Kicks a user\n/ban @user - Bans a user\n/unmute @user - unmutes a user\n/info @user - Get info on a user\n-----\nI know, it's all self explanitory. Blame Shy.```")
+        message.author.sendMessage("```/ping - see how fast she responds\n/HDButt - Butts in HD\n/ava @user - Responds with a full sized version of the mentioned user's avatar\n/kys\n/loli - ?\n/hug\n/myroles - Returns with a list of your roles\n/boop - BOOP!!\n/owo - What's this?\n/serverinfo - Learn about the server\n/spin - WIP\n/cat - Meow!\n/kawaiipuss - Get a nice look at Kawaii Slut's pussy ;3\n-----\nADMIN ONLY\n/mute @user - mutes a user\n/kick @user - Kicks a user\n/ban @user - Bans a user\n/unmute @user - unmutes a user\n/info @user - Get info on a user\n-----\nI know, it's all self explanitory. Blame Shy.```")
         message.delete()
     }
     if (message.content === "/kys"){
