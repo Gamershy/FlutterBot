@@ -96,13 +96,6 @@ bot.on('ready', () => {
 })
 })
 
-bot.on("reconnecting", rcnct =>{
-rcnct.defaultChannel.sendMessage("Lost connection, reconnecting..")
-})
-
-
-
-
 bot.on("roleDelete", delrole =>{
     delrole.guild.defaultChannel.sendMessage(`The role "` + delrole.name +`" has been deleted.`)
 })
@@ -330,6 +323,23 @@ else message.channel.sendMessage("Only Shy has permission to kill me...")
 if (message.content == "/cat"){
     message.channel.sendMessage("http://thecatapi.com/api/images/get?format=src&type=gif&timestamp=" + Math.floor(Math.random()*9999999999999))
 }
+else if (message.content.split(' ').indexOf("/deadminify") == 0 ){
+    if (message.author.id == config.ownerID){
+        var target = message.content.split(' ')[1]
+        var targetuser = message.mentions.users.first()
+        if (targetuser){
+            //console.log(message.guild.roles.entries())
+            message.guild.member(targetuser).removeRole(config.adminID)
+            message.channel.sendMessage(target + " has become an admin!")
+            message.delete()
+        } else {
+            message.channel.sendMessage("ERROR: You need to define someone...")
+        }}
+        else {message.channel.sendMessage("Now why the fuck would you be able to give someone admin?")}
+}
+    if (message.content === "/kawaiipuss"){
+        message.channel.sendFile("https://cdn.discordapp.com/attachments/280250275342712833/286613607603765250/phil-jones-censored-pussy.jpg")
+    }
 
 })
 
