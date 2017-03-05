@@ -81,6 +81,8 @@ const BoopImg = [
     "https://cdn.discordapp.com/attachments/270372438825500672/283016859014397952/a02.gif"
 ]
 
+var YouTube = require('youtube-node')
+  var youTube = new YouTube()
 /*
   A ping pong bot, whenever you send "ping", it replies "pong".
 */
@@ -90,6 +92,8 @@ bot.on('ready', () => {
   console.log("Online~")
   var timer = setInterval(()=>{bot.user.setGame(playingmsg[Math.floor(Math.random()*playingmsg.length)])},1000*60*60)
   var guld = bot.guilds.first().defaultChannel
+
+  youTube.setKey(config.ytKey)
   guld.sendMessage("I am now online~")
   rl.on("line", input =>{
     guld.sendMessage(input)
@@ -339,6 +343,27 @@ else if (message.content.split(' ').indexOf("/deadminify") == 0 ){
 }
     if (message.content === "/kawaiipuss"){
         message.channel.sendFile("https://cdn.discordapp.com/attachments/280250275342712833/286613607603765250/phil-jones-censored-pussy.jpg")
+    }
+if (message.content.split(" ").indexOf("/yt") == 0){
+    youTube.search(message.content.replace("/yt",""), 10, function(error, result){
+        if (result){
+            var video = result
+            if (video.items[0]){
+            message.channel.sendMessage("https://www.youtube.com/watch?v=" + video.items[0].id.videoId)
+        }
+        else message.channel.sendMessage("ERROR: Nothing was found...")
+        }
+        else {
+           message.channel.sendMessage(error)
+        }
+        
+    })
+}
+    if (message.content === "https://www.youtube.com/watch?v=undefined"){
+        if (message.author.id == config.botID){
+            message.channel.sendMessage("ERROR: It appears the first result was not a video. Refine your search.")
+            message.delete()
+        }
     }
 
 })
