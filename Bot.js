@@ -95,14 +95,14 @@ bot.on('ready', () => {
   var guld = bot.guilds.first().defaultChannel
 
   youTube.setKey(config.ytKey)
-  guld.sendMessage("Restarting for testing.")
+  guld.sendMessage("I am now online~")
   rl.on("line", input =>{
     guld.sendMessage(input)
 })
 })
 
 bot.on("roleDelete", delrole =>{
-    if (delrole.guild.defaultchannel){
+    if (delrole.guild){
     delrole.guild.defaultChannel.sendMessage(`The role "` + delrole.name +`" has been deleted.`)
     }
 })
