@@ -2,6 +2,7 @@ const Discord = require('discord.js')
 const config = require('./config.js')
 const bot = new Discord.Client()
 const readline = require("readline")
+const booru = require("booru")
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -94,14 +95,16 @@ bot.on('ready', () => {
   var guld = bot.guilds.first().defaultChannel
 
   youTube.setKey(config.ytKey)
-  guld.sendMessage("I am now online~")
+  guld.sendMessage("Restarting for testing.")
   rl.on("line", input =>{
     guld.sendMessage(input)
 })
 })
 
 bot.on("roleDelete", delrole =>{
+    if (delrole.guild.defaultchannel){
     delrole.guild.defaultChannel.sendMessage(`The role "` + delrole.name +`" has been deleted.`)
+    }
 })
 
 bot.on("channelCreate", createchnl =>{
@@ -364,6 +367,17 @@ if (message.content.split(" ").indexOf("/yt") == 0){
             message.channel.sendMessage("ERROR: It appears the first result was not a video. Refine your search.")
             message.delete()
         }
+    }
+    if (message.content.split(" ").indexOf("/r34") == 0){
+        var cmd = message.content.replace("/r34","")
+        var tags = cmd.split(",")
+        booru.search("r34", [tags[0], tags[1], tags[2], tags[3], tags[4]], 5)
+        .then(booru.commonfy)
+        .then(images => {
+            for(let image of images){
+            message.channel.sendMessage(image.common.file_url)
+            }
+        })
     }
 
 })
