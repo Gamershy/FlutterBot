@@ -95,7 +95,7 @@ bot.on('ready', () => {
   var guld = bot.guilds.first().defaultChannel
 
   youTube.setKey(config.ytKey)
-  guld.sendMessage("I am now online~")
+  //guld.sendMessage("I am now online~")
   rl.on("line", input =>{
     guld.sendMessage(input)
 })
@@ -172,11 +172,11 @@ if (message.content.split(' ').indexOf("/setgame") == 0 ){
     }
             
 }
-if (message.content.toLowerCase().indexOf("porn") >=0 && message.author.id != config.botID){
+if (message.content.toLowerCase().indexOf("porn.") >=0 && message.author.id != config.botID){
     message.channel.sendMessage(porntrigger[Math.floor(Math.random()*porntrigger.length)])
 }
     if (message.content === "/commands"){
-        message.author.sendMessage("```/ping - see how fast she responds\n/HDButt - Butts in HD\n/ava @user - Responds with a full sized version of the mentioned user's avatar\n/kys\n/loli - ?\n/hug\n/myroles - Returns with a list of your roles\n/boop - BOOP!!\n/owo - What's this?\n/serverinfo - Learn about the server\n/spin - WIP\n/cat - Meow!\n/kawaiipuss - Get a nice look at Kawaii Slut's pussy ;3\n-----\nADMIN ONLY\n/mute @user - mutes a user\n/kick @user - Kicks a user\n/ban @user - Bans a user\n/unmute @user - unmutes a user\n/info @user - Get info on a user\n-----\nI know, it's all self explanitory. Blame Shy.```")
+        message.author.sendMessage("```/ping - see how fast she responds\n/HDButt - Butts in HD\n/ava @user - Responds with a full sized version of the mentioned user's avatar\n/kys\n/loli - ?\n/hug\n/myroles - Returns with a list of your roles\n/boop - BOOP!!\n/owo - What's this?\n/serverinfo - Learn about the server\n/spin - WIP\n/cat - Meow!\n/kawaiipuss - Get a nice look at Kawaii Slut's pussy ;3\n/yt <search> - look up a youtube video\n/r34 <tags> - Search R34 for porn (tags are separated by ,'s and there's a limit of 5 tags)\n/gudbat\n/loodbat\n/sendnoods\n/roles @user - check what roles a user has\n-----\nADMIN ONLY\n/mute @user - mutes a user\n/kick @user - Kicks a user\n/ban @user - Bans a user\n/unmute @user - unmutes a user\n/info @user - Get info on a user\n-----\nI know, it's all self explanitory. Blame Shy.```")
         message.delete()
     }
     if (message.content === "/kys"){
@@ -379,7 +379,24 @@ if (message.content.split(" ").indexOf("/yt") == 0){
             }
         })
     }
-
+    if (message.content.split(" ").indexOf("/roles") == 0){
+        var target = message.content.split(" ")[1]
+        var targetuser = message.mentions.users.first()
+        if (targetuser){
+        message.channel.sendMessage(targetuser + "'s Roles:")
+        message.channel.sendMessage(message.guild.member(targetuser).roles.array().map(role => role.name.replace("@everyone","")))
+    }
+    else message.channel.sendMessage("ERROR: You need to define someone...")
+}
+    if (message.content === "/sendnoods"){
+        message.channel.sendFile("https://cdn.discordapp.com/attachments/270372438825500672/292342878737399809/26bf6ac5b31209915df332272bee1cb890f12c7617850b5b3acd45d68dba7ee9_1.jpg")
+    }
+    if (message.content === "/loodbat"){
+        message.channel.sendFile("https://cdn.discordapp.com/attachments/270372438825500672/292342957107970049/503.png")
+    }
+    if (message.content === "/gudbat"){
+        message.channel.sendFile("https://cdn.discordapp.com/attachments/270372438825500672/292342957741178880/thumb.png")
+    }
 })
 
 
