@@ -95,7 +95,7 @@ bot.on('ready', () => {
   var guld = bot.guilds.first().defaultChannel
 
   youTube.setKey(config.ytKey)
-  //guld.sendMessage("I am now online~")
+  guld.sendMessage("I am now online~")
   rl.on("line", input =>{
     guld.sendMessage(input)
 })
