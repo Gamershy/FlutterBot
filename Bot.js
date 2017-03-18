@@ -1,4 +1,4 @@
-const Discord = require('discord.js')
+﻿const Discord = require('discord.js')
 const config = require('./config.js')
 const bot = new Discord.Client()
 const readline = require("readline")
@@ -171,7 +171,9 @@ bot.on("channelCreate", createchnl =>{
     createchnl.guild.defaultChannel.sendMessage("Created new channel: " + createchnl)
 }})
 bot.on("channelDelete", delchnl =>{
+if (delchnl.guild){
     delchnl.guild.defaultChannel.sendMessage("Deleted Channel: " + delchnl.name)
+}
 })
 // create an event listener for messages
 bot.on('message', message => {
