@@ -98,7 +98,9 @@ var commands = [
     {"name":"/r34 <Tags> (Number)" , "result":"Search R34 for some porn. Leaving the tags blank will yield random results"},
     {"name":"/gudbat" , "result":"Good bat~"},
     {"name":"/loodbat" , "result":"Lewd Bat."},
-    {"name":"/sendnoods" , "result":"You heard the pony, send em"}
+    {"name":"/sendnoods" , "result":"You heard the pony, send em"},
+    {"name":"/nickname" , "result":"set your nickname. (Made for mobile, usable by pc.)"}
+
 ]
 var admincmds = [
     {"name":"/mute @user" , "result":"Mutes a user as punishment"},
@@ -414,7 +416,7 @@ else if (message.content.split(' ').indexOf("/deadminify") == 0 ){
         if (targetuser){
             //console.log(message.guild.roles.entries())
             message.guild.member(targetuser).removeRole(config.adminID)
-            message.channel.sendMessage(target + " has become an admin!")
+            message.channel.sendMessage(target + " is no longer admin...")
             message.delete()
         } else {
             message.channel.sendMessage("ERROR: You need to define someone...")
@@ -477,7 +479,7 @@ if (message.content.split(" ").indexOf("/yt") == 0){
     if (message.content.split(" ").indexOf("/nickname") == 0){
         message.guild.member(message.author).setNickname(message.content.replace("/nickname" , ""))
         message.channel.sendMessage(message.author.username + ", your name has been set")
-    }  
+    }
 }
 })
 
