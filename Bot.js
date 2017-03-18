@@ -81,9 +81,67 @@ const BoopImg = [
     "https://cdn.discordapp.com/attachments/270372438825500672/283016858402160640/515.gif",
     "https://cdn.discordapp.com/attachments/270372438825500672/283016859014397952/a02.gif"
 ]
-
+var commands = [
+    {"name":"/ping" , "result":"See how fast she responds."},
+    {"name":"/HDButt" , "result":"Butts in HD ;3"},
+    {"name":"/ava @user" , "result":"Displays a user's avatar"},
+    {"name":"/kys" , "result":"Find a portal to a magical land~"},
+    {"name":"/loli" , "result":"I swear it's a loli!"},
+    {"name":"/hug" , "result":"Give everyone a big ol' hug"},
+    {"name":"/myroles" , "result":"Displays your roles for everyone to see."},
+    {"name":"/boop" , "result":"BOOP!!"},
+    {"name":"/owo" , "result":"What's this? owo"},
+    {"name":"/spin" , "result":"It'll be done soon™"},
+    {"name":"/cat" , "result":"Meow~"},
+    {"name":"/kawaiipuss" , "result":"See some sexy pussy"},
+    {"name":"/yt <query>" , "result":"Search youtube for a video"},
+    {"name":"/r34 <Tags> (Number)" , "result":"Search R34 for some porn. Leaving the tags blank will yield random results"},
+    {"name":"/gudbat" , "result":"Good bat~"},
+    {"name":"/loodbat" , "result":"Lewd Bat."},
+    {"name":"/sendnoods" , "result":"You heard the pony, send em"}
+]
+var admincmds = [
+    {"name":"/mute @user" , "result":"Mutes a user as punishment"},
+    {"name":"/unmute @user" , "result":"Unmutes a user"},
+    {"name":"/kick @user" , "result":"Kicks a user from the server"},
+    {"name":"/ban @user" , "result":"Bans a user from the server. Talk to Shy about unbanning."},
+    {"name":"/info @user" , "result":"Displays information about a user. Useful for seeing when accounts were made."}
+]
 var YouTube = require('youtube-node')
   var youTube = new YouTube()
+  function evalBooruCmd(input)
+{
+    //cleanup
+    input = input.replace(/,/g , " ") // replace commas with space (incase someone does tag,tag)
+    input = input.replace(/\s+/g, ' ')//replace excess whitespace ("tag  tag" -> "tag tag")
+    input = input.trim() //remove trailing whitespace ("tag tag " -> "tag tag")
+    
+    var values = input.split(" ")
+    var tags
+    var integerFound = false
+    for(n in values){
+        if(parseInt(values[n])){
+            //integer found.
+            tags = values.splice(0,n)
+            //values now has the integer tags has the tags
+            integerFound = true //yep we found a integer
+        }
+    }
+    
+    var number
+    if (integerFound){
+        number = parseInt(values[0])
+    } else{
+        number = 1
+        tags = values //didnt find a integer so "values" only contains tags
+    }
+    return {"tags": tags, "number":number}
+}
+    function constrain(minimum, maximum, value){
+    if(value > maximum) value = maximum
+    if(value < minimum) value = minimum
+    return value
+}
 /*
   A ping pong bot, whenever you send "ping", it replies "pong".
 */
@@ -100,6 +158,7 @@ bot.on('ready', () => {
     guld.sendMessage(input)
 })
 })
+
 
 bot.on("roleDelete", delrole =>{
     if (delrole.guild){
@@ -118,7 +177,8 @@ bot.on("channelDelete", delchnl =>{
 bot.on('message', message => {
     console.log("[" + message.channel.name + "] " + message.author.username + "> " + message.content)
   // if the message is "ping",
-  if (message.content === "/ping"){ 
+   if (message.guild){
+      if (message.content === "/ping"){ 
   message.channel.sendMessage("Pinging.. " + Date.now())
 
   }
@@ -176,8 +236,23 @@ if (message.content.toLowerCase().indexOf("porn.") >=0 && message.author.id != c
     message.channel.sendMessage(porntrigger[Math.floor(Math.random()*porntrigger.length)])
 }
     if (message.content === "/commands"){
-        message.author.sendMessage("```/ping - see how fast she responds\n/HDButt - Butts in HD\n/ava @user - Responds with a full sized version of the mentioned user's avatar\n/kys\n/loli - ?\n/hug\n/myroles - Returns with a list of your roles\n/boop - BOOP!!\n/owo - What's this?\n/serverinfo - Learn about the server\n/spin - WIP\n/cat - Meow!\n/kawaiipuss - Get a nice look at Kawaii Slut's pussy ;3\n/yt <search> - look up a youtube video\n/r34 <tags> - Search R34 for porn (tags are separated by ,'s and there's a limit of 5 tags)\n/gudbat\n/loodbat\n/sendnoods\n/roles @user - check what roles a user has\n-----\nADMIN ONLY\n/mute @user - mutes a user\n/kick @user - Kicks a user\n/ban @user - Bans a user\n/unmute @user - unmutes a user\n/info @user - Get info on a user\n-----\nI know, it's all self explanitory. Blame Shy.```")
+        var data = new Discord.RichEmbed()
+            data.setColor("#191970")
+            data.setTitle("COMMANDS")
+            for(command of commands){
+                data.addField(command.name , command.result)
+            }
+            message.author.sendEmbed(data)
         message.delete()
+        if (message.member.roles.has(config.adminID)){
+            var data = new Discord.RichEmbed()
+              data.setColor("#FF0000")
+            data.setTitle("ADMIN COMMANDS")
+            for(command of admincmds){
+                data.addField(command.name , command.result)
+            }
+            message.author.sendEmbed(data)
+        }
     }
     if (message.content === "/kys"){
         message.channel.sendFile("https://cdn.discordapp.com/attachments/268542019264184330/281635808518209537/full.png")
@@ -370,8 +445,8 @@ if (message.content.split(" ").indexOf("/yt") == 0){
     }
     if (message.content.split(" ").indexOf("/r34") == 0){
         var cmd = message.content.replace("/r34","")
-        var tags = cmd.split(",")
-        booru.search("r34", [tags[0], tags[1], tags[2], tags[3], tags[4]], 5)
+        var eval = evalBooruCmd(cmd)
+        booru.search("r34", eval.tags, {limit: constrain(1,20,eval.number), random: true})
         .then(booru.commonfy)
         .then(images => {
             for(let image of images){
@@ -397,6 +472,11 @@ if (message.content.split(" ").indexOf("/yt") == 0){
     if (message.content === "/gudbat"){
         message.channel.sendFile("https://cdn.discordapp.com/attachments/270372438825500672/292342957741178880/thumb.png")
     }
+    if (message.content.split(" ").indexOf("/nickname") == 0){
+        message.guild.member(message.author).setNickname(message.content.replace("/nickname" , ""))
+        message.channel.sendMessage(message.author.username + ", your name has been set")
+    }  
+}
 })
 
 
