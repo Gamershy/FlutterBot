@@ -191,10 +191,12 @@ bot.on('ready', () => {
   var guld = bot.guilds.first().defaultChannel
 
   youTube.setKey(config.ytKey)
-  if (dev = true){
+  if (dev == true){
       guld.sendMessage("Dev Build (1.6.0.8)")
   }
-  else guld.sendMessage("I am now online~")
+  else{
+      guld.sendMessage("I am now online~")
+    }
   rl.on("line", input =>{
     guld.sendMessage(input)
 })
