@@ -89,6 +89,7 @@ var commands = [
     {"name":"/loli" , "result":"I swear it's a loli!"},
     {"name":"/hug" , "result":"Give everyone a big ol' hug"},
     {"name":"/myroles" , "result":"Displays your roles for everyone to see."},
+    {"name":"/roles @user" , "result":"Displays a user's roles."},
     {"name":"/boop" , "result":"BOOP!!"},
     {"name":"/owo" , "result":"What's this? owo"},
     {"name":"/spin" , "result":"It'll be done soon™"},
@@ -96,6 +97,7 @@ var commands = [
     {"name":"/kawaiipuss" , "result":"See some sexy pussy"},
     {"name":"/yt <query>" , "result":"Search youtube for a video"},
     {"name":"/r34 <Tags> (Number)" , "result":"Search R34 for some porn. Leaving the tags blank will yield random results"},
+    {"name":"/r34top <Tags> (Number)" , "result": "Search R34 for the top scored porn."},
     {"name":"/gudbat" , "result":"Good bat~"},
     {"name":"/loodbat" , "result":"Lewd Bat."},
     {"name":"/sendnoods" , "result":"You heard the pony, send em"},
@@ -109,10 +111,10 @@ var admincmds = [
     {"name":"/ban @user" , "result":"Bans a user from the server. Talk to Shy about unbanning."},
     {"name":"/info @user" , "result":"Displays information about a user. Useful for seeing when accounts were made."}
 ]
+var dev = true
 var YouTube = require('youtube-node')
   var youTube = new YouTube()
-  function evalBooruCmd(input)
-{
+  function evalBooruCmd(input){
     //cleanup
     input = input.replace(/,/g , " ") // replace commas with space (incase someone does tag,tag)
     input = input.replace(/\s+/g, ' ')//replace excess whitespace ("tag  tag" -> "tag tag")
@@ -144,6 +146,40 @@ var YouTube = require('youtube-node')
     if(value < minimum) value = minimum
     return value
 }
+
+    //sorting stuff
+function predicatBy(prop) {
+    return function (a, b) {
+        if (a[prop] > b[prop]) {
+            return 1;
+        } else if (a[prop] < b[prop]) {
+            return -1;
+        }
+        return 0;
+    }
+}
+
+/**
+ * Sorts the Booru results highest rating first and returns n results
+ * @param {JSON} data json data to sort, use image
+ * @param {number} num number of results to get 
+ */
+function sortBooru(data, num){
+    var common = []
+    for (image of data) { common.push(image.common) }
+    //for (image of data) { console.log(image.common) }
+    common.sort(predicatBy("score")).reverse()
+    //console.log("commonyfied data: ")
+    //for (image of common){console.log(image.score)}
+    if (common.length>num){
+        var ret = []
+        for (var n = 0; n <num; n++){
+            ret.push(common[n])
+        }
+    return ret
+    }
+    return common
+}
 /*
   A ping pong bot, whenever you send "ping", it replies "pong".
 */
@@ -155,7 +191,10 @@ bot.on('ready', () => {
   var guld = bot.guilds.first().defaultChannel
 
   youTube.setKey(config.ytKey)
-  guld.sendMessage("I am now online~")
+  if (dev = true){
+      guld.sendMessage("Dev Build (1.6.0.8)")
+  }
+  else guld.sendMessage("I am now online~")
   rl.on("line", input =>{
     guld.sendMessage(input)
 })
@@ -447,17 +486,29 @@ if (message.content.split(" ").indexOf("/yt") == 0){
             message.delete()
         }
     }
-    if (message.content.split(" ").indexOf("/r34") == 0){
-        var cmd = message.content.replace("/r34","")
+    if (message.content.split(" ").indexOf("/r34top") == 0){
+               var cmd = message.content.replace("/r34","")
         var eval = evalBooruCmd(cmd)
-        booru.search("r34", eval.tags, {limit: constrain(1,20,eval.number), random: true})
+        booru.search("r34", eval.tags, {limit: 100, random: true})
         .then(booru.commonfy)
         .then(images => {
-            for(let image of images){
-            message.channel.sendMessage(image.common.file_url)
+            var sorted = sortBooru(images,constrain(1,20,eval.number))
+            for(let image of sorted){
+            message.channel.sendMessage(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \n${image.file_url}`)
             }
         })
     }
+    if (message.content.split(" ").indexOf("/r34") == 0){
+        var cmd = message.content.replace("/r34","")
+    var eval = evalBooruCmd(cmd)
+    booru.search("r34", eval.tags, {limit: constrain(1,20,eval.number), random: true})
+    .then(booru.commonfy)
+    .then(images => {
+        for (let image of images){
+            message.channel.sendMessage(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \nhttps:${image.file_url}`)
+        }
+    })
+    }   
     if (message.content.split(" ").indexOf("/roles") == 0){
         var target = message.content.split(" ")[1]
         var targetuser = message.mentions.users.first()
