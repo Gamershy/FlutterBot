@@ -180,6 +180,10 @@ function sortBooru(data, num){
     }
     return common
 }
+function delayedDelete(msg){
+    setTimeout((msgtodelete)=>
+        {msgtodelete.delete()},5000,msg);
+}
 /*
   A ping pong bot, whenever you send "ping", it replies "pong".
 */
@@ -192,7 +196,7 @@ bot.on('ready', () => {
 
   youTube.setKey(config.ytKey)
   if (dev == true){
-      guld.sendMessage("Dev Build (1.6.0.8)")
+      guld.sendMessage("Dev Build (1.6.2.0)")
   }
   else{
       guld.sendMessage("I am now online~")
@@ -297,8 +301,15 @@ if (message.content.toLowerCase().indexOf("porn.") >=0 && message.author.id != c
                 data.addField(command.name , command.result)
             }
             message.author.sendEmbed(data)
+            message.channel.sendMessage("DM'd you the commands")
         }
     }
+        if (message.content === "DM'd you the commands"){
+            if (message.author.id == config.botID){
+                delayedDelete(message)
+                }
+            }
+    
     if (message.content === "/kys"){
         message.channel.sendFile("https://cdn.discordapp.com/attachments/268542019264184330/281635808518209537/full.png")
     }
@@ -503,11 +514,13 @@ if (message.content.split(" ").indexOf("/yt") == 0){
     if (message.content.split(" ").indexOf("/r34") == 0){
         var cmd = message.content.replace("/r34","")
     var eval = evalBooruCmd(cmd)
+    message.channel.startTyping()
     booru.search("r34", eval.tags, {limit: constrain(1,20,eval.number), random: true})
     .then(booru.commonfy)
     .then(images => {
         for (let image of images){
             message.channel.sendMessage(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \nhttps:${image.file_url}`)
+            message.channel.stopTyping()
         }
     })
     }   
@@ -532,6 +545,13 @@ if (message.content.split(" ").indexOf("/yt") == 0){
     if (message.content.split(" ").indexOf("/nickname") == 0){
         message.guild.member(message.author).setNickname(message.content.replace("/nickname" , ""))
         message.channel.sendMessage(message.author.username + ", your name has been set")
+    }
+    if (message.content.split(" ").indexOf("/purge") == 0){
+        if (message.member.roles.has(config.adminID)){
+        message.delete()
+        message.channel.bulkDelete(message.content.replace("/purge",""))
+        }
+        else message.channel.sendMessage("Does it look like you're an admin?")
     }
 }
 })
