@@ -120,7 +120,7 @@ var admincmds = [
     {"name":"/ban @user" , "result":"Bans a user from the server. Talk to Shy about unbanning."},
     {"name":"/info @user" , "result":"Displays information about a user. Useful for seeing when accounts were made."}
 ]
-var dev = true
+var dev = false
 var YouTube = require('youtube-node')
   var youTube = new YouTube()
   function evalBooruCmd(input){
