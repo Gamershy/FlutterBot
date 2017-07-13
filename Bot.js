@@ -79,7 +79,15 @@ const BoopImg = [
     "https://cdn.discordapp.com/attachments/270372438825500672/283016847522267136/thumb.gif",
     "https://cdn.discordapp.com/attachments/270372438825500672/283016854698459137/giphy_1.gif",
     "https://cdn.discordapp.com/attachments/270372438825500672/283016858402160640/515.gif",
-    "https://cdn.discordapp.com/attachments/270372438825500672/283016859014397952/a02.gif"
+    "https://cdn.discordapp.com/attachments/270372438825500672/283016859014397952/a02.gif",
+    "https://cdn.discordapp.com/attachments/313132381488021524/333865886106648576/943e7643-8763-4171-b6fb-3443b683a425.gif",
+    "https://cdn.discordapp.com/attachments/313132381488021524/333865886576279553/09d86ce3-810a-4e05-8384-1cba996da05e.gif",
+    "https://cdn.discordapp.com/attachments/313132381488021524/333866116151640064/a952636e-ad02-4093-8550-1ad3ea41043b.gif",
+    "https://cdn.discordapp.com/attachments/313132381488021524/333866851270393856/c623fb82-b0a1-4a06-aa5c-23f292d2cf97.gif",
+    "https://cdn.discordapp.com/attachments/313132381488021524/333866851769778177/0e8d2e98-0566-4d8b-affc-84f11671e74c.gif",
+    "https://cdn.discordapp.com/attachments/313132381488021524/333866852197466112/386aeecf-8e2b-499d-802f-0bf099d557fc.gif",
+    "https://cdn.discordapp.com/attachments/313132381488021524/333867183828500480/24ed5466-02ad-405d-8155-9e4c59807ddd.gif",
+    "https://cdn.discordapp.com/attachments/334886087925301250/334886120431288341/image.gif",
 ]
 var commands = [
     {"name":"/ping" , "result":"See how fast she responds."},
@@ -101,7 +109,8 @@ var commands = [
     {"name":"/gudbat" , "result":"Good bat~"},
     {"name":"/loodbat" , "result":"Lewd Bat."},
     {"name":"/sendnoods" , "result":"You heard the pony, send em"},
-    {"name":"/nickname" , "result":"set your nickname. (Made for mobile, usable by pc.)"}
+    {"name":"/nickname" , "result":"set your nickname. (Made for mobile, usable by pc.)"},
+    {"name":"/imagination" , "result":"Go on, use it!"}
 
 ]
 var admincmds = [
@@ -111,7 +120,7 @@ var admincmds = [
     {"name":"/ban @user" , "result":"Bans a user from the server. Talk to Shy about unbanning."},
     {"name":"/info @user" , "result":"Displays information about a user. Useful for seeing when accounts were made."}
 ]
-var dev = false
+var dev = true
 var YouTube = require('youtube-node')
   var youTube = new YouTube()
   function evalBooruCmd(input){
@@ -183,7 +192,8 @@ function sortBooru(data, num){
 function delayedDelete(msg){
     setTimeout((msgtodelete)=>
         {msgtodelete.delete()},5000,msg);
-}
+} 
+
 /*
   A ping pong bot, whenever you send "ping", it replies "pong".
 */
@@ -196,7 +206,7 @@ bot.on('ready', () => {
 
   youTube.setKey(config.ytKey)
   if (dev == true){
-      guld.sendMessage("Dev Build (1.6.2.0)")
+      guld.sendMessage("Dev Build (1.6.5.2)")
   }
   else{
       guld.sendMessage("I am now online~")
@@ -322,6 +332,11 @@ else if (message.content.split(' ').indexOf("/mute") == 0 ){
             //console.log(message.guild.roles.entries())
             message.guild.member(targetuser).addRole("249616536573050900")
             message.channel.sendMessage(target + " has been muted...")
+            if (time){
+            muteTimer(targetuser,time)
+            } else{
+                muteTimer(targetuser,60)
+            }
             message.delete()
         } else {
             message.channel.sendMessage("ERROR: You need to define someone...")
@@ -552,6 +567,9 @@ if (message.content.split(" ").indexOf("/yt") == 0){
         message.channel.bulkDelete(message.content.replace("/purge",""))
         }
         else message.channel.sendMessage("Does it look like you're an admin?")
+    }
+    if (message.content === "/imagination"){
+        message.channel.sendFile("https://lh3.googleusercontent.com/-AmxfRf7edKo/VSuNtOO1orI/AAAAAAAAFm8/ITrB-WsFVQ0/w368-h284/rainbow-is-love-glitter.gif")
     }
 }
 })
