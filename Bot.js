@@ -332,12 +332,6 @@ else if (message.content.split(' ').indexOf("/mute") == 0 ){
             //console.log(message.guild.roles.entries())
             message.guild.member(targetuser).addRole("249616536573050900")
             message.channel.sendMessage(target + " has been muted...")
-            if (time){
-            muteTimer(targetuser,time)
-            } else{
-                muteTimer(targetuser,60)
-            }
-            message.delete()
         } else {
             message.channel.sendMessage("ERROR: You need to define someone...")
         }}
