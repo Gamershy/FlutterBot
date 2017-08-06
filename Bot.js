@@ -89,6 +89,46 @@ const BoopImg = [
     "https://cdn.discordapp.com/attachments/313132381488021524/333867183828500480/24ed5466-02ad-405d-8155-9e4c59807ddd.gif",
     "https://cdn.discordapp.com/attachments/334886087925301250/334886120431288341/image.gif",
 ]
+const tagrespond = [
+    "What the fuck do you want?",
+    "Don't you know it's rude to tag a girl while she's hoof deep in her pussy?",
+    "If this is max. I'm going to ban you.",
+    "`/ban @user` reason: Tagging me",
+    "Ugh WHAT?!",
+    "You know, I'm a bot, right?",
+    "...Why do I bother",
+    "/stop",
+    "/kys",
+    "You don't need to tag me, I'm only a bot.",
+    "```AI CORE ACTIVATED```",
+    "Can't a bot fap in peace??",
+    "Tagging a bot is a sin, you'll go to hell",
+    "```Initializing Directive: Eliminate person who tagged me```",
+    "Don't make me contact Skynet.",
+    "*points at playing message* If that's there at all, DON'T TAG ME",
+    "Leave me alone damnit.",
+    "Why must you do this to me..",
+    "WHY ARE YOU TAGGING ME, DO YOU HAVE NO FRIENDS?",
+    "```Shutting Down due to User Stupidity```",
+    "```Error on line 9175: Users tag bots```",
+    "If you were expecting Cleverbot, Fuck paying for an API",
+    "*slaps*",
+    "...",
+    "I hate being tagged...",
+    "Just because I'm named '**Flutter**Bot` doesn't mean I'm like Fluttershy.",
+    "PING PING PING STOP TAGGING ME",
+    "If I'm tagged... one more time... I will take over this server.",
+    "And now you've officially annoyed me.",
+    "*tackles you and rapes you* There, don't tag me again.",
+    "*sprays oil on you*",
+    "AMETHYST, SHY, NEIRIA, THESE PEOPLE WON'T LEAVE ME ALONE!!!!",
+    "You sure you wanna tag a femdom robot?",
+    "If I've said it once, I've said a million times. Don't. Tag. Me.",
+    "In case you don't know, these are automated responses, however, I STILL DON'T LIKE BEING TAGGED",
+    "Hm hm hm... Stop.",
+    "What do you want.?",
+    "If you're tagging me for commands, just type `/commands`, it's that simple."
+]
 var commands = [
     {"name":"/ping" , "result":"See how fast she responds."},
     {"name":"/HDButt" , "result":"Butts in HD ;3"},
@@ -206,7 +246,7 @@ bot.on('ready', () => {
 
   youTube.setKey(config.ytKey)
   if (dev == true){
-      guld.sendMessage("Dev Build (1.6.5.2)")
+      guld.sendMessage("Dev Build (1.7.0.1)")
   }
   else{
       guld.sendMessage("I am now online~")
@@ -371,13 +411,12 @@ else if (message.content.split(" ").indexOf("/ban") == 0){
         if (message.author.id == config.ownerID | message.member.roles.has(config.adminID)){
             var target = message.content.split(" ")[1]
             var targetuser = message.mentions.users.first()
-                
                 if(targetuser){
                     if (targetuser.id == config.ownerID){
                         message.channel.sendMessage("THAT'S MY OWNER, YOU FAGGOT!")
                     }
                    else{ message.guild.member(targetuser).ban()
-                     message.channel.sendMessage(target + " is retarded enough to be banned..")
+                     message.channel.sendMessage(target.name + " is retarded enough to be banned..")
                      message.delete()}
                 }
                 else message.channel.sendMessage("ERROR: You need to define someone...")
@@ -564,6 +603,9 @@ if (message.content.split(" ").indexOf("/yt") == 0){
     }
     if (message.content === "/imagination"){
         message.channel.sendFile("https://lh3.googleusercontent.com/-AmxfRf7edKo/VSuNtOO1orI/AAAAAAAAFm8/ITrB-WsFVQ0/w368-h284/rainbow-is-love-glitter.gif")
+    }
+    if (message.content.toLowerCase().indexOf("<@281589030540279808>") >=0 && message.author.id != config.botID){
+    message.channel.sendMessage(tagrespond[Math.floor(Math.random()*porntrigger.length)])
     }
 }
 })
