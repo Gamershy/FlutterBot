@@ -548,7 +548,7 @@ if (message.content.split(" ").indexOf("/yt") == 0){
         }
     }
     if (message.content.split(" ").indexOf("/r34top") == 0){
-               var cmd = message.content.replace("/r34","")
+               var cmd = message.content.replace("/r34top","")
         var eval = evalBooruCmd(cmd)
         booru.search("r34", eval.tags, {limit: 100, random: true})
         .then(booru.commonfy)
@@ -567,7 +567,7 @@ if (message.content.split(" ").indexOf("/yt") == 0){
     .then(booru.commonfy)
     .then(images => {
         for (let image of images){
-            message.channel.sendMessage(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \n `${image.file_url}`)
+            message.channel.sendMessage(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \n${image.file_url}`)
             message.channel.stopTyping()
         }
     })
