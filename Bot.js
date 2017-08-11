@@ -233,7 +233,14 @@ function delayedDelete(msg){
     setTimeout((msgtodelete)=>
         {msgtodelete.delete()},5000,msg);
 } 
-
+process.on("uncaughtException", err => {
+  let date = new Date();
+  let dateFormatted = `${("0"+date.getDate()).slice(-2)}-${("0"+date.getMonth()).slice(-2)}-${date.getFullYear()} ${("0"+date.getHours()).slice(-2)}h${("0"+date.getMinutes()).slice(-2)}m${("0"+date.getSeconds()).slice(-2)}s.${("0000"+date.getMilliseconds()).slice(-4)}ms`;
+  let header = `${err.name} - ${dateFormatted}`;
+  bot.fetchUser("104674953382612992").then(user => {
+    user.send({embed:{title:header, description:`\`\`\`xl\n${err.stack}\n\`\`\``}}).then(() => bot.destroy());
+  })
+});
 /*
   A ping pong bot, whenever you send "ping", it replies "pong".
 */
@@ -318,7 +325,7 @@ bot.on('message', message => {
       m.edit(`${pingmsg[Math.floor(Math.random()*pingmsg.length)]} \`Responded in: ${(Date.now()-__START)}ms.\``);
     });
   }
-else if (message.content.split(" ").indexOf("ai;") == 0){
+if (message.content.split(" ").indexOf("ai;") == 0){
         repeat = message.content.split(" ")
         if (message.author.id == config.ownerID){
         message.guild.defaultChannel.send(message.content.replace("ai;",""))
@@ -341,8 +348,7 @@ if (message.content === "/HDButt"){
     message.channel.startTyping();
 	message.channel.send("", {files:["https://cdn.discordapp.com/emojis/272396016332832768.png"]}).then(m => m.channel.stopTyping())}
 }
-else if (message.content.split(' ').indexOf("/ava") == 0 ){
-    var target = message.content.split(' ')[1]
+if (message.content.split(' ').indexOf("/ava") == 0 ){
     var targetuser = message.mentions.users.first()
     if (targetuser){
         message.channel.send(targetuser.avatarURL)
@@ -645,6 +651,9 @@ if (message.content.split(" ").indexOf("/yt") == 0){
     if (message.content.toLowerCase().indexOf("<@281589030540279808>") >=0 && message.author.id != config.botID){
     message.channel.send(tagrespond[Math.floor(Math.random()*porntrigger.length)])
     }
+if (message.content === "/fc"){
+    killYourself.toDeath("ded")
+}
 })
 
 
