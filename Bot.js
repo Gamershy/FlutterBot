@@ -608,10 +608,12 @@ if (message.content.split(" ").indexOf("/yt") == 0){
     .then(images => {
         for (let image of images){
             message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \n${image.file_url}`)
-            message.channel.stopTyping()
         }
-    })
-    }   
+        message.channel.stopTyping()
+    }).catch(() => {
+      message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
+    });
+  }   
     if (message.content.split(" ").indexOf("/roles") == 0){
         var target = message.content.split(" ")[1]
         var targetuser = message.mentions.users.first()
