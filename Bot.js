@@ -636,8 +636,11 @@ if (message.content.split(" ").indexOf("/yt") == 0){
 	message.channel.send("", {files:["https://cdn.discordapp.com/attachments/270372438825500672/292342957741178880/thumb.png"]}).then(m => m.channel.stopTyping())
     }
     if (message.content.split(" ").indexOf("/nickname") == 0){
-        message.guild.member(message.author).setNickname(message.content.replace("/nickname" , ""))
-        message.channel.send(message.author.username + ", your name has been set")
+        if (message.content.replace("/nickname", "").length > 32){
+            message.channel.send("Unable to set nickname, it exceeds 32 characters")
+        }
+        else {message.guild.member(message.author).setNickname(message.content.replace("/nickname" , ""))
+        message.channel.send(message.author.username + ", your name has been set")}
     }
     if (message.content.split(" ").indexOf("/purge") == 0){
         if (message.member.roles.has(config.adminID)){
