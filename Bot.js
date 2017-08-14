@@ -656,9 +656,6 @@ if (message.content.split(" ").indexOf("/yt") == 0){
     if (message.content.toLowerCase().indexOf("<@281589030540279808>") >=0 && message.author.id != config.botID){
     message.channel.send(tagrespond[Math.floor(Math.random()*porntrigger.length)])
     }
-if (message.content === "/fc"){
-    killYourself.toDeath("ded")
-}
 })
 
 
