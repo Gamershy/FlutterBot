@@ -1,4 +1,11 @@
 ﻿const Discord = require('discord.js')
+if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
+Object.defineProperty(Discord.Guild.prototype, "defaultChannel", {
+  get: function () {
+    delete this.defaultChannel;
+    return this.defaultChannel = this.channels.get("249311166776606721");
+  }
+})};
 const config = require('./config.js')
 const bot = new Discord.Client()
 const readline = require("readline")
