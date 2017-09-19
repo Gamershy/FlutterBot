@@ -151,8 +151,8 @@ var commands = [
     {"name":"/cat" , "result":"Meow~"},
     {"name":"/kawaiipuss" , "result":"See some sexy pussy"},
     {"name":"/yt <query>" , "result":"Search youtube for a video"},
-    {"name":"/r34 <Tags> (Number)" , "result":"Search R34 for some porn. Leaving the tags blank will yield random results"},
-    {"name":"/r34top <Tags> (Number)" , "result": "Search R34 for the top scored porn."},
+    {"name":"/r34 <Tags> [Number]" , "result":"Search R34 for some porn. Leaving the tags blank will yield random results"},
+    {"name":"/r34top <Tags> [Number]" , "result": "Search R34 for the top scored porn."},
     {"name":"/gudbat" , "result":"Good bat~"},
     {"name":"/loodbat" , "result":"Lewd Bat."},
     {"name":"/sendnoods" , "result":"You heard the pony, send em"},
@@ -164,7 +164,7 @@ var admincmds = [
     {"name":"/mute @user" , "result":"Mutes a user as punishment"},
     {"name":"/unmute @user" , "result":"Unmutes a user"},
     {"name":"/kick @user" , "result":"Kicks a user from the server"},
-    {"name":"/ban @user" , "result":"Bans a user from the server. Talk to Shy about unbanning."},
+    {"name":"/ban <@user> [reason]" , "result":"Bans a user from the server. Talk to Shy about unbanning."},
     {"name":"/info @user" , "result":"Displays information about a user. Useful for seeing when accounts were made."}
 ]
 var dev = false
@@ -175,7 +175,7 @@ var YouTube = require('youtube-node')
     input = input.replace(/,/g , " ") // replace commas with space (incase someone does tag,tag)
     input = input.replace(/\s+/g, ' ')//replace excess whitespace ("tag  tag" -> "tag tag")
     input = input.trim() //remove trailing whitespace ("tag tag " -> "tag tag")
-    
+
     var values = input.split(" ")
     var tags
     var integerFound = false
@@ -187,7 +187,7 @@ var YouTube = require('youtube-node')
             integerFound = true //yep we found a integer
         }
     }
-    
+
     var number
     if (integerFound){
         number = parseInt(values[0])
@@ -218,7 +218,7 @@ function predicatBy(prop) {
 /**
  * Sorts the Booru results highest rating first and returns n results
  * @param {JSON} data json data to sort, use image
- * @param {number} num number of results to get 
+ * @param {number} num number of results to get
  */
 function sortBooru(data, num){
     var common = []
@@ -239,7 +239,7 @@ function sortBooru(data, num){
 function delayedDelete(msg){
     setTimeout((msgtodelete)=>
         {msgtodelete.delete()},5000,msg);
-} 
+}
 process.on("uncaughtException", err => {
   let date = new Date();
   let dateFormatted = `${("0"+date.getDate()).slice(-2)}-${("0"+date.getMonth()).slice(-2)}-${date.getFullYear()} ${("0"+date.getHours()).slice(-2)}h${("0"+date.getMinutes()).slice(-2)}m${("0"+date.getSeconds()).slice(-2)}s.${("0000"+date.getMilliseconds()).slice(-4)}ms`;
@@ -346,7 +346,7 @@ if (message.content === "/randgame"){
         message.delete()
     }
     else message.channel.send("Only Shy can play with me...")
-}  
+}
 
 if (message.content === "bip"){
         message.channel.send("bop")
@@ -371,7 +371,7 @@ if (message.content.split(' ').indexOf("/setgame") == 0 ){
         else{
             message.channel.send(message.author+", only Shy can play with me =(")
     }
-            
+
 }
 if (message.content.toLowerCase().indexOf("porn.") >=0 && message.author.id != config.botID){
     message.channel.send(porntrigger[Math.floor(Math.random()*porntrigger.length)])
@@ -401,7 +401,7 @@ if (message.content.toLowerCase().indexOf("porn.") >=0 && message.author.id != c
                 delayedDelete(message)
                 }
             }
-    
+
     if (message.content === "/kys"){
         message.channel.startTyping();
 	message.channel.send("", {files:["https://cdn.discordapp.com/attachments/268542019264184330/281635808518209537/full.png"]}).then(m => m.channel.stopTyping())
@@ -451,21 +451,25 @@ else if (message.content.split(" ").indexOf("/kick") == 0){
         else message.channel.send("Does it look like you're an admin?")
     }
 else if (message.content.split(" ").indexOf("/ban") == 0){
-        if (message.author.id == config.ownerID | message.member.roles.has(config.adminID)){
-            var target = message.content.split(" ")[1]
-            var targetuser = message.mentions.users.first()
-                if(targetuser){
-                    if (targetuser.id == config.ownerID){
-                        message.channel.send("THAT'S MY OWNER, YOU FAGGOT!")
-                    }
-                   else{ message.guild.member(targetuser).ban()
-                     message.channel.send(target.name + " is retarded enough to be banned..")
-                     message.delete()}
-                }
-                else message.channel.send("ERROR: You need to define someone...")
-        }
-        else message.channel.send("Does it look like you're an admin?")
+    if (message.member.roles.has(config.adminID)){
+        let [command, user, ...reason] = message.content.split(" ");
+        reason = reason || []
+        reason = reason.join(" ")
+        let guildMember = (message.mentions.members.size)?
+        message.mentions.members.first() : message.guild.member(user)
+        if (guildMember){
+            guildMember.ban(`${message.author.tag}: ${reason}`).then(member => {
+                   message.channel.send(`${user} has been banned by ${message.author} for ${reason};`)
+                    message.delete()
+            })}
+        else{
+          message.channel.send("This user isn't on the server.")
+              }
     }
+else{
+        message.channel.send("Does it look like you're an admin?")
+      }
+}
     if (message.content === "/roledata"){
         console.log(message.guild.roles.entries())
         message.channel.send("Logging Role Data...")
@@ -488,7 +492,7 @@ else if (message.content.split(" ").indexOf("/ban") == 0){
     }
     if (message.content === "/dicksize"){
         message.channel.send(size[Math.floor(Math.random()*size.length)])
-    
+
     }
     if (message.content === "/myroles"){
         message.channel.send(message.author + "'s Roles:")
@@ -545,10 +549,9 @@ else if (message.content.split(" ").indexOf("/ban") == 0){
         message.channel.send("Can't you read? This feature is a WIP.")
     }
 
-     if (message.content === "/stop"){
+     if (message.content === "/kill"){
      if (message.author.id == config.ownerID){
-         message.channel.send("Shutting Down...")
-process.exit()
+         message.channel.send("Shutting Down...").then(m => m.client.destroy().then(() => process.exit()))
 }
 else message.channel.send("Only Shy has permission to kill me...")
 }
@@ -585,7 +588,7 @@ if (message.content.split(" ").indexOf("/yt") == 0){
         else {
            message.channel.send(error)
         }
-        
+
     })
 }
     if (message.content === "https://www.youtube.com/watch?v=undefined"){
@@ -597,7 +600,7 @@ if (message.content.split(" ").indexOf("/yt") == 0){
     if (message.content.split(" ").indexOf("/r34top") == 0){
                var cmd = message.content.replace("/r34top","")
         var eval = evalBooruCmd(cmd)
-        booru.search("r34", eval.tags, {limit: 100, random: true})
+        booru.search("r34", eval.tags, {limit: 5, random: true})
         .then(booru.commonfy)
         .then(images => {
             var sorted = sortBooru(images,constrain(1,5,eval.number))
@@ -610,7 +613,7 @@ if (message.content.split(" ").indexOf("/yt") == 0){
         var cmd = message.content.replace("/r34","")
     var eval = evalBooruCmd(cmd)
     message.channel.startTyping()
-    booru.search("r34", eval.tags, {limit: constrain(1,20,eval.number), random: true})
+    booru.search("r34", eval.tags, {limit: constrain(1,5,eval.number), random: true})
     .then(booru.commonfy)
     .then(images => {
         for (let image of images){
@@ -620,7 +623,7 @@ if (message.content.split(" ").indexOf("/yt") == 0){
     }).catch(() => {
       message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
     });
-  }   
+  }
     if (message.content.split(" ").indexOf("/roles") == 0){
         var target = message.content.split(" ")[1]
         var targetuser = message.mentions.users.first()
