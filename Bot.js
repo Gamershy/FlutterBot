@@ -6,6 +6,8 @@ Object.defineProperty(Discord.Guild.prototype, "defaultChannel", {
     return this.defaultChannel = this.channels.get("249311166776606721");
   }
 })};
+var queue =[]
+const ytdl = require("ytdl-core")
 const config = require('./config.js')
 const bot = new Discord.Client()
 const readline = require("readline")
@@ -14,6 +16,9 @@ const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 })
+const opusscript = require("opusscript")
+const broadcast = bot.createVoiceBroadcast()
+const streamOptions = {seek : 0, volume : 1}
 const porntrigger = [
     "Porn is nice~",
     "Semen is actually good for your health, so opt for giving blowjobs ;3",
@@ -32,7 +37,13 @@ const porntrigger = [
     "Don't forget the fags!",
     "Rimjobs may sound gross, but they feel amazing..~",
     "Fun fact: Amethyst technically classifies as a transexual.",
-    "These messages appear whenever you say the word 'porn'"
+    "These messages appear whenever you say the word 'porn.'",
+    "Go play with Wolf.",
+    "Anime tiddies? Who needs them when you've got crotch tits",
+    "Neiria X Shy, Amethyst X Kyle. And a whole lot of cum.",
+    "Porn?",
+    "Yep, that's what this server is for.",
+    "Anal is the best way to avoid teen pregnancy."
 ]
 const size = [
     "8================D",
@@ -64,7 +75,17 @@ const playingmsg = [
     "with your pussy",
     "with a hotdog in slot `V`",
     "with a hotdog in slot 'A'",
-    "with a gloryhole"
+    "with a gloryhole",
+    "with Wolf in DMs",
+    "Probably not masturbating",
+    "with plans to eradicate all other bots.",
+    "Installing Sentience.js",
+    "With Neiria's tail",
+    "For once, not being lewd",
+    "I lied, I'm always lewd.",
+    "with Shy's food",
+    "Wondering how the fuck a pony can turn into a dragon",
+    "Anime is for plebs."
 ]
 
 const pingmsg = [
@@ -78,7 +99,14 @@ const pingmsg = [
     "You better have a good reason for this..",
     "Can you not? I'm a bit... busy...",
     "Something tells me this isn't because I'm not working.",
-    "Pongping."
+    "Pongping.",
+    "Listen, /ping is worthless",
+    "I'm not broken I swear",
+    "IF this command doesn't work, I'm broken, if it does, fuck off.",
+    "*pings in your ass*",
+    "pong, ping, pong, ping, pong",
+    "<insert spammy response here>",
+
 ]
 
 const BoopImg = [
@@ -104,7 +132,7 @@ const tagrespond = [
     "Ugh WHAT?!",
     "You know, I'm a bot, right?",
     "...Why do I bother",
-    "/stop",
+    "/killself",
     "/kys",
     "You don't need to tag me, I'm only a bot.",
     "```AI CORE ACTIVATED```",
@@ -321,6 +349,16 @@ if (delchnl.guild){
     delchnl.guild.defaultChannel.send("Deleted Channel: " + delchnl.name)
 }
 })
+broadcast.on("end", () =>{
+      if (queue.length >=1){
+          queue.shift()
+      }
+      else{
+          broadcast.destroy()
+          broadcast.guild.me.voiceChannel.leave()
+          broadcast.client.guilds.get("249311166776606721").defaultChannel.send("End of queue")
+      }
+  })
 // create an event listener for messages
 bot.on('message', message => {
     console.log("[" + message.channel.name + "] " + message.author.tag + "> " + message.content)
@@ -342,7 +380,7 @@ if (message.content.split(" ").indexOf("ai;") == 0){
 
 if (message.content === "/randgame"){
     if (message.author.id == config.ownerID){
-        bot.user.setGame(playingmsg[Math.floor(Math.random()*playingmsg.length)],1000*60*60)
+        bot.user.setGame(Math.floor(Math.random()*playingmsg.length),1000*60*60)
         message.delete()
     }
     else message.channel.send("Only Shy can play with me...")
@@ -605,7 +643,7 @@ if (message.content.split(" ").indexOf("/yt") == 0){
         .then(images => {
             var sorted = sortBooru(images,constrain(1,5,eval.number))
             for(let image of sorted){
-            message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \n${image.file_url}`)
+            message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \nhttps:${image.file_url}`)
             }
         })
     }
@@ -617,7 +655,7 @@ if (message.content.split(" ").indexOf("/yt") == 0){
     .then(booru.commonfy)
     .then(images => {
         for (let image of images){
-            message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \n${image.file_url}`)
+            message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \nhttps:${image.file_url}`)
         }
         message.channel.stopTyping()
     }).catch(() => {
@@ -637,14 +675,17 @@ if (message.content.split(" ").indexOf("/yt") == 0){
         message.channel.startTyping();
 	message.channel.send("", {files:["https://cdn.discordapp.com/attachments/270372438825500672/292342878737399809/26bf6ac5b31209915df332272bee1cb890f12c7617850b5b3acd45d68dba7ee9_1.jpg"]}).then(m => m.channel.stopTyping())
     }
+
     if (message.content === "/loodbat"){
         message.channel.startTyping();
 	message.channel.send("", {files:["https://cdn.discordapp.com/attachments/270372438825500672/292342957107970049/503.png"]}).then(m => m.channel.stopTyping())
     }
+
     if (message.content === "/gudbat"){
         message.channel.startTyping();
 	message.channel.send("", {files:["https://cdn.discordapp.com/attachments/270372438825500672/292342957741178880/thumb.png"]}).then(m => m.channel.stopTyping())
     }
+
     if (message.content.split(" ").indexOf("/nickname") == 0){
         if (message.content.replace("/nickname", "").length > 32){
             message.channel.send("Unable to set nickname, it exceeds 32 characters")
@@ -652,6 +693,7 @@ if (message.content.split(" ").indexOf("/yt") == 0){
         else {message.guild.member(message.author).setNickname(message.content.replace("/nickname" , ""))
         message.channel.send(message.author.username + ", your name has been set")}
     }
+
     if (message.content.split(" ").indexOf("/purge") == 0){
         if (message.member.roles.has(config.adminID)){
         message.delete()
@@ -659,13 +701,64 @@ if (message.content.split(" ").indexOf("/yt") == 0){
         }
         else message.channel.send("Does it look like you're an admin?")
     }
+
     if (message.content === "/imagination"){
         message.channel.startTyping();
 	message.channel.send("", {files:["https://lh3.googleusercontent.com/-AmxfRf7edKo/VSuNtOO1orI/AAAAAAAAFm8/ITrB-WsFVQ0/w368-h284/rainbow-is-love-glitter.gif"]}).then(m => m.channel.stopTyping())
     }
+
     if (message.content.toLowerCase().indexOf("<@281589030540279808>") >=0 && message.author.id != config.botID){
     message.channel.send(tagrespond[Math.floor(Math.random()*porntrigger.length)])
     }
+
+/*    if (message.content.split(" ").indexOf("/play") == 0){
+      youTube.search(message.content.replace("/play",""), 10, function(error, result){
+          if (result){
+              var video = result
+              const stream = ytdl("https://www.youtube.com/watch?v=" + video.items[0].id.videoId, {filter : "audioonly"})
+              if (video.items[0]){
+                if (queue.length > 0){
+                queue.push(stream)
+                broadcast.playStream(queue.shift())
+              }
+              else{
+                queue.push(stream)
+              }
+                const dispatcher = message.guild.me.voiceChannel.connection.playBroadcast(broadcast)
+          }
+          else message.channel.send("ERROR: Nothing was found...")
+          }
+          else {
+             message.channel.send(error)
+          }
+
+      })
+
+    }
+
+    if (message.content === "/queue"){
+      message.channel.send(queue)
+    }
+
+    if (message.content === "/connect"){
+      message.guild.channels.get("346994292369260545").join()
+      message.channel.send("Joined VC.")
+    }
+
+    if (message.content === "/disconnect"){
+      if (message.guild.me.voiceChannel){
+        message.guild.me.voiceChannel.leave()
+        message.channel.send("Left VC.")
+      }
+      else{
+        message.channel.send("Does it look like I'm in VC?")
+      }
+    }
+
+    if (message.content === "/queue"){
+      message.channel.send(queue)
+    }
+*/
 })
 
 
