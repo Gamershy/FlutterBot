@@ -185,7 +185,8 @@ var commands = [
     {"name":"/loodbat" , "result":"Lewd Bat."},
     {"name":"/sendnoods" , "result":"You heard the pony, send em"},
     {"name":"/nickname" , "result":"set your nickname. (Made for mobile, usable by pc.)"},
-    {"name":"/imagination" , "result":"Go on, use it!"}
+    {"name":"/imagination" , "result":"Go on, use it!"},
+    {"name":"/e6 <tags> [Number]" , "result":"Search e621 for porn. Leaving the tags blank will yeild random results."}
 
 ]
 var admincmds = [
@@ -671,6 +672,30 @@ if (message.content.split(" ").indexOf("/yt") == 0){
     }
     else message.channel.send("ERROR: You need to define someone...")
 }
+    if (message.content.split(" ").indexOf("/e6") == 0){
+        var cmd = message.content.replace("/e6","")
+    var eval = evalBooruCmd(cmd)
+    message.channel.startTyping()
+    booru.search("e6", eval.tags, {limit: constrain(1,5,eval.number), random: true})
+    .then(booru.commonfy)
+    .then(images => {
+        for (let image of images){
+            message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \n${image.file_url}`)
+        }
+        message.channel.stopTyping()
+    }).catch(() => {
+      message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
+    });
+  }
+    if (message.content.split(" ").indexOf("/roles") == 0){
+        var target = message.content.split(" ")[1]
+        var targetuser = message.mentions.users.first()
+        if (targetuser){
+        message.channel.send(targetuser + "'s Roles:")
+        message.channel.send(message.guild.member(targetuser).roles.array().map(role => role.name.replace("@everyone","")))
+    }
+    else message.channel.send("ERROR: You need to define someone...")
+}   
     if (message.content === "/sendnoods"){
         message.channel.startTyping();
 	message.channel.send("", {files:["https://cdn.discordapp.com/attachments/270372438825500672/292342878737399809/26bf6ac5b31209915df332272bee1cb890f12c7617850b5b3acd45d68dba7ee9_1.jpg"]}).then(m => m.channel.stopTyping())
