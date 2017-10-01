@@ -432,8 +432,8 @@ if (message.content.toLowerCase().indexOf("porn.") >=0 && message.author.id != c
                 data.addField(command.name , command.result)
             }
             message.author.send("", {embed:data})
-            message.channel.send("DM'd you the commands")
         }
+	 message.channel.send("DM'd you the commands")
     }
         if (message.content === "DM'd you the commands"){
             if (message.author.id == config.botID){
@@ -687,15 +687,6 @@ if (message.content.split(" ").indexOf("/yt") == 0){
       message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
     });
   }
-    if (message.content.split(" ").indexOf("/roles") == 0){
-        var target = message.content.split(" ")[1]
-        var targetuser = message.mentions.users.first()
-        if (targetuser){
-        message.channel.send(targetuser + "'s Roles:")
-        message.channel.send(message.guild.member(targetuser).roles.array().map(role => role.name.replace("@everyone","")))
-    }
-    else message.channel.send("ERROR: You need to define someone...")
-}   
     if (message.content === "/sendnoods"){
         message.channel.startTyping();
 	message.channel.send("", {files:["https://cdn.discordapp.com/attachments/270372438825500672/292342878737399809/26bf6ac5b31209915df332272bee1cb890f12c7617850b5b3acd45d68dba7ee9_1.jpg"]}).then(m => m.channel.stopTyping())
