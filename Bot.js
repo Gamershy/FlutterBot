@@ -1,4 +1,4 @@
-const Discord = require('discord.js')
+﻿const Discord = require('discord.js')
 if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
   Object.defineProperty(Discord.Guild.prototype, "defaultChannel", {
     get: function () {
@@ -365,7 +365,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
       if (message.content.startsWith("/")) {
         const [command, ...args] = message.content.slice(-(message.content.length - "/".length)).split(" ");
         var logchan = message.guild.channels.get("364658410605772802")
-        logchan.send(`[${message.author.tag}]: ${message.content}`)
+        logchan.send(`{${message.channel.name}}[${message.author.tag}]: ${message.content}`)
         if (message.guild){
           //Everything below here requires "/"
           if (command === "ping"){
@@ -534,7 +534,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
                 }
                 if (command === "owo"){
                   message.channel.startTyping();
-                  message.channel.send("", {files:["https:/cdn.discordapp.com/attachments/270372438825500672/283016856770576394/7224116065017216276_account_id8.png"]}).then(m => m.channel.stopTyping())
+                  message.channel.send("", {files:["https://cdn.discordapp.com/attachments/270372438825500672/283016856770576394/7224116065017216276_account_id8.png"]}).then(m => m.channel.stopTyping())
                 }
                 if (command === "boop"){
                   message.channel.send("", {files:[BoopImg[Math.floor(Math.random()*BoopImg.length)]]})
