@@ -411,8 +411,8 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
             var data = new Discord.RichEmbed()
             data.setColor("#191970")
             data.setTitle("COMMANDS")
-            for(command of commands){
-              data.addField(command.name , command.result)
+            for(cmds of commands){
+              data.addField(cmds.name , cmds.result)
             }
             message.author.send("", {embed:data})
             message.delete()
@@ -420,8 +420,8 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
               var data = new Discord.RichEmbed()
               data.setColor("#FF0000")
               data.setTitle("ADMIN COMMANDS")
-              for(command of admincmds){
-                data.addField(command.name , command.result)
+              for(cmds of admincmds){
+                data.addField(cmds.name , cmds.result)
               }
               message.author.send("", {embed:data})
             }
