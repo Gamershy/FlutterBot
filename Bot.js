@@ -1,25 +1,25 @@
-﻿const Discord = require('discord.js')
+const Discord = require('discord.js')
 if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
-Object.defineProperty(Discord.Guild.prototype, "defaultChannel", {
-  get: function () {
-    delete this.defaultChannel;
-    return this.defaultChannel = this.channels.get("249311166776606721");
-  }
-})};
-var queue =[]
-const ytdl = require("ytdl-core")
-const config = require('./config.js')
-const bot = new Discord.Client()
-const readline = require("readline")
-const booru = require("booru")
-const rl = readline.createInterface({
+  Object.defineProperty(Discord.Guild.prototype, "defaultChannel", {
+    get: function () {
+      delete this.defaultChannel;
+      return this.defaultChannel = this.channels.get("249311166776606721");
+    }
+  })};
+  var queue =[]
+  const ytdl = require("ytdl-core")
+  const config = require('./config.js')
+  const bot = new Discord.Client()
+  const readline = require("readline")
+  const booru = require("booru")
+  const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
-})
-const opusscript = require("opusscript")
-const broadcast = bot.createVoiceBroadcast()
-const streamOptions = {seek : 0, volume : 1}
-const porntrigger = [
+  })
+  const opusscript = require("opusscript")
+  const broadcast = bot.createVoiceBroadcast()
+  const streamOptions = {seek : 0, volume : 1}
+  const porntrigger = [
     "Porn is nice~",
     "Semen is actually good for your health, so opt for giving blowjobs ;3",
     "Inhuman penis is much more appealing than human ones.",
@@ -44,8 +44,8 @@ const porntrigger = [
     "Porn?",
     "Yep, that's what this server is for.",
     "Anal is the best way to avoid teen pregnancy."
-]
-const size = [
+  ]
+  const size = [
     "8================D",
     "8=====D",
     "8=D",
@@ -53,8 +53,8 @@ const size = [
     ".",
     "8=============D",
     "8==============================D"
-]
-const playingmsg = [
+  ]
+  const playingmsg = [
     "with tools in slot 'A'",
     "Banned from Equestria",
     "with herself, in your bed.",
@@ -86,9 +86,9 @@ const playingmsg = [
     "with Shy's food",
     "Wondering how the fuck a pony can turn into a dragon",
     "Anime is for plebs."
-]
+  ]
 
-const pingmsg = [
+  const pingmsg = [
     "Porn, I mean, Pong!",
     "Yeah yeah, I'm working.",
     "Pingpong.",
@@ -107,9 +107,9 @@ const pingmsg = [
     "pong, ping, pong, ping, pong",
     "<insert spammy response here>",
 
-]
+  ]
 
-const BoopImg = [
+  const BoopImg = [
     "https://cdn.discordapp.com/attachments/270372438825500672/283016843030036481/271618__UNOPT__safe_animated_scrunchy-face_boop_marker-pony_extreme-speed-animation.gif",
     "https://cdn.discordapp.com/attachments/270372438825500672/283016847522267136/thumb.gif",
     "https://cdn.discordapp.com/attachments/270372438825500672/283016854698459137/giphy_1.gif",
@@ -123,8 +123,8 @@ const BoopImg = [
     "https://cdn.discordapp.com/attachments/313132381488021524/333866852197466112/386aeecf-8e2b-499d-802f-0bf099d557fc.gif",
     "https://cdn.discordapp.com/attachments/313132381488021524/333867183828500480/24ed5466-02ad-405d-8155-9e4c59807ddd.gif",
     "https://cdn.discordapp.com/attachments/334886087925301250/334886120431288341/image.gif",
-]
-const tagrespond = [
+  ]
+  const tagrespond = [
     "What the fuck do you want?",
     "Don't you know it's rude to tag a girl while she's hoof deep in her pussy?",
     "If this is max. I'm going to ban you.",
@@ -163,8 +163,8 @@ const tagrespond = [
     "Hm hm hm... Stop.",
     "What do you want.?",
     "If you're tagging me for commands, just type `/commands`, it's that simple."
-]
-var commands = [
+  ]
+  var commands = [
     {"name":"/ping" , "result":"See how fast she responds."},
     {"name":"/HDButt" , "result":"Butts in HD ;3"},
     {"name":"/ava @user" , "result":"Displays a user's avatar"},
@@ -188,16 +188,16 @@ var commands = [
     {"name":"/imagination" , "result":"Go on, use it!"},
     {"name":"/e6 <tags> [Number]" , "result":"Search e621 for porn. Leaving the tags blank will yeild random results."}
 
-]
-var admincmds = [
+  ]
+  var admincmds = [
     {"name":"/mute @user" , "result":"Mutes a user as punishment"},
     {"name":"/unmute @user" , "result":"Unmutes a user"},
     {"name":"/kick @user" , "result":"Kicks a user from the server"},
     {"name":"/ban <@user> [reason]" , "result":"Bans a user from the server. Talk to Shy about unbanning."},
     {"name":"/info @user" , "result":"Displays information about a user. Useful for seeing when accounts were made."}
-]
-var dev = false
-var YouTube = require('youtube-node')
+  ]
+  var dev = false
+  var YouTube = require('youtube-node')
   var youTube = new YouTube()
   function evalBooruCmd(input){
     //cleanup
@@ -209,47 +209,47 @@ var YouTube = require('youtube-node')
     var tags
     var integerFound = false
     for(n in values){
-        if(parseInt(values[n])){
-            //integer found.
-            tags = values.splice(0,n)
-            //values now has the integer tags has the tags
-            integerFound = true //yep we found a integer
-        }
+      if(parseInt(values[n])){
+        //integer found.
+        tags = values.splice(0,n)
+        //values now has the integer tags has the tags
+        integerFound = true //yep we found a integer
+      }
     }
 
     var number
     if (integerFound){
-        number = parseInt(values[0])
+      number = parseInt(values[0])
     } else{
-        number = 1
-        tags = values //didnt find a integer so "values" only contains tags
+      number = 1
+      tags = values //didnt find a integer so "values" only contains tags
     }
     return {"tags": tags, "number":number}
-}
-    function constrain(minimum, maximum, value){
+  }
+  function constrain(minimum, maximum, value){
     if(value > maximum) value = maximum
     if(value < minimum) value = minimum
     return value
-}
+  }
 
-    //sorting stuff
-function predicatBy(prop) {
+  //sorting stuff
+  function predicatBy(prop) {
     return function (a, b) {
-        if (a[prop] > b[prop]) {
-            return 1;
-        } else if (a[prop] < b[prop]) {
-            return -1;
-        }
-        return 0;
+      if (a[prop] > b[prop]) {
+        return 1;
+      } else if (a[prop] < b[prop]) {
+        return -1;
+      }
+      return 0;
     }
-}
+  }
 
-/**
- * Sorts the Booru results highest rating first and returns n results
- * @param {JSON} data json data to sort, use image
- * @param {number} num number of results to get
- */
-function sortBooru(data, num){
+  /**
+  * Sorts the Booru results highest rating first and returns n results
+  * @param {JSON} data json data to sort, use image
+  * @param {number} num number of results to get
+  */
+  function sortBooru(data, num){
     var common = []
     for (image of data) { common.push(image.common) }
     //for (image of data) { console.log(image.common) }
@@ -257,525 +257,535 @@ function sortBooru(data, num){
     //console.log("commonyfied data: ")
     //for (image of common){console.log(image.score)}
     if (common.length>num){
-        var ret = []
-        for (var n = 0; n <num; n++){
-            ret.push(common[n])
-        }
-    return ret
+      var ret = []
+      for (var n = 0; n <num; n++){
+        ret.push(common[n])
+      }
+      return ret
     }
     return common
-}
-function delayedDelete(msg){
+  }
+  function delayedDelete(msg){
     setTimeout((msgtodelete)=>
-        {msgtodelete.delete()},5000,msg);
-}
-process.on("uncaughtException", err => {
-  let date = new Date();
-  let dateFormatted = `${("0"+date.getDate()).slice(-2)}-${("0"+date.getMonth()).slice(-2)}-${date.getFullYear()} ${("0"+date.getHours()).slice(-2)}h${("0"+date.getMinutes()).slice(-2)}m${("0"+date.getSeconds()).slice(-2)}s.${("0000"+date.getMilliseconds()).slice(-4)}ms`;
-  let header = `${err.name} - ${dateFormatted}`;
-  bot.fetchUser("104674953382612992").then(user => {
-    user.send({embed:{title:header, description:`\`\`\`xl\n${err.stack}\n\`\`\``}}).then(() => bot.destroy());
-  })
-});
-/*
+    {msgtodelete.delete()},5000,msg);
+  }
+  process.on("uncaughtException", err => {
+    let date = new Date();
+    let dateFormatted = `${("0"+date.getDate()).slice(-2)}-${("0"+date.getMonth()).slice(-2)}-${date.getFullYear()} ${("0"+date.getHours()).slice(-2)}h${("0"+date.getMinutes()).slice(-2)}m${("0"+date.getSeconds()).slice(-2)}s.${("0000"+date.getMilliseconds()).slice(-4)}ms`;
+    let header = `${err.name} - ${dateFormatted}`;
+    bot.fetchUser("104674953382612992").then(user => {
+      user.send({embed:{title:header, description:`\`\`\`xl\n${err.stack}\n\`\`\``}}).then(() => bot.destroy());
+    })
+  });
+  /*
   A ping pong bot, whenever you send "ping", it replies "pong".
-*/
-// the ready event is vital, it means that your bot will only start reacting to information
-// from Discord _after_ ready is emitted.
-bot.on('ready', () => {
-  console.log("Online~")
-  var timer = setInterval(()=>{bot.user.setGame(playingmsg[Math.floor(Math.random()*playingmsg.length)])},1000*60*60)
-  var guld = bot.guilds.first().defaultChannel
+  */
+  // the ready event is vital, it means that your bot will only start reacting to information
+  // from Discord _after_ ready is emitted.
+  bot.on('ready', () => {
+    console.log("Online~")
+    var timer = setInterval(()=>{bot.user.setGame(playingmsg[Math.floor(Math.random()*playingmsg.length)])},1000*60*60)
+    var guld = bot.guilds.first().defaultChannel
 
-  youTube.setKey(config.ytKey)
-  if (dev == true){
+    youTube.setKey(config.ytKey)
+    if (dev == true){
       guld.send("Dev Build (1.7.0.1)")
-  }
-  else {
-    guld.send("I am now online~")
-  }
-  rl.on("line", input =>{
-    let inputStr = input;
-    let matches = input.match(/@[^#@;`]{2,32}#\d{4}/gu) || [];
+    }
+    else {
+      guld.send("I am now online~")
+    }
+    rl.on("line", input =>{
+      let inputStr = input;
+      let matches = input.match(/@[^#@;`]{2,32}#\d{4}/gu) || [];
 
-    matches.forEach((word) => {
+      matches.forEach((word) => {
         input = input.replace(word, word.replace(" ", "\u200b"));
-    });
+      });
 
-    input = input.split(" ");
-    let parser = /^(@(?!^(discordtag|everyone|here)#\d{4}$)([^#@;`]{2,32})#(\d{4}))$/u;
-    let pings = [];
-    input.forEach((word) => {
+      input = input.split(" ");
+      let parser = /^(@(?!^(discordtag|everyone|here)#\d{4}$)([^#@;`]{2,32})#(\d{4}))$/u;
+      let pings = [];
+      input.forEach((word) => {
         word = word.replace("\u200b", " ").replace(/[^](@(?!^(discordtag|everyone|here)#\d{4}$)([^#@;`]{2,32}))/, "$1").replace(/(\d{4})[^]/, "$1");
         if (parser.test(word)) {
-            let parsed = word.match(parser);
-            pings.push({username:parsed[3], discriminator:parsed[4]});
+          let parsed = word.match(parser);
+          pings.push({username:parsed[3], discriminator:parsed[4]});
         }
-    });
+      });
 
-    let cachedMembers = guld.guild.members;
-    let members = [];
-    let len = pings.length;
+      let cachedMembers = guld.guild.members;
+      let members = [];
+      let len = pings.length;
 
-    for (let p = 0; p < len; ++p) {
-      members.push(cachedMembers.find((member) => {
-        let {username, discriminator} = member.user;
-        let entry = pings[p];
+      for (let p = 0; p < len; ++p) {
+        members.push(cachedMembers.find((member) => {
+          let {username, discriminator} = member.user;
+          let entry = pings[p];
 
-        return ((username === entry.username) && (discriminator === entry.discriminator));
-      }));
-    }
+          return ((username === entry.username) && (discriminator === entry.discriminator));
+        }));
+      }
 
-    members.forEach((member) => {
-      inputStr = inputStr.replace(`@${member.user.tag}`, `<@!${member.user.id}>`);
-    });
+      members.forEach((member) => {
+        inputStr = inputStr.replace(`@${member.user.tag}`, `<@!${member.user.id}>`);
+      });
 
-    guld.send(inputStr);
+      guld.send(inputStr);
+    })
   })
-})
 
 
-bot.on("roleDelete", delrole =>{
+  bot.on("roleDelete", delrole =>{
     if (delrole.guild){
-    delrole.guild.defaultChannel.send(`The role "` + delrole.name +`" has been deleted.`)
+      delrole.guild.defaultChannel.send(`The role "` + delrole.name +`" has been deleted.`)
     }
-})
+  })
 
-bot.on("channelCreate", createchnl =>{
+  bot.on("channelCreate", createchnl =>{
     if (createchnl.guild){
-    createchnl.guild.defaultChannel.send("Created new channel: " + createchnl)
-}})
-bot.on("channelDelete", delchnl =>{
-if (delchnl.guild){
-    delchnl.guild.defaultChannel.send("Deleted Channel: " + delchnl.name)
-}
-})
-broadcast.on("end", () =>{
+      createchnl.guild.defaultChannel.send("Created new channel: " + createchnl)
+    }})
+    bot.on("channelDelete", delchnl =>{
+      if (delchnl.guild){
+        delchnl.guild.defaultChannel.send("Deleted Channel: " + delchnl.name)
+      }
+    })
+    broadcast.on("end", () =>{
       if (queue.length >=1){
-          queue.shift()
+        queue.shift()
       }
       else{
-          broadcast.destroy()
-          broadcast.guild.me.voiceChannel.leave()
-          broadcast.client.guilds.get("249311166776606721").defaultChannel.send("End of queue")
+        broadcast.destroy()
+        broadcast.guild.me.voiceChannel.leave()
+        broadcast.client.guilds.get("249311166776606721").defaultChannel.send("End of queue")
       }
-  })
-// create an event listener for messages
-bot.on('message', message => {
-    console.log("[" + message.channel.name + "] " + message.author.tag + "> " + message.content)
-  // if the message is "ping",
-   if (message.guild){
- if (message.content === "/ping"){
-    let __START = Date.now();
-    message.channel.send("Pinging...").then(m => {
-      m.edit(`${pingmsg[Math.floor(Math.random()*pingmsg.length)]} \`Responded in: ${(Date.now()-__START)}ms.\``);
-    });
-  }
-if (message.content.split(" ").indexOf("ai;") == 0){
-        repeat = message.content.split(" ")
-        if (message.author.id == config.ownerID){
-        message.guild.defaultChannel.send(message.content.replace("ai;",""))
-        message.delete()
-        }
-    }
+    })
+    // create an event listener for messages
+    bot.on('message', message => {
+      if (message.content.startsWith("/")) {
+        const [command, ...args] = message.content.slice(-(message.content.length - "/".length)).split(" ");
+        var logchan = message.guild.channels.get("364658410605772802")
+        logchan.send(`[${message.author.tag}]: ${message.content}`)
+        if (message.guild){
+          //Everything below here requires "/"
+          if (command === "ping"){
+            let __START = Date.now();
+            message.channel.send("Pinging...").then(m => {
+              m.edit(`${pingmsg[Math.floor(Math.random()*pingmsg.length)]} \`Responded in: ${(Date.now()-__START)}ms.\``);
+            });
+          }
 
-if (message.content === "/randgame"){
-    if (message.author.id == config.ownerID){
-        bot.user.setGame(Math.floor(Math.random()*playingmsg.length),1000*60*60)
-        message.delete()
-    }
-    else message.channel.send("Only Shy can play with me...")
-}
+          if (command === "randgame"){
+            if (message.author.id == config.ownerID){
+              bot.user.setGame(Math.floor(Math.random()*playingmsg.length),1000*60*60)
+              message.delete()
+            }
+            else message.channel.send("Only Shy can play with me...")
+          }
 
-if (message.content === "bip"){
-        message.channel.send("bop")
-  }
-if (message.content === "/HDButt"){
-    message.channel.startTyping();
-	message.channel.send("", {files:["https://cdn.discordapp.com/emojis/272396016332832768.png"]}).then(m => m.channel.stopTyping())}
-}
-if (message.content.split(' ').indexOf("/ava") == 0 ){
-    var targetuser = message.mentions.users.first()
-    if (targetuser){
-        message.channel.send(targetuser.avatarURL)
-        }
-        else (message.channel.send("ERROR: You need to define someone..."))
+          if (command === "HDButt"){
+            message.channel.startTyping();
+            message.channel.send("", {files:["https://cdn.discordapp.com/emojis/272396016332832768.png"]}).then(m => m.channel.stopTyping())
+          }
 
-    }
-if (message.content.split(' ').indexOf("/setgame") == 0 ){
-    if (message.author.id == config.ownerID){
-        bot.user.setGame(message.content.replace('/setgame ',''))
-        message.delete()
-    }
-        else{
-            message.channel.send(message.author+", only Shy can play with me =(")
-    }
+          if (command.split(' ').indexOf("ava") == 0 ){
+            var targetuser = message.mentions.users.first()
+            if (targetuser){
+              message.channel.send(targetuser.avatarURL)
+            }
+            else (message.channel.send("ERROR: You need to define someone..."))
+          }
 
-}
-if (message.content.toLowerCase().indexOf("porn.") >=0 && message.author.id != config.botID){
-    message.channel.send(porntrigger[Math.floor(Math.random()*porntrigger.length)])
-}
-    if (message.content === "/commands"){
-        var data = new Discord.RichEmbed()
+          if (command.split(' ').indexOf("setgame") == 0 ){
+            if (message.author.id == config.ownerID){
+              bot.user.setGame(args.join(" "))
+              message.delete()
+            }
+            else{
+              message.channel.send(message.author + ", only Shy can play with me =(")
+            }
+
+          }
+
+          if (command === "commands"){
+            var data = new Discord.RichEmbed()
             data.setColor("#191970")
             data.setTitle("COMMANDS")
             for(command of commands){
-                data.addField(command.name , command.result)
+              data.addField(command.name , command.result)
             }
             message.author.send("", {embed:data})
-        message.delete()
-        if (message.member.roles.has(config.adminID)){
-            var data = new Discord.RichEmbed()
+            message.delete()
+            if (message.member.roles.has(config.adminID)){
+              var data = new Discord.RichEmbed()
               data.setColor("#FF0000")
-            data.setTitle("ADMIN COMMANDS")
-            for(command of admincmds){
+              data.setTitle("ADMIN COMMANDS")
+              for(command of admincmds){
                 data.addField(command.name , command.result)
-            }
-            message.author.send("", {embed:data})
-        }
-	 message.channel.send("DM'd you the commands")
-    }
-        if (message.content === "DM'd you the commands"){
-            if (message.author.id == config.botID){
-                delayedDelete(message)
-                }
-            }
-
-    if (message.content === "/kys"){
-        message.channel.startTyping();
-	message.channel.send("", {files:["https://cdn.discordapp.com/attachments/268542019264184330/281635808518209537/full.png"]}).then(m => m.channel.stopTyping())
-    }
-//COMMAND: !punish
-else if (message.content.split(' ').indexOf("/mute") == 0 ){
-    if (message.author.id == config.ownerID | message.member.roles.has(config.adminID)){
-        var target = message.content.split(' ')[1]
-        var targetuser = message.mentions.users.first()
-        if (targetuser){
-            //console.log(message.guild.roles.entries())
-            message.guild.member(targetuser).addRole("249616536573050900")
-            message.channel.send(target + " has been muted...")
-        } else {
-            message.channel.send("ERROR: You need to define someone...")
-        }}
-        else {message.channel.send("Does it look like you're an admin?")}
-}
-else if (message.content.split(' ').indexOf("/unmute") == 0 ){
-    if (message.author.id == config.ownerID | message.member.roles.has(config.adminID)){
-        var target = message.content.split(' ')[1]
-        var targetuser = message.mentions.users.first()
-        if (targetuser){
-            //console.log(message.guild.roles.entries())
-            message.guild.member(targetuser).removeRole("249616536573050900")
-            message.channel.send(target + " is no longer being gagged!")
-            message.delete()
-        } else {
-            message.channel.send("ERROR: You need to define someone...")
-        }}
-        else {message.channel.send("Does it look like you're an admin?")}
-}
-if (message.content === "/RIP"){
-    message.channel.send("Rest in piss, Furbot, L-BOT, and PVPCraft.\nI RULE THIS SERVER NOW!!!")
-}
-else if (message.content.split(" ").indexOf("/kick") == 0){
-        if (message.author.id == config.ownerID | message.member.roles.has(config.adminID)){
-            var target = message.content.split(" ")[1]
-            var targetuser = message.mentions.users.first()
-                if(targetuser){
-                    message.guild.member(targetuser).kick()
-                    message.channel.send(target + " has been kicked in the ass..")
-                    message.delete()
-                }
-                else message.channel.send("ERROR: You need to define someone...")
-        }
-        else message.channel.send("Does it look like you're an admin?")
-    }
-else if (message.content.split(" ").indexOf("/ban") == 0){
-    if (message.member.roles.has(config.adminID)){
-        let [command, user, ...reason] = message.content.split(" ");
-        reason = reason || []
-        reason = reason.join(" ")
-        let guildMember = (message.mentions.members.size)?
-        message.mentions.members.first() : message.guild.member(user)
-        if (guildMember){
-            guildMember.ban(`${message.author.tag}: ${reason}`).then(member => {
-                   message.channel.send(`${user} has been banned by ${message.author} for ${reason};`)
-                    message.delete()
-            })}
-        else{
-          message.channel.send("This user isn't on the server.")
               }
-    }
-else{
-        message.channel.send("Does it look like you're an admin?")
-      }
-}
-    if (message.content === "/roledata"){
-        console.log(message.guild.roles.entries())
-        message.channel.send("Logging Role Data...")
-    }
-    if (message.content === "/loli"){
-        message.channel.startTyping();
-	message.channel.send("", {files:["https://cdn.discordapp.com/attachments/270372438825500672/281941724539125760/17_-_1_2.png"]}).then(m => m.channel.stopTyping())
-    }
-    else if (message.content.split(" ").indexOf("/say") == 0){
-        repeat = message.content.split(" ")
-        if (message.author.id == config.ownerID){
-        message.channel.send(message.content.replace("/say",""))
-        message.delete()
-        }
-        else (message.channel.send("Only Shy can tell me what to do.."))
-    }
-    if (message.content === "/hug"){
-        message.channel.startTyping();
-	message.channel.send("", {files:["https://cdn.discordapp.com/attachments/270372438825500672/281994810141835264/giphy.gif"]}).then(m => m.channel.stopTyping())
-    }
-    if (message.content === "/dicksize"){
-        message.channel.send(size[Math.floor(Math.random()*size.length)])
-
-    }
-    if (message.content === "/myroles"){
-        message.channel.send(message.author + "'s Roles:")
-        message.channel.send(message.guild.member(message.author).roles.array().map(role => role.name.replace("@everyone","")))
-    }
-    if (message.content === "/loop"){
-        if (message.author.id == config.ownerID | message.author.id == config.botID){
-            message.channel.send("/loop")
-        }
-    else (message.channel.send("Nice try."))
-    }
-    if (message.content === "/owo"){
-        message.channel.startTyping();
-	message.channel.send("", {files:["https://cdn.discordapp.com/attachments/270372438825500672/283016856770576394/7224116065017216276_account_id8.png"]}).then(m => m.channel.stopTyping())
-    }
-    if (message.content === "/boop"){
-        message.channel.send("", {files:[BoopImg[Math.floor(Math.random()*BoopImg.length)]]})
-    }
-    else if (message.content.split(" ").indexOf("/createrole") == 0){
-        if (message.member.roles.has(config.adminID)){
-        message.guild.createRole({name: message.content.replace("/createrole","")})
-        message.channel.send(`A new role "`+ message.content.replace("/createrole","") + `" has been created.`)
-        message.delete()
-    }
-    else (message.channel.send("Does it look like you're an admin?"))
-    }
-    else if (message.content.split(' ').indexOf("/adminify") == 0 ){
-    if (message.author.id == config.ownerID){
-        var target = message.content.split(' ')[1]
-        var targetuser = message.mentions.users.first()
-        if (targetuser){
-            //console.log(message.guild.roles.entries())
-            message.guild.member(targetuser).addRole(config.adminID)
-            message.channel.send(target + " has become an admin!")
-            message.delete()
-        } else {
-            message.channel.send("ERROR: You need to define someone...")
-        }}
-        else {message.channel.send("Now why the fuck would you be able to give someone admin?")}
-}
-    else if (message.content.split(" ").indexOf("/info") == 0){
-        if (message.member.roles.has(config.adminID)){
-            var target = message.content.split(" ")[1]
-            var targetuser = message.mentions.users.first()
-            if (targetuser){
-                message.channel.send("User: " + targetuser.username + "\nID: "+ targetuser.id + "\nStatus: " + targetuser.presence.status + "\nAccount Created: "+ targetuser.createdAt + "\nAvatar URL: " + "<" + targetuser.avatarURL + ">" + "\nBot?: " + targetuser.bot)
+              message.author.send("", {embed:data})
             }
-        }else message.channel.send("Do you look like an Admin?")
-    }
-    if (message.content === "/serverinfo"){
-        message.channel.send("Name: " + message.guild.name + "\nOwner: " + message.guild.owner + "\nID: " + message.guild.id + "\nMembers: " + message.guild.memberCount + "\nIcon URL: <" + message.guild.iconURL + ">\nCreated: " + message.guild.createdAt + "\nFeatures: " +  message.guild.features + "\nRegion: " + message.guild.region + "\nVerification LVL: " + message.guild.verificationLevel + "\nThanks to GeneralUltra758 for teaching me how to bot.")
-    }
-    if (message.content === "/spin"){
-        message.channel.send("Can't you read? This feature is a WIP.")
-    }
+            message.channel.send("DM'd you the commands")
+          }
 
-     if (message.content === "/kill"){
-     if (message.author.id == config.ownerID){
-         message.channel.send("Shutting Down...").then(m => m.client.destroy().then(() => process.exit()))
-}
-else message.channel.send("Only Shy has permission to kill me...")
-}
-if (message.content == "/cat"){
-    message.channel.send("http://thecatapi.com/api/images/get?format=src&type=gif&timestamp=" + Math.floor(Math.random()*9999999999999))
-}
-else if (message.content.split(' ').indexOf("/deadminify") == 0 ){
-    if (message.author.id == config.ownerID){
-        var target = message.content.split(' ')[1]
-        var targetuser = message.mentions.users.first()
-        if (targetuser){
-            //console.log(message.guild.roles.entries())
-            message.guild.member(targetuser).removeRole(config.adminID)
-            message.channel.send(target + " is no longer admin...")
-            message.delete()
-        } else {
-            message.channel.send("ERROR: You need to define someone...")
-        }}
-        else {message.channel.send("Now why the fuck would you be able to give someone admin?")}
-}
-    if (message.content === "/kawaiipuss"){
-        message.channel.startTyping();
-	message.channel.send("", {files:["https://cdn.discordapp.com/attachments/280250275342712833/286613607603765250/phil-jones-censored-pussy.jpg"]}).then(m => m.channel.stopTyping())
-    }
-if (message.content.split(" ").indexOf("/yt") == 0){
-    youTube.search(message.content.replace("/yt",""), 10, function(error, result){
-        if (result){
-            var video = result
-            if (video.items[0]){
-            message.channel.send("https://www.youtube.com/watch?v=" + video.items[0].id.videoId)
-        }
-        else message.channel.send("ERROR: Nothing was found...")
-        }
-        else {
-           message.channel.send(error)
-        }
+          if (command === "kys"){
+            message.channel.startTyping();
+            message.channel.send("", {files:["https://cdn.discordapp.com/attachments/268542019264184330/281635808518209537/full.png"]}).then(m => m.channel.stopTyping())
+          }
 
-    })
-}
-    if (message.content === "https://www.youtube.com/watch?v=undefined"){
-        if (message.author.id == config.botID){
-            message.channel.send("ERROR: It appears the first result was not a video. Refine your search.")
-            message.delete()
-        }
-    }
-    if (message.content.split(" ").indexOf("/r34top") == 0){
-               var cmd = message.content.replace("/r34top","")
-        var eval = evalBooruCmd(cmd)
-        booru.search("r34", eval.tags, {limit: 5, random: true})
-        .then(booru.commonfy)
-        .then(images => {
-            var sorted = sortBooru(images,constrain(1,5,eval.number))
-            for(let image of sorted){
-            message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \nhttps:${image.file_url}`)
-            }
-        })
-    }
-    if (message.content.split(" ").indexOf("/r34") == 0){
-        var cmd = message.content.replace("/r34","")
-    var eval = evalBooruCmd(cmd)
-    message.channel.startTyping()
-    booru.search("r34", eval.tags, {limit: constrain(1,5,eval.number), random: true})
-    .then(booru.commonfy)
-    .then(images => {
-        for (let image of images){
-            message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \nhttps:${image.file_url}`)
-        }
-        message.channel.stopTyping()
-    }).catch(() => {
-      message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
-    });
-  }
-    if (message.content.split(" ").indexOf("/roles") == 0){
-        var target = message.content.split(" ")[1]
-        var targetuser = message.mentions.users.first()
-        if (targetuser){
-        message.channel.send(targetuser + "'s Roles:")
-        message.channel.send(message.guild.member(targetuser).roles.array().map(role => role.name.replace("@everyone","")))
-    }
-    else message.channel.send("ERROR: You need to define someone...")
-}
-    if (message.content.split(" ").indexOf("/e6") == 0){
-        var cmd = message.content.replace("/e6","")
-    var eval = evalBooruCmd(cmd)
-    message.channel.startTyping()
-    booru.search("e6", eval.tags, {limit: constrain(1,5,eval.number), random: true})
-    .then(booru.commonfy)
-    .then(images => {
-        for (let image of images){
-            message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \n${image.file_url}`)
-        }
-        message.channel.stopTyping()
-    }).catch(() => {
-      message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
-    });
-  }
-    if (message.content === "/sendnoods"){
-        message.channel.startTyping();
-	message.channel.send("", {files:["https://cdn.discordapp.com/attachments/270372438825500672/292342878737399809/26bf6ac5b31209915df332272bee1cb890f12c7617850b5b3acd45d68dba7ee9_1.jpg"]}).then(m => m.channel.stopTyping())
-    }
-
-    if (message.content === "/loodbat"){
-        message.channel.startTyping();
-	message.channel.send("", {files:["https://cdn.discordapp.com/attachments/270372438825500672/292342957107970049/503.png"]}).then(m => m.channel.stopTyping())
-    }
-
-    if (message.content === "/gudbat"){
-        message.channel.startTyping();
-	message.channel.send("", {files:["https://cdn.discordapp.com/attachments/270372438825500672/292342957741178880/thumb.png"]}).then(m => m.channel.stopTyping())
-    }
-
-    if (message.content.split(" ").indexOf("/nickname") == 0){
-        if (message.content.replace("/nickname", "").length > 32){
-            message.channel.send("Unable to set nickname, it exceeds 32 characters")
-        }
-        else {message.guild.member(message.author).setNickname(message.content.replace("/nickname" , ""))
-        message.channel.send(message.author.username + ", your name has been set")}
-    }
-
-    if (message.content.split(" ").indexOf("/purge") == 0){
-        if (message.member.roles.has(config.adminID)){
-        message.delete()
-        message.channel.bulkDelete(message.content.replace("/purge",""))
-        }
-        else message.channel.send("Does it look like you're an admin?")
-    }
-
-    if (message.content === "/imagination"){
-        message.channel.startTyping();
-	message.channel.send("", {files:["https://lh3.googleusercontent.com/-AmxfRf7edKo/VSuNtOO1orI/AAAAAAAAFm8/ITrB-WsFVQ0/w368-h284/rainbow-is-love-glitter.gif"]}).then(m => m.channel.stopTyping())
-    }
-
-    if (message.content.toLowerCase().indexOf("<@281589030540279808>") >=0 && message.author.id != config.botID){
-    message.channel.send(tagrespond[Math.floor(Math.random()*porntrigger.length)])
-    }
-
-/*    if (message.content.split(" ").indexOf("/play") == 0){
-      youTube.search(message.content.replace("/play",""), 10, function(error, result){
-          if (result){
-              var video = result
-              const stream = ytdl("https://www.youtube.com/watch?v=" + video.items[0].id.videoId, {filter : "audioonly"})
-              if (video.items[0]){
-                if (queue.length > 0){
-                queue.push(stream)
-                broadcast.playStream(queue.shift())
+          else if (command.split(' ').indexOf("mute") == 0 ){
+            if (message.author.id == config.ownerID | message.member.roles.has(config.adminID)){
+              var target = args.join(" ")
+              var targetuser = message.mentions.users.first()
+              if (targetuser){
+                message.guild.member(targetuser).addRole("249616536573050900")
+                message.channel.send(target + " has been muted...")
               }
               else{
-                queue.push(stream)
+                message.channel.send("ERROR: You need to define someone...")
+              }}
+              else {message.channel.send("Does it look like you're an admin?")}
+            }
+
+            else if (command.split(' ').indexOf("unmute") == 0 ){
+              if (message.author.id == config.ownerID | message.member.roles.has(config.adminID)){
+                var target = args.join(" ")
+                var targetuser = message.mentions.users.first()
+                if (targetuser){
+                  message.guild.member(targetuser).removeRole("249616536573050900")
+                  message.channel.send(target + " is no longer being gagged!")
+                  message.delete()
+                } else {
+                  message.channel.send("ERROR: You need to define someone...")
+                }}
+                else {message.channel.send("Does it look like you're an admin?")}
               }
+
+              if (command === "RIP"){
+                message.channel.send("Rest in piss, Furbot, L-BOT, and PVPCraft.\nI RULE THIS SERVER NOW!!!")
+              }
+
+              else if (command.split(" ").indexOf("kick") == 0){
+                if (message.member.roles.has(config.adminID)){
+                  var target = args.join(" ")
+                  var targetuser = message.mentions.users.first()
+                  if(targetuser){
+                    message.guild.member(targetuser).kick()
+                    message.channel.send(targetuser.username + " has been kicked in the ass..")
+                    message.delete()
+                  }
+                  else message.channel.send("ERROR: You need to define someone...")
+                }
+                else message.channel.send("Does it look like you're an admin?")
+              }
+
+              else if (command.split(" ").indexOf("ban") == 0){
+                if (message.member.roles.has(config.adminID)){
+                  let [cmd, user, ...reason] = message.content.split(" ");
+                  un = message.mentions.users.first().tag
+                  reason = reason || []
+                  reason = reason.join(" ")
+                  let guildMember = (message.mentions.members.size)?
+                  message.mentions.members.first() : message.guild.member(user)
+                  if (guildMember){
+                      message.channel.send(`${un} has been banned by ${message.author} for ${reason};`).then(guildMember.ban(`${message.author.tag}: ${reason}`))
+                      message.delete()
+                    }
+                  else{
+                    message.channel.send("This user isn't on the server.")
+                    }
+                }
+                else{
+                  message.channel.send("Does it look like you're an admin?")
+                }
+              }
+                if (command === "roledata"){
+                  console.log(message.guild.roles.entries())
+                  message.channel.send("Logging Role Data...")
+                }
+                if (command === "loli"){
+                  message.channel.startTyping();
+                  message.channel.send("", {files:["https://cdn.discordapp.com/attachments/270372438825500672/281941724539125760/17_-_1_2.png"]}).then(m => m.channel.stopTyping())
+                }
+                else if (command.split(" ").indexOf("say") == 0){
+                  if (message.author.id == config.ownerID){
+                    message.channel.send(args.join(" "))
+                    message.delete()
+                  }
+                  else (message.channel.send("Only Shy can tell me what to do.."))
+                }
+                if (command === "hug"){
+                  message.channel.startTyping();
+                  message.channel.send("", {files:["https://cdn.discordapp.com/attachments/270372438825500672/281994810141835264/giphy.gif"]}).then(m => m.channel.stopTyping())
+                }
+                if (command === "dicksize"){
+                  message.channel.send(size[Math.floor(Math.random()*size.length)])
+
+                }
+                if (command === "myroles"){
+                  message.channel.send(message.author + "'s Roles:")
+                  message.channel.send(message.guild.member(message.author).roles.array().map(role => role.name.replace("@everyone","")))
+                }
+                if (command === "loop"){
+                  if (message.author.id == config.ownerID | message.author.id == config.botID){
+                    message.channel.send("/loop")
+                  }
+                  else (message.channel.send("Nice try."))
+                }
+                if (command === "owo"){
+                  message.channel.startTyping();
+                  message.channel.send("", {files:["https:/cdn.discordapp.com/attachments/270372438825500672/283016856770576394/7224116065017216276_account_id8.png"]}).then(m => m.channel.stopTyping())
+                }
+                if (command === "boop"){
+                  message.channel.send("", {files:[BoopImg[Math.floor(Math.random()*BoopImg.length)]]})
+                }
+                else if (command.split(" ").indexOf("createrole") == 0){
+                  if (message.member.roles.has(config.adminID)){
+                    message.guild.createRole(args.join(" "))
+                    message.channel.send(`A new role "`+ args.join(" ") + `" has been created.`)
+                    message.delete()
+                  }
+                  else (message.channel.send("Does it look like you're an admin?"))
+                }
+                else if (command.split(' ').indexOf("adminify") == 0 ){
+                  if (message.author.id == config.ownerID){
+                    var target = args.join(" ")
+                    var targetuser = message.mentions.users.first()
+                    if (targetuser){
+                      message.guild.member(targetuser).addRole(config.adminID)
+                      message.channel.send(target + " has become an admin!")
+                      message.delete()
+                    } else {
+                      message.channel.send("ERROR: You need to define someone...")
+                    }}
+                    else {message.channel.send("Now why the fuck would you be able to give someone admin?")}
+                  }
+                  else if (command.split(" ").indexOf("info") == 0){
+                    if (message.member.roles.has(config.adminID)){
+                      var target = args.join(" ")
+                      var targetuser = message.mentions.users.first()
+                      if (targetuser){
+                        message.channel.send("User: " + targetuser.username + "\nID: "+ targetuser.id + "\nStatus: " + targetuser.presence.status + "\nAccount Created: "+ targetuser.createdAt + "\nAvatar URL: " + "<" + targetuser.avatarURL + ">" + "\nBot?: " + targetuser.bot)
+                      }
+                    }else message.channel.send("Do you look like an Admin?")
+                  }
+                  if (command === "serverinfo"){
+                    message.channel.send(`Name:  ${message.guild.name} \nOwner:  ${message.guild.owner} \nID: ${message.guild.id}  \nMembers:  ${message.guild.memberCount} \nIcon URL: <${message.guild.iconURL}>\nCreated: ${message.guild.createdAt} \nFeatures: ${message.guild.features} \nRegion: ${message.guild.region} \nThanks to GeneralUltra758 for teaching me how to bot."`)
+                  }
+                  if (command === "spin"){
+                    message.channel.send("Can't you read? This feature is a WIP.")
+                  }
+
+                  if (command === "kill"){
+                    if (message.author.id == config.ownerID){
+                      message.channel.send("Shutting Down...").then(m => m.client.destroy().then(() => process.exit()))
+                    }
+                    else message.channel.send("Only Shy has permission to kill me...")
+                  }
+                  if (command == "cat"){
+                    message.channel.send("http://thecatapi.com/api/images/get?format=src&type=gif&timestamp=" + Math.floor(Math.random()*9999999999999))
+                  }
+                  else if (command.split(' ').indexOf("deadminify") == 0 ){
+                    if (message.author.id == config.ownerID){
+                      var target = args.join(" ")
+                      var targetuser = message.mentions.users.first()
+                      if (targetuser){
+                        //console.log(message.guild.roles.entries())
+                        message.guild.member(targetuser).removeRole(config.adminID)
+                        message.channel.send(target + " is no longer admin...")
+                        message.delete()
+                      } else {
+                        message.channel.send("ERROR: You need to define someone...")
+                      }}
+                      else {message.channel.send("Now why the fuck would you be able to give someone admin?")}
+                    }
+                    if (command === "kawaiipuss"){
+                      message.channel.startTyping();
+                      message.channel.send("", {files:["https://cdn.discordapp.com/attachments/280250275342712833/286613607603765250/phil-jones-censored-pussy.jpg"]}).then(m => m.channel.stopTyping())
+                    }
+                    if (command.split(" ").indexOf("yt") == 0){
+                      youTube.search(args.join(" "), 10, function(error, result){
+                        if (result){
+                          var video = result
+                          if (video.items[0]){
+                            message.channel.send("https://www.youtube.com/watch?v=" + video.items[0].id.videoId)
+                          }
+                          else message.channel.send("ERROR: Nothing was found...")
+                        }
+                        else {
+                          message.channel.send(error)
+                        }
+
+                      })
+                    }
+                    if (command.split(" ").indexOf("r34top") == 0){
+                      var cmd = args.join(" ")
+                      var eval = evalBooruCmd(cmd)
+                      booru.search("r34", eval.tags, {limit: 5, random: true})
+                      .then(booru.commonfy)
+                      .then(images => {
+                        var sorted = sortBooru(images,constrain(1,5,eval.number))
+                        for(let image of sorted){
+                          message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \nhttps:${image.file_url}`)
+                        }
+                      })
+                    }
+                    if (command.split(" ").indexOf("r34") == 0){
+                      var cmd = args.join(" ")
+                      var eval = evalBooruCmd(cmd)
+                      message.channel.startTyping()
+                      booru.search("r34", eval.tags, {limit: constrain(1,5,eval.number), random: true})
+                      .then(booru.commonfy)
+                      .then(images => {
+                        for (let image of images){
+                          message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \nhttps:${image.file_url}`)
+                        }
+                        message.channel.stopTyping()
+                      }).catch(() => {
+                        message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
+                      });
+                    }
+                    if (command.split(" ").indexOf("roles") == 0){
+                      var target = args.join(" ")
+                      var targetuser = message.mentions.users.first()
+                      if (targetuser){
+                        message.channel.send(targetuser.username + "'s Roles:")
+                        message.channel.send(message.guild.member(targetuser).roles.array().map(role => role.name.replace("@everyone","")))
+                      }
+                      else message.channel.send("ERROR: You need to define someone...")
+                    }
+                    if (command.split(" ").indexOf("e6") == 0){
+                      var cmd = args.join(" ")
+                      var eval = evalBooruCmd(cmd)
+                      message.channel.startTyping()
+                      booru.search("e6", eval.tags, {limit: constrain(1,5,eval.number), random: true})
+                      .then(booru.commonfy)
+                      .then(images => {
+                        for (let image of images){
+                          message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \n${image.file_url}`)
+                        }
+                        message.channel.stopTyping()
+                      }).catch(() => {
+                        message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
+                      });
+                    }
+                    if (command === "sendnoods"){
+                      message.channel.startTyping();
+                      message.channel.send("", {files:["https://cdn.discordapp.com/attachments/270372438825500672/292342878737399809/26bf6ac5b31209915df332272bee1cb890f12c7617850b5b3acd45d68dba7ee9_1.jpg"]}).then(m => m.channel.stopTyping())
+                    }
+
+                    if (command === "loodbat"){
+                      message.channel.startTyping();
+                      message.channel.send("", {files:["https://cdn.discordapp.com/attachments/270372438825500672/292342957107970049/503.png"]}).then(m => m.channel.stopTyping())
+                    }
+
+                    if (command === "gudbat"){
+                      message.channel.startTyping();
+                      message.channel.send("", {files:["https://cdn.discordapp.com/attachments/270372438825500672/292342957741178880/thumb.png"]}).then(m => m.channel.stopTyping())
+                    }
+
+                    if (command.split(" ").indexOf("nickname") == 0){
+                      if (args.join(" ").length > 32){
+                        message.channel.send("Unable to set nickname, it exceeds 32 characters")
+                      }
+                      else {message.guild.member(message.author).setNickname(args.join(" "))
+                      message.channel.send(message.author.username + ", your name has been set")}
+                    }
+
+                    if (command.split(" ").indexOf("purge") == 0){
+                      if (message.member.roles.has(config.adminID)){
+                        message.delete()
+                        message.channel.bulkDelete(args.join(" "))
+                      }
+                      else message.channel.send("Does it look like you're an admin?")
+                    }
+
+                    if (command === "imagination"){
+                      message.channel.startTyping();
+                      message.channel.send("", {files:["https://lh3.googleusercontent.com/-AmxfRf7edKo/VSuNtOO1orI/AAAAAAAAFm8/ITrB-WsFVQ0/w368-h284/rainbow-is-love-glitter.gif"]}).then(m => m.channel.stopTyping())
+                    }
+
+                    /*    if (message.content.split(" ").indexOf("/play") == 0){
+                    youTube.search(message.content.replace("/play",""), 10, function(error, result){
+                    if (result){
+                    var video = result
+                    const stream = ytdl("https://www.youtube.com/watch?v=" + video.items[0].id.videoId, {filter : "audioonly"})
+                    if (video.items[0]){
+                    if (queue.length > 0){
+                    queue.push(stream)
+                    broadcast.playStream(queue.shift())
+                  }
+                  else{
+                  queue.push(stream)
+                }
                 const dispatcher = message.guild.me.voiceChannel.connection.playBroadcast(broadcast)
-          }
-          else message.channel.send("ERROR: Nothing was found...")
-          }
-          else {
-             message.channel.send(error)
+              }
+              else message.channel.send("ERROR: Nothing was found...")
+            }
+            else {
+            message.channel.send(error)
           }
 
-      })
+        })
 
-    }
+      }
 
-    if (message.content === "/queue"){
+      if (message.content === "/queue"){
       message.channel.send(queue)
     }
 
     if (message.content === "/connect"){
-      message.guild.channels.get("346994292369260545").join()
-      message.channel.send("Joined VC.")
-    }
+    message.guild.channels.get("346994292369260545").join()
+    message.channel.send("Joined VC.")
+  }
 
-    if (message.content === "/disconnect"){
-      if (message.guild.me.voiceChannel){
-        message.guild.me.voiceChannel.leave()
-        message.channel.send("Left VC.")
-      }
-      else{
-        message.channel.send("Does it look like I'm in VC?")
-      }
-    }
+  if (message.content === "/disconnect"){
+  if (message.guild.me.voiceChannel){
+  message.guild.me.voiceChannel.leave()
+  message.channel.send("Left VC.")
+}
+else{
+message.channel.send("Does it look like I'm in VC?")
+}
+}
 
-    if (message.content === "/queue"){
-      message.channel.send(queue)
-    }
+if (message.content === "/queue"){
+message.channel.send(queue)
+}
 */
-})
+    }
+  }
+//These do not need "/" to function
+else{
+  console.log("[" + message.channel.name + "] " + message.author.tag + "> " + message.content)
+
+  if (message.content === "bip"){
+    message.channel.send("bop")
+  }
+
+  if (message.content === "DM'd you the commands"){
+    if (message.author.id == config.botID){
+      delayedDelete(message)
+    }
+  }
+
+  if (message.content === "https://www.youtube.com/watch?v=undefined"){
+    if (message.author.id == config.botID){
+      message.channel.send("ERROR: It appears the first result was not a video. Refine your search.")
+      message.delete()
+    }
+  }
+
+  if (message.content.toLowerCase().indexOf("<@281589030540279808>") >=0 && message.author.id != config.botID){
+    message.channel.send(tagrespond[Math.floor(Math.random()*porntrigger.length)])
+  }
+
+  if (message.content.toLowerCase().indexOf("porn.") >=0 && message.author.id != config.botID){
+    message.channel.send(porntrigger[Math.floor(Math.random()*porntrigger.length)])
+  }
+
+
+}})
 
 
 bot.login(config.botToken)
