@@ -9,7 +9,8 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
   var queue =[]
   const ytdl = require("ytdl-core")
   const config = require('./config.js')
-  const bot = new Discord.Client()
+  const permban = require(`./permban.js`)
+  const bot = new Discord.Client({fetchAllMembers:true})
   const readline = require("readline")
   const booru = require("booru")
   const rl = readline.createInterface({
@@ -196,7 +197,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
     {"name":"/ban <@user> [reason]" , "result":"Bans a user from the server. Talk to Shy about unbanning."},
     {"name":"/info @user" , "result":"Displays information about a user. Useful for seeing when accounts were made."}
   ]
-  var dev = false
+  var dev = true
   var YouTube = require('youtube-node')
   var youTube = new YouTube()
   function evalBooruCmd(input){
@@ -289,7 +290,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
 
     youTube.setKey(config.ytKey)
     if (dev == true){
-      guld.send("Dev Build (1.7.0.1)")
+      guld.send("Dev Build (2.1.0.4)")
     }
     else {
       guld.send("I am now online~")
@@ -334,6 +335,25 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
     })
   })
 
+  bot.on("guildMemberAdd", member =>{
+    if (member.id === permban.banlist){
+      member.ban("This user is on the permban list.")
+      member.guild.defaultChannel.send(`${member} tried to join, but is on the permban list.`)
+    }
+    else{
+      member.guild.defaultChannel.send(`Whalecum ${member} to the server! Be sure to read <#249401654003105792> before you post.`)
+    }
+  })
+
+  bot.on("guildMemberRemove", member =>{
+    if (member.id === permban.banlist){
+      member.ban("This user is on the permban list.")
+      member.guild.defaultChannel.send(`${member} tried to join, but is on the permban list.`)
+    }
+    else{
+      member.guild.defaultChannel.send(`It's triggering. Put a proper message here, Shy.`)
+    }
+  })
 
   bot.on("roleDelete", delrole =>{
     if (delrole.guild){
@@ -783,7 +803,6 @@ else{
   if (message.content.toLowerCase().indexOf("porn.") >=0 && message.author.id != config.botID){
     message.channel.send(porntrigger[Math.floor(Math.random()*porntrigger.length)])
   }
-
 
 }})
 
