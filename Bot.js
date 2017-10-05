@@ -197,7 +197,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
     {"name":"/ban <@user> [reason]" , "result":"Bans a user from the server. Talk to Shy about unbanning."},
     {"name":"/info @user" , "result":"Displays information about a user. Useful for seeing when accounts were made."}
   ]
-  var dev = true
+  var dev = false
   var YouTube = require('youtube-node')
   var youTube = new YouTube()
   function evalBooruCmd(input){
@@ -351,7 +351,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
       member.guild.defaultChannel.send(`${member} tried to join, but is on the permban list.`)
     }
     else{
-      member.guild.defaultChannel.send(`It's triggering. Put a proper message here, Shy.`)
+      member.guild.defaultChannel.send(`Cya ${member.name}, you probably won't be missed~`)
     }
   })
 
