@@ -336,23 +336,11 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
   })
 
   bot.on("guildMemberAdd", member =>{
-    if (member.id === permban.banlist){
-      member.ban("This user is on the permban list.")
-      member.guild.defaultChannel.send(`${member} tried to join, but is on the permban list.`)
-    }
-    else{
       member.guild.defaultChannel.send(`Whalecum ${member} to the server! Be sure to read <#249401654003105792> before you post.`)
-    }
   })
 
   bot.on("guildMemberRemove", member =>{
-    if (member.id === permban.banlist){
-      member.ban("This user is on the permban list.")
-      member.guild.defaultChannel.send(`${member} tried to join, but is on the permban list.`)
-    }
-    else{
-      member.guild.defaultChannel.send(`Cya ${member.name}, you probably won't be missed~`)
-    }
+      member.guild.defaultChannel.send(`Cya ${member.displayName}, you probably won't be missed~`)
   })
 
   bot.on("roleDelete", delrole =>{
@@ -585,7 +573,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
                       var target = args.join(" ")
                       var targetuser = message.mentions.users.first()
                       if (targetuser){
-                        message.channel.send("User: " + targetuser.username + "\nID: "+ targetuser.id + "\nStatus: " + targetuser.presence.status + "\nAccount Created: "+ targetuser.createdAt + "\nAvatar URL: " + "<" + targetuser.avatarURL + ">" + "\nBot?: " + targetuser.bot)
+                        message.channel.send("User: " + targetuser.username + "\nID: "+ targetuser.id + "\nStatus: " + targetuser.presence.status + "\nAccount Created: "+ targetuser.createdAt + "\nJoined Server: " + message.guild.member(targetuser).joinedAt + "\nAvatar URL: " + "<" + targetuser.avatarURL + ">" + "\nBot?: " + targetuser.bot)
                       }
                     }else message.channel.send("Do you look like an Admin?")
                   }
