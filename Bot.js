@@ -713,6 +713,40 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
                       message.channel.send("", {files:["https://lh3.googleusercontent.com/-AmxfRf7edKo/VSuNtOO1orI/AAAAAAAAFm8/ITrB-WsFVQ0/w368-h284/rainbow-is-love-glitter.gif"]}).then(m => m.channel.stopTyping())
                     }
 
+                    if (command === "announce"){
+                    if (message.member.roles.has(config.adminID)){
+                      var announcechan = message.guild.channels.get("250781565817192458")
+                      let [cmd, color, title, ...text] = message.content.split(" ")
+                          if (color === "r"){
+                            var hex = "ff0000"
+                            var tagall = true
+                            var bool = "Color - Red"
+                          }
+                          if (color === "y"){
+                            var hex = "ffff00"
+                            var tagall = true
+                            var bool = "Color = Yellow"
+                          }
+                          if (color === "b"){
+                            var hex = "0000ff"
+                            var tagall = false
+                            var bool = "Color - Blue"
+                          }
+                          if (color === "l"){
+                            var hex = "a7a7ff"
+                            var tagall = true
+                            var bool = "Color - Light Blue"
+                          }
+                          if (tagall === true){
+                            announcechan.send("@everyone")
+                          }
+                            announcechan.send({embed:new Discord.RichEmbed().setColor(hex).setTitle(title).setDescription(text.join(" ")).setTimestamp(new Date())})
+                            announcechan.send(`\`\`\`${title} | ${bool} \n ${text.join(" ")}\`\`\``).then(m => message.delete())
+                    }
+                    else{
+                      message.channel.send("Does it look like you're an admin?")
+                    }
+                  }
                     /*    if (message.content.split(" ").indexOf("/play") == 0){
                     youTube.search(message.content.replace("/play",""), 10, function(error, result){
                     if (result){
