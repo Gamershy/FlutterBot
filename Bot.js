@@ -370,6 +370,12 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
     })
     // create an event listener for messages
     bot.on('message', message => {
+      if (message.channel.type === "dm"){
+	if (message.author.id != config.botID){
+        message.channel.send("DMing commands doesn't work, please use them on the server.")
+	}
+	return;
+      }
       if (message.content.startsWith("/")) {
         const [command, ...args] = message.content.slice(-(message.content.length - "/".length)).split(" ");
         var logchan = message.guild.channels.get("364658410605772802")
