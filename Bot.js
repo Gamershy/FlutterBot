@@ -832,6 +832,10 @@ else{
     message.channel.send(porntrigger[Math.floor(Math.random()*porntrigger.length)])
   }
 
+  if (message.content.toLowerCase().indexof("corn." >=0 && message.author.id === "269952003793354764"){
+    message.channel.send("Fuck off, Senpoi.")
+  }
+
 }})
 
 
