@@ -405,7 +405,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
           if (command.split(' ').indexOf("ava") == 0 ){
             var targetuser = message.mentions.users.first()
             if (targetuser){
-              message.channel.send(targetuser.avatarURL)
+              message.channel.send(targetuser.displayAvatarURL)
             }
             else (message.channel.send("ERROR: You need to define someone..."))
           }
