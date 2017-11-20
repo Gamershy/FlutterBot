@@ -187,7 +187,9 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
     {"name":"/sendnoods" , "result":"You heard the pony, send em"},
     {"name":"/nickname" , "result":"set your nickname. (Made for mobile, usable by pc.)"},
     {"name":"/imagination" , "result":"Go on, use it!"},
-    {"name":"/e6 <tags> [Number]" , "result":"Search e621 for porn. Leaving the tags blank will yeild random results."}
+    {"name":"/e6 <tags> [Number]" , "result":"Search e621 for porn. Leaving the tags blank will yeild random results."},
+    {"name":"/flip" , "result":"Flip a coin."},
+    {"name":"/roll [sides]" , "result":"Roll a die with the specified number of sides. (Default: 12)"}
 
   ]
   var admincmds = [
@@ -195,8 +197,10 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
     {"name":"/unmute @user" , "result":"Unmutes a user"},
     {"name":"/kick @user" , "result":"Kicks a user from the server"},
     {"name":"/ban <@user> [reason]" , "result":"Bans a user from the server. Talk to Shy about unbanning."},
-    {"name":"/info @user" , "result":"Displays information about a user. Useful for seeing when accounts were made."}
+    {"name":"/info @user" , "result":"Displays information about a user. Useful for seeing when accounts were made."},
+    {"name":"/announce <r/y/l/b> <title> <content>", "result":"Send an announcement to #announcements, ALL ARGUMENTS REQUIRED. r = red, y = yellow, l = lightblue, b = blue. Blue doesn't tag @everyone."}
   ]
+
   var dev = false
   var YouTube = require('youtube-node')
   var youTube = new YouTube()
@@ -753,6 +757,38 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
                       message.channel.send("Does it look like you're an admin?")
                     }
                   }
+
+                  if (command === "flip"){
+                    var coinside = Math.floor(Math.random()*2)
+                        if (coinside === 0){
+                          //heads
+                          var sidename = "heads"
+                          var sideimg = "https://cdn.discordapp.com/attachments/249311166776606721/382040020409909248/coin_heads.png"
+                        }
+                        else{
+                          //tails
+                          var sidename = "tails"
+                          var sideimg = "https://cdn.discordapp.com/attachments/249311166776606721/382040887649239063/coin_tails.png"
+                        }
+                      message.channel.send({embed:new Discord.RichEmbed().setColor("0000ff").setTitle("Coin Flip!").setDescription(`${message.author.tag} flipped ${sidename}!`).setImage(sideimg)})
+                  }
+
+                  if (command === "roll"){
+                    if (args != ""){
+                      var dicesides = args;
+                    }
+                    else{
+                      var dicesides = 12
+                    }
+                      message.channel.send(`:game_die: ${message.author.tag} rolls ${Math.floor(Math.random()*dicesides)}!`)
+                    }
+
+                  if (command === "img"){
+                    if (message.author.id === config.botID){
+                      message.channel.send("",{files:["\images\\coin_tails.png"]})
+                    }
+                  }
+
                     /*    if (message.content.split(" ").indexOf("/play") == 0){
                     youTube.search(message.content.replace("/play",""), 10, function(error, result){
                     if (result){
