@@ -10,13 +10,14 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
   const ytdl = require("ytdl-core")
   const config = require('./config.js')
   const permban = require(`./permban.js`)
-  const bot = new Discord.Client({fetchAllMembers:true})
+  const bot = new Discord.Client({fetchAllMembers:true, disabledEvents:["TYPING_START"]})
   const readline = require("readline")
   const booru = require("booru")
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
   })
+  const fs = require("fs")
   const opusscript = require("opusscript")
   const broadcast = bot.createVoiceBroadcast()
   const streamOptions = {seek : 0, volume : 1}
@@ -395,7 +396,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
 
           if (command === "randgame"){
             if (message.author.id == config.ownerID){
-              bot.user.setGame(Math.floor(Math.random()*playingmsg.length),1000*60*60)
+              bot.user.setGame(Math.floor(Math.random()*playingmsg.length))
               message.delete()
             }
             else message.channel.send("Only Shy can play with me...")
@@ -788,6 +789,52 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
                       message.channel.send("",{files:["\images\\coin_tails.png"]})
                     }
                   }
+
+                  if (command === "update"){
+                    if (message.author.id === config.ownerID){
+                      fs.readFile("./changelog.txt", {}, (err, content) => {
+                        if (err) {
+                          message.channel.send("Could not post changelog.");
+                          message.author.send({embed:{description:err.stack}});
+                          return;
+                        }
+
+                        if (content.constructor === Buffer) content = content.toString();
+
+                        let [version, ...changes] = content.split("\n");
+                        message.guild.channels.get("382608948378730496").send("@everyone")
+                        message.guild.channels.get("382608948378730496").send({embed:{title:version, description:changes.join("\n"), color:message.guild.me.displayColor}});
+                      });
+                    }
+                  }
+
+                  if (command === "togdm"){
+                    if (!message.guild.member(message.author).roles.has("382614220153421825")){
+                      message.guild.member(message.author).addRole("382614220153421825").then(() => message.channel.send(`${message.author} has requested to not be DM'd.`))
+                    }
+                    else{
+                      message.guild.member(message.author).removeRole("382614220153421825").then(() => message.channel.send(`${message.author} doesn't mind being DM'd anymore.`))
+                    }
+                  }
+
+                  if (command === "lemmemoan"){
+                    if (!message.guild.member(message.author).roles.has("291399317166751744")){
+                      message.guild.member(message.author).addRole("291399317166751744").then(() => message.channel.send(`${message.author} likes fapping with others~`))
+                    }
+                    else{
+                      message.guild.member(message.author).removeRole("291399317166751744").then(() => message.channel.send(`${message.author} got too shy to fap for us ;-;`))
+                    }
+                  }
+
+                  if (command === "botwatch"){
+                    if (!message.guild.member(message.author).roles.has("380371674647756800")){
+                      message.guild.member(message.author).addRole("380371674647756800").then(() => message.channel.send(`${message.author}, you will now be pinged for updates.`))
+                    }
+                    else{
+                      message.guild.member(message.author).removeRole("380371674647756800").then(() => message.channel.send(`${message.author}, you will no longer be pinged for updates.`))
+                    }
+                  }
+
 
                     /*    if (message.content.split(" ").indexOf("/play") == 0){
                     youTube.search(message.content.replace("/play",""), 10, function(error, result){

@@ -1,0 +1,16 @@
+Version 2.4.0
++ Added /botwatch command, this will let you see further bot commands. Type this command in chat to get pinged for each update to Flutterbot
++ Added /togdm, this command will give you a role that'll let others know you don't wish to be DM'd. Please not that they still can DM you.
++ Added /lemmemoan, this command will automatically add the "Voice Fapper" role to you.
+// All of these commands are **Toggles**, enter them once to gain the role, enter them again to remove the role.
+
+~ Planned Features
+- Finally make /spin functional
+- Maybe work on music. Probably not, tbh
+- Delete AI Cores for safety of the human race
+
+
+~ Distant plans
+- Add minigames (D&D, RPG, Horse Racing)
+- Add a currency system, so I can steal your money- Imean, so you can buy worthless ingame items (No I won't do microtransactions.)
+- Maybe one day actually make Flutterbot have a simple AI.
