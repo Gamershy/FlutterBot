@@ -7,6 +7,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
     }
   })};
   var queue =[]
+  const path = require("path")
   const ytdl = require("ytdl-core")
   const config = require('./config.js')
   const permban = require(`./permban.js`)
@@ -277,7 +278,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
   }
 
   function maintenancemsg(msg){
-    msg.channel.send("This command is under maintenance, and is disabled. Try again later." , {files:["\images\\maintanence.jpg"]})
+    msg.channel.send("This command is under maintenance, and is disabled. Try again later." , {files:[path.join(__dirname, "maintanence.jpg")]})
   }
 
   process.on("uncaughtException", err => {
