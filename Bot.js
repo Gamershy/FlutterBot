@@ -6,6 +6,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
       return this.defaultChannel = this.channels.get("249311166776606721");
     }
   })};
+  var disabledCommands = ["spin"]
   var queue =[]
   const path = require("path")
   const ytdl = require("ytdl-core")
@@ -391,6 +392,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
         const [command, ...args] = message.content.slice(-(message.content.length - "/".length)).split(" ");
         var logchan = message.guild.channels.get("364658410605772802")
         logchan.send(`{${message.channel.name}}[${message.author.tag}]: ${message.content}`)
+        if (disabledCommands.includes(command) && message.author.id != config.ownerID)  return maintenancemsg(message)
         if (message.guild){
           //Everything below here requires "/"
           if (command === "ping"){
@@ -598,8 +600,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
                     message.channel.send(`Name:  ${message.guild.name} \nOwner:  ${message.guild.owner} \nID: ${message.guild.id}  \nMembers:  ${message.guild.memberCount} \nIcon URL: <${message.guild.iconURL}>\nCreated: ${message.guild.createdAt} \nFeatures: ${message.guild.features} \nRegion: ${message.guild.region} \nThanks to GeneralUltra758 for teaching me how to bot."`)
                   }
                   if (command === "spin"){
-                    maintenancemsg(message)
-                    //message.channel.send("Can't you read? This feature is a WIP.")
+                    message.channel.send("Can't you read? This feature is a WIP.")
                   }
 
                   if (command === "kill"){
