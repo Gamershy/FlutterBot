@@ -278,7 +278,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
   }
 
   function maintenancemsg(msg){
-    msg.channel.send("This command is under maintenance, and is disabled. Try again later." , {files:[path.join(__dirname, "maintanence.jpg")]})
+    msg.channel.send("This command is under maintenance, and is disabled. Try again later." , {files:[path.join(__dirname, "images", "maintanence.jpg")]})
   }
 
   process.on("uncaughtException", err => {
@@ -714,8 +714,9 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
                       if (args.join(" ").length > 32){
                         message.channel.send("Unable to set nickname, it exceeds 32 characters")
                       }
-                      else {message.guild.member(message.author).setNickname(args.join(" "))
-                      message.channel.send(message.author.username + ", your name has been set")}
+                      else {
+                        message.guild.member(message.author).setNickname(args.join(" "))
+                        message.channel.send(message.author.username + ", your name has been set")}
                     }
 
                     if (command.split(" ").indexOf("purge") == 0){
@@ -792,14 +793,15 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
                     }
 
                   if (command === "img"){
-                    if (message.author.id === config.botID){
-                      message.channel.send("",{files:["\images\\coin_tails.png"]})
+                    if (message.author.id === config.ownerID){
+                      let [path, ...filename] = args.split("/")
+                      message.channel.send("",{files:[path.join(__dirname, path, filename)]})
                     }
                   }
 
                   if (command === "update"){
                     if (message.author.id === config.ownerID){
-                      fs.readFile("./changelog.txt", {}, (err, content) => {
+                      fs.readFile(path.join(__dirname, "changelog.txt"), {}, (err, content) => {
                         if (err) {
                           message.channel.send("Could not post changelog.");
                           message.author.send({embed:{description:err.stack}});
@@ -809,7 +811,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")){
                         if (content.constructor === Buffer) content = content.toString();
 
                         let [version, ...changes] = content.split("\n");
-                        message.guild.channels.get("382608948378730496").send("@everyone")
+                        message.guild.channels.get("382608948378730496").send("<@&380371674647756800>")
                         message.guild.channels.get("382608948378730496").send({embed:{title:version, description:changes.join("\n"), color:message.guild.me.displayColor}});
                       });
                     }
