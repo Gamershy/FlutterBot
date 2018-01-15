@@ -13,7 +13,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")) {
 var disabledCommands = []
 //var queue = []
 const path = require("path")
-const mongoose = require("./Mongoose")
+const mongoose = require("./Mongoose/index.js")
 const config = require('./config.js')
 const permban = require(`./permban.js`)
 const bot = new Discord.Client({fetchAllMembers: true, disabledEvents: ["TYPING_START"]})
