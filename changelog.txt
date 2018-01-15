@@ -1,8 +1,11 @@
-Version 2.4.1
-+ Minor code cleanup
-+ Added image sending (owner only, can only access files saved in bot's folder)
-  ~planned image browsing system and image uploading
-  ~Also planning on adding a "User Safe" version for y'all to use
-+ Tweaked Changelog command to work when on the server
-+ Added new "Under Maintenance" message for disabled commands
-- Removed AI Core (?)
+Version 3.0.0
++ Added Databasing!!!!
+  + Flutterbot will now handle all Level systems
+  + New currency! :gem: gems can be used to trade for items and later will be used in minigames
+  + You can check your stats with /stats
+  + You can also request to trade items via /trade @user, accept requests by typing /trade accept @user
+  + Once a day you can type /reward to get free gems and a possible random item. Chains will increase the rewards! If you miss a day, your chain will reset.
+- Fixed Tag responses (Bot was checking for the length of PornTrigger, not tagrespond)
++ Added framework for Minigames
+  + Only functional Minigame is Slots, you can play by typing /spin. This will have a random chance of giving you gems, or items. Keep in mind this costs gems to play (100 gems per play).
+  ? Planned RPG Minigame system. This will be a while.
