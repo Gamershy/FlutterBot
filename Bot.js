@@ -1002,6 +1002,28 @@ bot.on('message', async message => {
         }
       }
 
+      if (command === "tradegems"){
+        let [cmd, value, target] = message.content.split(" ")
+        var targetuser = message.mentions.users.first().id
+            val = parseInt(value, 10)
+            if (!targetuser) return message.channel.send("ERROR: You need to define someone...")
+            if (val !== val || val <=0) return message.channel.send("ERROR: You need to give a real number of gems, negatives aren't allowed.")
+              if (val <= __user.gem){
+                if (targetuser = await User.findOne({userId:targetuser})){
+                  targetuser.gem += val
+                  targetuser.save()
+                  __user.gem -= val
+		  message.channel.send(`Successfully sent ${val} Gems to ${message.guild.member(targetuser.userId).user.tag}`)
+                }
+		else{
+		  message.channel.send("ERROR: The user isn't in the database yet... make sure they've sent at least one non-command message")
+                }
+              }
+              else{
+                message.channel.send("You don't have enough gems...")
+              }
+       }
+
     }
   }
 //These do not need "/" to function

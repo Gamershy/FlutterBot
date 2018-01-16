@@ -1,10 +1,9 @@
 Version 3.0.0
 + Added Databasing!!!!
   + Flutterbot will now handle all Level systems
-  + New currency! :gem: gems can be used to trade for items and later will be used in minigames
+  + New currency! :gem: gems can be used to play minigames and later will be used for items and trading
   + You can check your stats with /stats
-  + You can also request to trade items via /trade @user, accept requests by typing /trade accept @user
-  + Once a day you can type /reward to get free gems and a possible random item. Chains will increase the rewards! If you miss a day, your chain will reset.
+  + Once a day you can type /reward to get free gems and experience. Chains will increase the rewards! If you miss a day, your chain will reset.
 - Fixed Tag responses (Bot was checking for the length of PornTrigger, not tagrespond)
 + Added framework for Minigames
   + Only functional Minigame is Slots, you can play by typing /spin. This will have a random chance of giving you gems, or items. Keep in mind this costs gems to play (100 gems per play).
