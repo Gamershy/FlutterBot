@@ -1,10 +1,21 @@
-Version 3.0.0
-+ Added Databasing!!!!
-  + Flutterbot will now handle all Level systems
-  + New currency! :gem: gems can be used to play minigames and later will be used for items and trading
-  + You can check your stats with /stats
-  + Once a day you can type /reward to get free gems and experience. Chains will increase the rewards! If you miss a day, your chain will reset.
-- Fixed Tag responses (Bot was checking for the length of PornTrigger, not tagrespond)
-+ Added framework for Minigames
-  + Only functional Minigame is Slots, you can play by typing /spin. This will have a random chance of giving you gems, or items. Keep in mind this costs gems to play (100 gems per play).
-  ? Planned RPG Minigame system. This will be a while.
+Version 3.0.1
+  + Added new command: /tradegems
+    ~ Use this command to give another user some gems
+    ~ SYNTAX: `/tradegems <number> @user`
+  + Added new command: /color
+    ~ Gives you a new color, assuming you're a "Daily Fapper" or above (New rank role)
+    ~ SYNTAX: `/color <color>`
+    ~ Use `/removecolor <color>` before changing colors
+  + Added new rank roles!
+    ~ Level 10 = Newcummer - No special perms
+    ~ Level 20 = Daily Fapper - Ability to change colors using /color
+    ~ Level 40 = Addicted to Porn - No new perms yet
+    ~ Level 70 = Pervert - No new perms yet
+    ~ Level 100 = God of Lewdness - Highest possible rank
+    ~ Remember: Levels are alot easier to get with Flutterbot, this may seem daunting, but it won't take long.
+  + Added new pages to /commands
+    ~ SYNTAX: /commands <page>
+  + Added new prefix support
+    ~ Flutterbot currently supports the following prefixes: `/`, `\\`, `>`, `!`, `?`, `%`, `$`, `#`, `=`, `+`
+    ~ For simplicity, all syntax examples will continue to use `/` as a prefix
+  + Oh look, this changelog is actually accurate this time, how bout that

@@ -598,7 +598,7 @@ bot.on('message', async message => {
       }
       else if (command.split(" ").indexOf("createrole") == 0) {
         if (message.member.roles.has(config.adminID)) {
-          message.guild.createRole(args.join(" "))
+          message.guild.createRole({name:args.join(" ")})
           message.channel.send(`A new role "` + args.join(" ") + `" has been created.`)
           message.delete()
         }
@@ -956,6 +956,7 @@ bot.on('message', async message => {
           __user.gem += (255*__user.rewardChain);
           __user.lastReward = new Date();
           __user.markModified("lastReward");
+          message.channel.send("You've earned your daily reward!")
         } else {
           message.channel.send("You need to wait until tomorrow to run this command again.");
         }
@@ -1023,6 +1024,49 @@ bot.on('message', async message => {
                 message.channel.send("You don't have enough gems...")
               }
        }
+        if (command === "color"){
+          let [cmd, ...color] = message.content.split(" ")
+          var rolename = `color - ${args.join(" ")}`,
+              role
+          if (message.member.roles.has("403126021500567552")){
+              if (role = message.guild.roles.findKey("name", rolename)){
+                  message.guild.member(message.author.id).addRole(role).then(_ => {
+                  message.channel.send(`Gave you the color ${color}`)
+                })
+              }
+              else{
+                  message.channel.send("That color doesn't exist, makes sure you spelled it correctly, or ask Shy or an admin to create it")
+              }
+          }
+          else{
+              message.channel.send('You need the "Daily Fapper" role to use this command')
+          }
+        }
+
+        if (command === "removecolor"){
+          let [cmd, ...color] = message.content.split(" ")
+          var rolename = `color - ${args.join(" ").toLowerCase()}`,
+              role
+          if (message.member.roles.has("403126021500567552")){
+              if (role = message.guild.roles.findKey("name", rolename)){
+                  if (message.member.roles.has(role)){
+                    message.guild.member(message.author.id).removeRole(role).then(_ => {
+                    message.channel.send(`Removed the color ${color}`)
+                  })
+                  }
+                  else{
+                    message.channel.send("You don't have that color")
+                  }
+              }
+              else{
+                  message.channel.send("That color doesn't exist, makes sure you spelled it correctly, or ask Shy or an admin to create it")
+              }
+          }
+          else{
+              message.channel.send('You need the "Daily Fapper" role to use this command')
+          }
+        }
+
 
     }
   }
@@ -1067,6 +1111,38 @@ bot.on('message', async message => {
       __user.nxtlvl += 100
     }
   }
+
+    // overcomplicated rank adding code
+    if (__user.lvl >= 10){
+      if (!message.member.roles.has("403125967939436545")){
+        message.member.addRole("403125967939436545")
+      }
+    }
+    
+    if (__user.lvl >= 20){
+      if (!message.member.roles.has("403126021500567552")){
+        message.member.addRole("403126021500567552")
+      }
+    }
+
+    if (__user.lvl >= 40){
+      if (!message.member.roles.has("403126248487780372")){
+        message.member.addRole("403126248487780372")
+      }
+    }
+
+    if (__user.lvl >= 70){
+      if (!message.member.roles.has("403126385981521941")){
+        message.member.addRole("403126385981521941")
+      }
+    }
+   
+    if (__user.lvl >= 100){
+      if (!message.member.roles.has("403126466210037771")){
+        message.member.addRole("403126466210037771")
+      }
+    }
+
 
   __user.isModified()? __user.save() : void 0 ;
 })
