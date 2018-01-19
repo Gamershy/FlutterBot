@@ -926,18 +926,36 @@ bot.on('message', async message => {
       }
 
       if (command === "stats") {
-        if (!__user) {
-          message.channel.send("You have no stats yet. Please send at least one message that's not a command.")
+      let [cmd, targetuser] = message.content.split(" ")
+        if (targetuser){
+          var target = message.mentions.users.first().id
+          if (target = await User.findOne({userId:target})) {
+            message.channel.send({
+              embed: {
+                color: message.guild.member(target.userId).displayColor,
+                title: `${message.guild.member(target.userId).user.tag}'s Stats:`,
+                description: `Level: ${target.lvl} \n EXP/Next LVL: ${target.exp}/${target.nxtlvl} \nGems: ${target.gem} \nInventory: ${target.inv} \nCurrent Chain: ${target.rewardChain} \nLast Reward: ${target.lastReward}`,
+                thumbnail: {url: message.guild.member(target.userId).user.avatarURL},
+                footer: {text: `Executed by: ${message.author.tag}`, iconURL: message.author.avatarURL}
+              }
+            })
+          }
+          else message.channel.send(`ERROR: That user isn't in the database yet. Make sure they've sent at least one non-command message.`)
         }
-        else {
-          message.channel.send({
-            embed: {
-              color: message.member.displayColor,
-              title: `${message.author.tag}'s Stats:`,
-              description: `Level: ${__user.lvl} \nEXP/Next LVL: ${__user.exp}/${__user.nxtlvl} \nGems: ${__user.gem} \nInventory: ${__user.inv} \nCurrent Chain: ${__user.rewardChain} \nLast Reward: ${__user.lastReward}`,
-              thumbnail: {url: message.author.avatarURL}
-            }
-          });
+        else{
+          if (!__user) {
+            message.channel.send("You have no stats yet. Please send at least one message that's not a command.")
+          }
+          else {
+            message.channel.send({
+              embed: {
+                color: message.member.displayColor,
+                title: `${message.author.tag}'s Stats:`,
+                description: `Level: ${__user.lvl} \nEXP/Next LVL: ${__user.exp}/${__user.nxtlvl} \nGems: ${__user.gem} \nInventory: ${__user.inv} \nCurrent Chain: ${__user.rewardChain} \nLast Reward: ${__user.lastReward}`,
+                thumbnail: {url: message.author.avatarURL}
+              }
+            });
+          }
         }
       }
 
@@ -952,11 +970,13 @@ bot.on('message', async message => {
           if (daysSinceLastReward >= 2) __user.rewardChain = 0;
 
           ++__user.rewardChain;
-          __user.exp += Math.ceil(Math.random() * 50);
-          __user.gem += (255*__user.rewardChain);
+          var gemsEarned = (255*__user.rewardChain)
+          var expEarned = Math.ceil(Math.random() * 50)
+          __user.exp += expEarned;
+          __user.gem += gemsEarned;
           __user.lastReward = new Date();
           __user.markModified("lastReward");
-          message.channel.send("You've earned your daily reward!")
+          message.channel.send(`You've earned your daily reward!\n EXP + ${expEarned}, Gems + ${gemsEarned}`)
         } else {
           message.channel.send("You need to wait until tomorrow to run this command again.");
         }
@@ -1118,7 +1138,7 @@ bot.on('message', async message => {
         message.member.addRole("403125967939436545")
       }
     }
-    
+
     if (__user.lvl >= 20){
       if (!message.member.roles.has("403126021500567552")){
         message.member.addRole("403126021500567552")
@@ -1136,7 +1156,7 @@ bot.on('message', async message => {
         message.member.addRole("403126385981521941")
       }
     }
-   
+
     if (__user.lvl >= 100){
       if (!message.member.roles.has("403126466210037771")){
         message.member.addRole("403126466210037771")

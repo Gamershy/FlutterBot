@@ -1,21 +1,6 @@
-Version 3.0.1
-  + Added new command: /tradegems
-    ~ Use this command to give another user some gems
-    ~ SYNTAX: `/tradegems <number> @user`
-  + Added new command: /color
-    ~ Gives you a new color, assuming you're a "Daily Fapper" or above (New rank role)
-    ~ SYNTAX: `/color <color>`
-    ~ Use `/removecolor <color>` before changing colors
-  + Added new rank roles!
-    ~ Level 10 = Newcummer - No special perms
-    ~ Level 20 = Daily Fapper - Ability to change colors using /color
-    ~ Level 40 = Addicted to Porn - No new perms yet
-    ~ Level 70 = Pervert - No new perms yet
-    ~ Level 100 = God of Lewdness - Highest possible rank
-    ~ Remember: Levels are alot easier to get with Flutterbot, this may seem daunting, but it won't take long.
-  + Added new pages to /commands
-    ~ SYNTAX: /commands <page>
-  + Added new prefix support
-    ~ Flutterbot currently supports the following prefixes: `/`, `\\`, `>`, `!`, `?`, `%`, `$`, `#`, `=`, `+`
-    ~ For simplicity, all syntax examples will continue to use `/` as a prefix
-  + Oh look, this changelog is actually accurate this time, how bout that
+Version 3.0.2
+  // Small Improvement update
+  + `/stats` can now target other users. Using it without targeting will display your own stats.
+  + `/reward` now actually tells what you earned. Thought that'd be nice
+  + To re-clarify: `\\` is not supported. But `\` is.
+  - Probably broke like, 50 things with this update, we'll see =3
