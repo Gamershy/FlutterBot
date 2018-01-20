@@ -934,7 +934,7 @@ bot.on('message', async message => {
               embed: {
                 color: message.guild.member(target.userId).displayColor,
                 title: `${message.guild.member(target.userId).user.tag}'s Stats:`,
-                description: `Level: ${target.lvl} \n EXP/Next LVL: ${target.exp}/${target.nxtlvl} \nGems: ${target.gem} \nInventory: ${target.inv} \nCurrent Chain: ${target.rewardChain} \nLast Reward: ${target.lastReward}`,
+                description: `Level: ${target.lvl} \nEXP/Next LVL: ${target.exp}/${target.nxtlvl} \nGems: ${target.gem} \nInventory: ${target.inv} \nCurrent Chain: ${target.rewardChain} \nLast Reward: ${target.lastReward}`,
                 thumbnail: {url: message.guild.member(target.userId).user.avatarURL},
                 footer: {text: `Executed by: ${message.author.tag}`, iconURL: message.author.avatarURL}
               }
@@ -1128,30 +1128,30 @@ bot.on('message', async message => {
     // increment the user's experience
     while (__user.exp >= __user.nxtlvl) {
       __user.lvl += 1
-      __user.nxtlvl += 100
+      __user.nxtlvl += (__user.lvl * 100 * 1.3)
     }
   }
 
     // overcomplicated rank adding code
-    if (__user.lvl >= 10){
+    if (__user.lvl >= 5){
       if (!message.member.roles.has("403125967939436545")){
         message.member.addRole("403125967939436545")
       }
     }
 
-    if (__user.lvl >= 20){
+    if (__user.lvl >= 10){
       if (!message.member.roles.has("403126021500567552")){
         message.member.addRole("403126021500567552")
       }
     }
 
-    if (__user.lvl >= 40){
+    if (__user.lvl >= 30){
       if (!message.member.roles.has("403126248487780372")){
         message.member.addRole("403126248487780372")
       }
     }
 
-    if (__user.lvl >= 70){
+    if (__user.lvl >= 60){
       if (!message.member.roles.has("403126385981521941")){
         message.member.addRole("403126385981521941")
       }
