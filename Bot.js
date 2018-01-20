@@ -1048,10 +1048,15 @@ bot.on('message', async message => {
           let [cmd, ...color] = message.content.split(" ")
           var rolename = `color - ${args.join(" ")}`,
               role
+          var currentRole;
+
           if (message.member.roles.has("403126021500567552")){
+            while (currentRole = message.member.roles.find(role => role.name.startsWith("color - "))) {
+              await message.member.removeRole(currentRole);
+            }
               if (role = message.guild.roles.findKey("name", rolename)){
                   message.guild.member(message.author.id).addRole(role).then(_ => {
-                  message.channel.send(`Gave you the color ${color}`)
+                  message.channel.send(`Gave you the color ${color.join(" ")}`)
                 })
               }
               else{
@@ -1071,7 +1076,7 @@ bot.on('message', async message => {
               if (role = message.guild.roles.findKey("name", rolename)){
                   if (message.member.roles.has(role)){
                     message.guild.member(message.author.id).removeRole(role).then(_ => {
-                    message.channel.send(`Removed the color ${color}`)
+                    message.channel.send(`Removed the color ${color.join(" ")}`)
                   })
                   }
                   else{
