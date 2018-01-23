@@ -1,6 +1,7 @@
-Version 3.0.2
-  // Small Improvement update
-  + `/stats` can now target other users. Using it without targeting will display your own stats.
-  + `/reward` now actually tells what you earned. Thought that'd be nice
-  + To re-clarify: `\\` is not supported. But `\` is.
-  - Probably broke like, 50 things with this update, we'll see =3
+Version 3.0.3
+  + Added a warnings system
+    ~ Admins only commands
+    ~ /warn @user <reason> - warns a targeted user
+    ~ /viewwarn @user - View a user's warnings (DM response)
+    ~ /clearwarn @user - Clears a user's Warnings
+  + Fixed /Unmute
