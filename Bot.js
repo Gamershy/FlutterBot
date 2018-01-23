@@ -740,7 +740,7 @@ bot.on('message', async message => {
           .then(booru.commonfy)
           .then(images => {
             for (let image of images) {
-              message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \nhttps:${image.file_url}`)
+              message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \n${image.file_url}`)
             }
             message.channel.stopTyping()
           }).catch(() => {
@@ -1106,10 +1106,11 @@ bot.on('message', async message => {
                     message.delete()
                   })
                 }
-                else message.channel.send("ERROR: You need to provide a reason for warning this user.")
+                else message.channel.send("ERROR: This user isn't in the database. Are you really warning someone who hasn't spoken yet?")
               }
-              else message.channel.send("ERROR: You need to define someone.")
+              else message.channel.send("ERROR: You need to provide a reason for warning this user.")
             }
+            else message.channel.send("ERROR: You need to define someone.")	
         }
 
         if (command === "viewwarn"){
