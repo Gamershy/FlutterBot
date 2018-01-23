@@ -1,4 +1,4 @@
-const {Schema} = require("Mongoose")
+const {Schema} = require("mongoose")
 var ItemSchema = new Schema({
   name:       String,
   value:      Number,

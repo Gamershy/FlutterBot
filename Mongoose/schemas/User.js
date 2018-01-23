@@ -1,4 +1,4 @@
-const {Schema} = require("Mongoose")
+const {Schema} = require("mongoose")
 const ItemSchema = require("./Item")
 const WarnSchema = require("./Warn")
 var UserSchema = new Schema({

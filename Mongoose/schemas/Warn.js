@@ -1,4 +1,4 @@
-const {Schema} = require("Mongoose")
+const {Schema} = require("mongoose")
 
 var WarnSchema = new Schema({
   issuer:   {type: String, required: true},
