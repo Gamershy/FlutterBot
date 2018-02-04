@@ -1097,6 +1097,7 @@ bot.on('message', async message => {
         if(command === "warn"){
           let [cmd, target, ...reason] = message.content.split(" ")
               reason = reason.join(" ")
+          if (message.member.roles.has(config.adminID)){
             if (message.mentions.users.size){
               var targetuser = message.mentions.users.first().id
               if (reason){
@@ -1111,7 +1112,10 @@ bot.on('message', async message => {
               else message.channel.send("ERROR: You need to provide a reason for warning this user.")
             }
             else message.channel.send("ERROR: You need to define someone.")	
+          }
+          else message.channel.send("Does it look like you're an admin?")
         }
+
 
         if (command === "viewwarn"){
           if (message.member.roles.has(config.adminID)){
@@ -1153,6 +1157,7 @@ bot.on('message', async message => {
 
         if (command === "clearwarn"){
           let [cmd, user] = message.content.split(" ")
+          if (message.member.roles.has(config.adminID)){
             if (message.mentions.users.size){
               var targetuser = message.mentions.users.first().id
               if (targetuser = await User.findOne({userId:targetuser})){
@@ -1163,6 +1168,8 @@ bot.on('message', async message => {
                 message.delete()
               }
             }
+          }
+          else (message.channel.send("Does it look like you're an admin?"))
         }
 
 
