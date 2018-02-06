@@ -1,7 +1,9 @@
-Version 3.0.3
-  + Added a warnings system
-    ~ Admins only commands
-    ~ /warn @user <reason> - warns a targeted user
-    ~ /viewwarn @user - View a user's warnings (DM response)
-    ~ /clearwarn @user - Clears a user's Warnings
-  + Fixed /Unmute
+Version 3.0.7
+  + /reward now tells you how much time you have left til your next reward~
+  + All user time is now based on GMT (+0). This was changed due to the host server being in a different timezone from mine.
+  + A few bugfixes
+
+  Planned:
+  + changes to playing messages
+  + More minigames
+  - finally remove Flutterbot's rogue AI

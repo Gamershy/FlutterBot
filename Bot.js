@@ -936,7 +936,7 @@ bot.on('message', async message => {
               embed: {
                 color: message.guild.member(target.userId).displayColor,
                 title: `${message.guild.member(target.userId).user.tag}'s Stats:`,
-                description: `Level: ${target.lvl} \nEXP/Next LVL: ${target.exp}/${target.nxtlvl} \nGems: ${target.gem} \nInventory: ${target.inv} \nCurrent Chain: ${target.rewardChain} \nLast Reward: ${target.lastReward}`,
+                description: `Level: ${target.lvl} \nEXP/Next LVL: ${target.exp}/${target.nxtlvl} \nGems: ${target.gem} \nInventory: ${target.inv} \nCurrent Chain: ${target.rewardChain} \nLast Reward: ${target.lastReward.toUTCString()}`,
                 thumbnail: {url: message.guild.member(target.userId).user.avatarURL},
                 footer: {text: `Executed by: ${message.author.tag}`, iconURL: message.author.avatarURL}
               }
@@ -953,7 +953,7 @@ bot.on('message', async message => {
               embed: {
                 color: message.member.displayColor,
                 title: `${message.author.tag}'s Stats:`,
-                description: `Level: ${__user.lvl} \nEXP/Next LVL: ${__user.exp}/${__user.nxtlvl} \nGems: ${__user.gem} \nInventory: ${__user.inv} \nCurrent Chain: ${__user.rewardChain} \nLast Reward: ${__user.lastReward}`,
+                description: `Level: ${__user.lvl} \nEXP/Next LVL: ${__user.exp}/${__user.nxtlvl} \nGems: ${__user.gem} \nInventory: ${__user.inv} \nCurrent Chain: ${__user.rewardChain} \nLast Reward: ${__user.lastReward.toUTCString()}`,
                 thumbnail: {url: message.author.avatarURL}
               }
             });
@@ -965,6 +965,11 @@ bot.on('message', async message => {
         let currentDate = new Date();
         let lastActivationDate = __user.lastReward.getTime();
         let day = (24 * 60 * 60 * 1000);
+        let timeRemaining = new Date((__user.lastReward.getTime()+day) - Date.now());
+console.log(timeRemaining)
+        let hours = timeRemaining.getUTCHours();
+        let minutes = timeRemaining.getUTCMinutes();
+        let seconds = timeRemaining.getUTCSeconds();
 
         let daysSinceLastReward = (currentDate - lastActivationDate) / day;
 
@@ -978,9 +983,9 @@ bot.on('message', async message => {
           __user.gem += gemsEarned;
           __user.lastReward = new Date();
           __user.markModified("lastReward");
-          message.channel.send(`You've earned your daily reward!\n EXP + ${expEarned}, Gems + ${gemsEarned}`)
+          message.channel.send(`You've earned your daily reward!\n EXP + ${expEarned}, Gems + ${gemsEarned}`);
         } else {
-          message.channel.send("You need to wait until tomorrow to run this command again.");
+          message.channel.send(`You need to wait ${hours} hour${hours!==1? "s" : ""}, ${minutes} minute${minutes!==1? "s" : ""}, and ${seconds} second${seconds!==1? "s" : ""} to use this command again.`);
         }
       }
 
