@@ -318,7 +318,7 @@ process.on("uncaughtException", err => {
 bot.on('ready', () => {
   console.log("Online~")
   var timer = setInterval(() => {
-    bot.user.setGame(playingmsg[Math.floor(Math.random() * playingmsg.length)])
+    bot.user.setActivity(playingmsg[Math.floor(Math.random() * playingmsg.length)], {type: "PLAYING"})
   }, 1000 * 60 * 60)
   var guld = bot.guilds.first().defaultChannel
 
@@ -425,7 +425,7 @@ bot.on('message', async message => {
 
       if (command === "randgame") {
         if (message.author.id == config.ownerID) {
-          bot.user.setGame(Math.floor(Math.random() * playingmsg.length))
+          bot.user.setActivity(Math.floor(Math.random() * playingmsg.length), {type: "PLAYING"})
           message.delete()
         }
         else message.channel.send("Only Shy can play with me...")
@@ -446,7 +446,7 @@ bot.on('message', async message => {
 
       if (command.split(' ').indexOf("setgame") == 0) {
         if (message.author.id == config.ownerID) {
-          bot.user.setGame(args.join(" "))
+          bot.user.setActivity(args.join(" "), {type: "PLAYING"})
           message.delete()
         }
         else {
