@@ -218,10 +218,11 @@ var admincmds = [
   {"name": "/kick @user", "result": "Kicks a user from the server"},
   {"name": "/ban <@user> [reason]", "result": "Bans a user from the server. Talk to Shy about unbanning."},
   {"name": "/info @user", "result": "Displays information about a user. Useful for seeing when accounts were made."},
-  {
-    "name": "/announce <r/y/l/b> <title> <content>",
-    "result": "Send an announcement to #announcements, ALL ARGUMENTS REQUIRED. r = red, y = yellow, l = lightblue, b = blue. Blue doesn't tag @everyone."
-  }
+  {"name": "/announce <r/y/l/b> <title> <content>",
+    "result": "Send an announcement to #announcements, ALL ARGUMENTS REQUIRED. r = red, y = yellow, l = lightblue, b = blue. Blue doesn't tag @everyone."},
+  {"name": "/warn <user> <reason>", "result": "Warn a user for breaking rules. REASON IS REQUIRED"},
+  {"name": "/clearwarn <user>", "result": "Clear all warnings from a specified user. DO NOT ABUSE THIS COMMAND"},
+  {"name": "/viewwarn <user>", "result": "View the warnings given to a specified user. DM response"}
 ]
 
 var dev = config.devmode
@@ -924,6 +925,15 @@ bot.on('message', async message => {
         }
         else {
           message.guild.member(message.author).removeRole("380371674647756800").then(() => message.channel.send(`${message.author}, you will no longer be pinged for updates.`))
+        }
+      }
+
+      if (command === "idraw") {
+        if (!message.guild.member(message.author).roles.has("411777943711252480")) {
+          message.guild.member(message.author).addRole("411777943711252480").then(() => message.channel.send(`${message.author}, you are now registered as an artist.`))
+        }
+        else {
+          message.guild.member(message.author).removeRole("411777943711252480").then(() => message.channel.send(`${message.author}, you are no longer registered as an artist.`))
         }
       }
 
