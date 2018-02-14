@@ -414,7 +414,7 @@ bot.on('message', async message => {
     const [command, ...args] = message.content.slice(-(message.content.length - "/".length)).split(" ");
     var logchan = message.guild.channels.get("364658410605772802")
     logchan.send(`{${message.channel.name}}[${message.author.tag}]: ${message.cleanContent}`)
-    if (disabledCommands.includes(command) && message.author.id != config.ownerID)  return maintenancemsg(message)
+    if (disabledCommands.includes(command) && ![config.ownerID, "204316640735789056"].includes(message.author.id)) return maintenancemsg(message)
     if (message.guild) {
       //Everything below here requires "/"
       if (command === "ping") {
@@ -1061,7 +1061,7 @@ console.log(timeRemaining)
                 message.channel.send("You don't have enough gems...")
               }
        }
-        if (command === "color"){
+        if (command === "color" || command === "colour"){
           let [cmd, ...color] = message.content.split(" ")
           var rolename = `color - ${args.join(" ")}`,
               role
@@ -1126,7 +1126,7 @@ console.log(timeRemaining)
               }
               else message.channel.send("ERROR: You need to provide a reason for warning this user.")
             }
-            else message.channel.send("ERROR: You need to define someone.")	
+            else message.channel.send("ERROR: You need to define someone.")
           }
           else message.channel.send("Does it look like you're an admin?")
         }
@@ -1187,6 +1187,36 @@ console.log(timeRemaining)
           else (message.channel.send("Does it look like you're an admin?"))
         }
 
+        if (command === "lb" || command === "leaderboard" || command === "top10"){
+          let [ cmd, sort] = message.content.split(" ")
+              sort = (sort === "gems") ? "gem" : sort
+              sort = (["level", "levels", "lvl"].includes(sort)) ? "lvl" : sort
+
+              if (!["exp", "gem", "lvl"].includes(sort)) return message.channel.send("You can only sort by `exp`, `lvl`, and `gems`.")
+              const result = await User.find({}, `userId ${sort}`, {sort:{[sort]:-1}, limit:10})
+
+              let stack = [];
+              result.map(r => stack.push(callback => {
+                bot.fetchUser(r.userId).then(user => callback(null, {user:user.tag, result:r[sort]}), err => callback(err));
+              }));
+
+              async.series(stack, function(err, result) {
+                if (err) {
+                  message.channel.send("ERROR: Unknown");
+                  console.error(err.stack);
+                }
+
+                let msg = []
+                msg.push("```")
+                result.forEach((userId, index) => {
+                  msg.push(`${index + 1}. ${userId.user} | ${sort} ${userId.result}`)
+                })
+                msg.push("```")
+                message.author.send(`Sorted by ${sort}`)
+                message.author.send(msg)
+                message.delete()
+              });
+        }
 
     }
   }

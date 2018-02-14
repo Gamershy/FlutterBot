@@ -1,9 +1,6 @@
-Version 3.0.7
-  + /reward now tells you how much time you have left til your next reward~
-  + All user time is now based on GMT (+0). This was changed due to the host server being in a different timezone from mine.
-  + A few bugfixes
-
-  Planned:
-  + changes to playing messages
-  + More minigames
-  - finally remove Flutterbot's rogue AI
+Version 3.1.0
+  + Added leaderboards, there are 3 commands that work with this function
+    + /lb <type>, /leaderboard <type>, and /top10 <type>
+    ? The types are "exp" "lvl" and "gems". These will determine what leaderboard you view.
+  + Added alias for /color: /colour <color>
+  
