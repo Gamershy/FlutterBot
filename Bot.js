@@ -1,5 +1,4 @@
-﻿//This comment is for testing poiposes
-const Discord = require('discord.js')
+﻿const Discord = require('discord.js')
 if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")) {
   Object.defineProperty(Discord.Guild.prototype, "defaultChannel", {
     get: function () {
