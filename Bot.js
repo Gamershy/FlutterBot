@@ -1220,14 +1220,14 @@ console.log(timeRemaining)
               });
         }
 
-        if (command === "colorlist"){
-          if (message.member.roles.has("403126021500567552")){
-            let list = []
-            const colors = await (message.guild.roles.findKey("name", message.guild.roles.startsWith("color - "))
-              colors.forEach((color, index) => {
-                list.push(colors)
-          }
-        }
+//        if (command === "colorlist"){
+//          if (message.member.roles.has("403126021500567552")){
+//            let list = []
+//            const colors = await (message.guild.roles.findKey("name", message.guild.roles.startsWith("color - "))
+//              colors.forEach((color, index) => {
+//                list.push(colors)
+//          }
+//        }
 
     }
   }
