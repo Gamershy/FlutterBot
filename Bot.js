@@ -1,4 +1,5 @@
-﻿const Discord = require('discord.js')
+﻿//This comment is for testing poiposes
+const Discord = require('discord.js')
 if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")) {
   Object.defineProperty(Discord.Guild.prototype, "defaultChannel", {
     get: function () {
@@ -1068,14 +1069,16 @@ console.log(timeRemaining)
           var currentRole;
 
           if (message.member.roles.has("403126021500567552")){
-            while (currentRole = message.member.roles.find(role => role.name.startsWith("color - "))) {
-              await message.member.removeRole(currentRole);
-            }
+ 
               if (role = message.guild.roles.findKey("name", rolename)){
+                while (currentRole = message.member.roles.find(role => role.name.startsWith("color - "))) {
+                  await message.member.removeRole(currentRole)
+                }
                   message.guild.member(message.author.id).addRole(role).then(_ => {
                   message.channel.send(`Gave you the color ${color.join(" ")}`)
                 })
               }
+           }
               else{
                   message.channel.send("That color doesn't exist, makes sure you spelled it correctly, or ask Shy or an admin to create it")
               }
@@ -1216,6 +1219,15 @@ console.log(timeRemaining)
                 message.author.send(msg)
                 message.delete()
               });
+        }
+
+        if (command === "colorlist"){
+          if (message.member.roles.has("403126021500567552")){
+            let list = []
+            const colors = await (message.guild.roles.findKey("name", message.guild.roles.startsWith("color - "))
+              colors.forEach((color, index) => {
+                list.push(colors)
+          }
         }
 
     }
