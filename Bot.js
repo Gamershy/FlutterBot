@@ -1077,15 +1077,16 @@ console.log(timeRemaining)
                   message.channel.send(`Gave you the color ${color.join(" ")}`)
                 })
               }
-           }
+           
               else{
                   message.channel.send("That color doesn't exist, makes sure you spelled it correctly, or ask Shy or an admin to create it")
               }
-          }
+		  }
           else{
               message.channel.send('You need the "Daily Fapper" role to use this command')
           }
-        }
+		}
+        
 
         if (command === "removecolor"){
           let [cmd, ...color] = message.content.split(" ")
