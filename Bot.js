@@ -372,6 +372,7 @@ bot.on('ready', () => {
 
 bot.on("guildMemberAdd", member => {
   member.guild.defaultChannel.send(`Whalecum ${member} to the server! Be sure to read <#249401654003105792> before you post.`)
+  member.guild.channels.get("424870218414948367").send("User: " + member.user.username + "\nID: " + member.id + "\nStatus: " + member.presence.status + "\nAccount Created: " + member.user.createdAt + "\nJoined Server: " + member.guild.joinedAt + "\nAvatar URL: " + "<" + member.user.avatarURL + ">" + "\nBot?: " + member.user.bot)
 })
 
 bot.on("guildMemberRemove", member => {
@@ -394,6 +395,26 @@ bot.on("channelDelete", delchnl => {
     delchnl.guild.defaultChannel.send("Deleted Channel: " + delchnl.name)
   }
 })
+
+bot.on("messageDelete", message => {
+	var logchan = message.guild.channels.get("364658410605772802")
+		logchan.send({
+  	  	embed: {
+    			author: {
+      		  	name: `${message.member.displayName} | ${message.author.tag} (${message.author.id})`,
+      			  icon_url: message.author.displayAvatarURL
+    			},
+    			color: message.member.displayColor,
+    			title: `Message posted ${message.createdAt.toUTCString()} ${message.id}`,
+    			description: message.cleanContent,
+    			footer: {
+      		  	text: `Deleted from #${message.channel.name} at ${new Date().toUTCString()}`
+    			}
+ 			}
+		}
+ )
+})
+ 
 // create an event listener for messages
 bot.on('message', async message => {
   if (message.channel.type === "dm") {
@@ -813,7 +834,7 @@ bot.on('message', async message => {
       if (command === "announce") {
         if (message.member.roles.has(config.adminID)) {
           var announcechan = message.guild.channels.get("250781565817192458")
-          let [cmd, color, title, ...text] = message.content.split(" ")
+          let [cmd, color, title, ...text] = message.cleanContent.split(" ")
           if (color === "r") {
             var hex = "ff0000"
             var tagall = true
