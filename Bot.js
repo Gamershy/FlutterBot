@@ -858,8 +858,8 @@ bot.on('message', async message => {
           if (tagall === true) {
             announcechan.send("@everyone")
           }
-          announcechan.send({embed: new Discord.RichEmbed().setColor(hex).setTitle(title).setDescription(text.join(" ")).setTimestamp(new Date())})
-          announcechan.send(`\`\`\`${title} | ${bool} \n ${text.join(" ")}\`\`\``).then(m => message.delete())
+          announcechan.send({embed: new Discord.RichEmbed().setAuthor(`Author: ${message.member.displayName} | ${message.author.tag}`).setColor(hex).setTitle(`Title: ${title}`).setDescription(text.join(" ")).setTimestamp(new Date())})
+          announcechan.send(`\`\`\`${title} | ${bool} | ${message.member.displayName} / ${message.author.tag} \n ${text.join(" ")}\`\`\``).then(m => message.delete())
         }
         else {
           message.channel.send("Does it look like you're an admin?")

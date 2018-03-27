@@ -1,6 +1,5 @@
-Version 3.1.0
-  + Added leaderboards, there are 3 commands that work with this function
-    + /lb <type>, /leaderboard <type>, and /top10 <type>
-    ? The types are "exp" "lvl" and "gems". These will determine what leaderboard you view.
-  + Added alias for /color: /colour <color>
+Version 3.1.1
+	+Added Author tags for announcements
+	+ Added secret admin only stuffs (admins check #admin_announcements)
+	-No you don't get to know yet.
   
