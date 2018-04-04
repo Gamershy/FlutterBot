@@ -210,7 +210,9 @@ var commands = [
   {"name": "/stats", "result": "View your stats from Flutterbot's Database"},
   {"name": "/reward", "result": "Get a daily reward! Running this once a day will increase the reswards(Missing a day will reset your chain)"},
   {"name": "/lemmemoan", "result": "Get a role that'll alert you whenever there's a voice fap session about to start (@Voice Fapper)"},
-  {"name": "/botwatch", "result": "Get pinged for every major update Flutterbot gets! (@botwatcher, effective in #Flutterbots_changelog)"}
+  {"name": "/botwatch", "result": "Get pinged for every major update Flutterbot gets! (@botwatcher, effective in #Flutterbots_changelog)"},
+  {"name": "/color", "result": "Get a new color (requires Daily Fapper role)"},
+  {"name": "/imtaken", "result": "Mark yourself as being in a relationship"}
 ]
 var admincmds = [
   {"name": "/mute @user", "result": "Mutes a user as punishment"},
@@ -434,6 +436,7 @@ bot.on('message', async message => {
   if (/^(\/|>|!|\?|%|\$|&|#|\=|\+)/.test(message.content)) {
     const [command, ...args] = message.content.slice(-(message.content.length - "/".length)).split(" ");
     var logchan = message.guild.channels.get("364658410605772802")
+    var announcechan = message.guild.channels.get("250781565817192458")
     logchan.send(`{${message.channel.name}}[${message.author.tag}]: ${message.cleanContent}`)
     if (disabledCommands.includes(command) && ![config.ownerID, "204316640735789056"].includes(message.author.id)) return maintenancemsg(message)
     if (message.guild) {
@@ -957,6 +960,15 @@ bot.on('message', async message => {
           message.guild.member(message.author).removeRole("411777943711252480").then(() => message.channel.send(`${message.author}, you are no longer registered as an artist.`))
         }
       }
+      
+      if (command === "imtaken") {
+        if (!message.guild.member(message.author).roles.has("431145333867675659")) {
+          message.guild.member(message.author).addRole("431145333867675659").then(() => message.channel.send(`No touchy, ${message.author} is in a relationship~`))
+        }
+        else {
+          message.guild.member(message.author).removeRole("431145333867675659").then(() => message.channel.send(`${message.author} is now a single pringle...`))
+        }
+      }
 
       if (command === "stats") {
       let [cmd, targetuser] = message.content.split(" ")
@@ -1240,7 +1252,24 @@ console.log(timeRemaining)
                 message.author.send(msg)
                 message.delete()
               });
+        	}
+        
+        if (command === "newcmd"){
+        if (message.author.id != config.ownerID) return message.channel.send("ERROR: Only the owner can use this command.")
+        	let [cmd, syn, ...desc] = args.join(" ").split(",")
+        	announcechan.send("@everyone NEW COMMAND")
+			announcechan.send({
+				embed: {
+					title: `New Command: /${cmd}`,
+					description: desc.join(","),
+					footer: {
+						text: `Syntax: ${syn}`
+					}
+				}
+			})
+			message.delete()
         }
+       
 
 //        if (command === "colorlist"){
 //          if (message.member.roles.has("403126021500567552")){
