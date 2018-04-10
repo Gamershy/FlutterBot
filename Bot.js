@@ -379,6 +379,7 @@ bot.on("guildMemberAdd", member => {
 
 bot.on("guildMemberRemove", member => {
   member.guild.defaultChannel.send(`Cya ${member.displayName}, you probably won't be missed~`)
+  member.guild.channels.get("424870218414948367").send("User: " + member.user.username + "Left server at: " + new Date().toUTCString() )
 })
 
 bot.on("roleDelete", delrole => {
