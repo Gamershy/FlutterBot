@@ -1270,6 +1270,24 @@ console.log(timeRemaining)
 			})
 			message.delete()
         }
+        
+        if (command === "dblookup"){
+        	let [cmd, target] = message.content.split(" ")
+        		if (target){
+        			if (target = await User.findOne({userId:target})){
+						message.channel.send({
+              		  	embed: {
+                				color: message.member.displayColor,
+             				   title: `Stats for ${target.userId}:`,
+            				    description: `Level: ${target.lvl} \nEXP/Next LVL: ${target.exp}/${target.nxtlvl} \nGems: ${target.gem} \nInventory: ${target.inv} \nCurrent Chain: ${target.rewardChain} \nLast Reward: ${target.lastReward.toUTCString()}`,
+     			  	         footer: {text: `Executed by: ${message.author.tag}`, iconURL: message.author.avatarURL}
+          			   	 }
+         			    })
+        			}
+        			else message.channel.send("ERROR: No user with that ID exists in the database.")
+				}
+				else message.channel.send("ERROR: You need to define an ID")
+		}
        
 
 //        if (command === "colorlist"){
