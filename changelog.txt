@@ -1,5 +1,14 @@
-Version 3.1.1
-	+Added Author tags for announcements
-	+ Added secret admin only stuffs (admins check #admin_announcements)
-	-No you don't get to know yet.
-  
+Version 4.0.0
+  +++ FINALLY ADDED MUSIC FUNCTIONALITY (Thanks Zur)
+      + Added command: /play
+          pretty self explanitory. Plays the specified song searched from YouTube, or adds to a queue if a song is already playing.
+      + Added command: /skip
+          Instantly skips any song you added, otherwise initiates a skip vote.
+      + Added command: /queue
+          View the queue at any time.
+      + Added command: /shuffle
+          vote to fully randomize the queue.
+  + Admins have access to vote bypassing commands. ADMINS, DO NOT ABUSE THIS PRIVALIGE!
+  + Fixed a couple errors in some admin only things.
+  + Bob Ross night is coming back =3
+  - removed rogue AI

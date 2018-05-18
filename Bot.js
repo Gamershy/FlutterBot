@@ -5,9 +5,9 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")) {
       delete this.defaultChannel;
       return this.defaultChannel = this.channels.get("249311166776606721");
     }
-  })
+  });
 }
-;
+
 
 var addons = {}
 var disabledCommands = []
@@ -1395,7 +1395,12 @@ console.log(timeRemaining)
   __user.isModified()? __user.save() : void 0 ;
 })
 
-ipc.serveNet()
+if (config.devmode) {
+  ipc.serveNet()
+} else {
+  ipc.serve()
+}
+
 ipc.server.on("start", () => {
   addons.music = child_process.spawn("node", ["./addons/music.js"], ["ignore", process.stdout, process.stderr])
 })
