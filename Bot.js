@@ -9,9 +9,10 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")) {
 }
 ;
 
-
+var addons = {}
 var disabledCommands = []
 //var queue = []
+const ipc = require("node-ipc")
 const async = require("async")
 const path = require("path")
 const mongoose = require("./Mongoose/index.js")
@@ -20,12 +21,16 @@ const permban = require(`./permban.js`)
 const bot = new Discord.Client({fetchAllMembers: true, disabledEvents: ["TYPING_START"]})
 const readline = require("readline")
 const booru = require("booru")
+const child_process = require("child_process")
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 })
 const fs = require("fs")
 
+ipc.config.id = "FB"
+ipc.config.socketRoot = path.join(__dirname, "sockets")
+ipc.config.socketRoot += "/"
 
 //Schema Variables
 var User = db.model("User")
@@ -370,6 +375,7 @@ bot.on('ready', () => {
 
     guld.send(inputStr);
   })
+  ipc.server.start()
 })
 
 bot.on("guildMemberAdd", member => {
@@ -379,7 +385,7 @@ bot.on("guildMemberAdd", member => {
 
 bot.on("guildMemberRemove", member => {
   member.guild.defaultChannel.send(`Cya ${member.displayName}, you probably won't be missed~`)
-  member.guild.channels.get("424870218414948367").send("User: " + member.user.username + "Left server at: " + new Date().toUTCString() )
+  member.guild.channels.get("424870218414948367").send("User: " + member.user.username + " Left server at: " + new Date().toUTCString() )
 })
 
 bot.on("roleDelete", delrole => {
@@ -573,6 +579,7 @@ bot.on('message', async message => {
           let guildMember = (message.mentions.members.size) ?
             message.mentions.members.first() : message.guild.member(user)
           if (guildMember) {
+            
             message.channel.send(`${un} has been banned by ${message.author} for ${reason};`).then(guildMember.ban(`${message.author.tag}: ${reason}`))
             message.delete()
           }
@@ -1288,6 +1295,11 @@ console.log(timeRemaining)
 				}
 				else message.channel.send("ERROR: You need to define an ID")
 		}
+		
+		if (command === "msay"){
+			let [cmd, ...msg] = message.content.split(" ")
+				ipc.server.broadcast("music.say", msg.join(" "))
+		}
        
 
 //        if (command === "colorlist"){
@@ -1383,5 +1395,8 @@ console.log(timeRemaining)
   __user.isModified()? __user.save() : void 0 ;
 })
 
-
+ipc.serveNet()
+ipc.server.on("start", () => {
+  addons.music = child_process.spawn("node", ["./addons/music.js"], ["ignore", process.stdout, process.stderr])
+})
 bot.login(config.botToken)
