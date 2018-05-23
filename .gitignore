@@ -2,3 +2,4 @@ config.js
 addons/*cfg.js
 sockets/*
 !sockets/.gitkeep
+node_modules/
