@@ -1,4 +1,4 @@
-﻿const Discord = require('discord.js')
+const Discord = require('discord.js')
 if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")) {
   Object.defineProperty(Discord.Guild.prototype, "defaultChannel", {
     get: function () {
@@ -314,9 +314,13 @@ process.on("uncaughtException", err => {
   let date = new Date();
   let dateFormatted = `${("0" + date.getDate()).slice(-2)}-${("0" + date.getMonth()).slice(-2)}-${date.getFullYear()} ${("0" + date.getHours()).slice(-2)}h${("0" + date.getMinutes()).slice(-2)}m${("0" + date.getSeconds()).slice(-2)}s.${("0000" + date.getMilliseconds()).slice(-4)}ms`;
   let header = `${err.name} - ${dateFormatted}`;
-  bot.fetchUser("104674953382612992").then(user => {
-    user.send({embed: {title: header, description: `\`\`\`xl\n${err.stack}\n\`\`\``}}).then(() => bot.destroy());
-  })
+  
+  let shy = bot.fetchUser("104674953382612992");
+  let wolf = bot.fetchUser("204316640735789056");
+
+  Promise.all([shy, wolf]).then(users => {
+    users.forEach(user => user.send({embed: {title: header, description: `\`\`\`xl\n${err.stack}\n\`\`\``}}));
+  }).then(() => bot.destroy()).then(() => process.exit());
 });
 /*
  A ping pong bot, whenever you send "ping", it replies "pong".
