@@ -311,9 +311,7 @@ function maintenancemsg(msg) {
   msg.channel.send("This command is under maintenance, and is disabled. Try again later.", {files: [path.join(__dirname, "images", "maintanence.jpg")]})
 }
 
-//process.on("unhandledRejection", (e,p) =>{ console.log("Unhandled rejection in Promise:", p, "with reason:", e)})
-
-process.on("uncaughtException", err => {
+process.on("unhandledRejection", err => {
   let date = new Date();
   let dateFormatted = `${("0" + date.getDate()).slice(-2)}-${("0" + date.getMonth()).slice(-2)}-${date.getFullYear()} ${("0" + date.getHours()).slice(-2)}h${("0" + date.getMinutes()).slice(-2)}m${("0" + date.getSeconds()).slice(-2)}s.${("0000" + date.getMilliseconds()).slice(-4)}ms`;
   let header = `${err.name} - ${dateFormatted}`;
@@ -321,10 +319,34 @@ process.on("uncaughtException", err => {
   let shy = bot.fetchUser("104674953382612992");
   let wolf = bot.fetchUser("204316640735789056");
 
+  // way too overcomplicated work-around for sending messagess
   Promise.all([shy, wolf]).then(users => {
-    users.forEach(user => user.send({embed: {title: header, description: `\`\`\`xl\n${err.stack}\n\`\`\``}}));
-  }).then(() => bot.destroy()).then(() => process.exit());
+    new Promise((resolve, reject) => {
+      let _userId = 0;
+      let send = function(user) {
+        try {
+          user.send({embed: {title: header, description: `\`\`\`xl\n${err.stack}\n\`\`\``}}).then(() => {
+            _userId++;
+
+            if (_userId === users.length) {
+              resolve();
+            } else {
+              send(users[_userId]);
+            }
+          });
+        } catch (e) {
+          reject(e);
+        }
+      }
+
+      send(users[_userId]);
+    }).then(() => bot.destroy())
+      .then(() => process.exit())
+  }).catch(e => {
+    console.log("Failed with", e.stack);
+  });
 });
+
 /*
  A ping pong bot, whenever you send "ping", it replies "pong".
  */
@@ -1318,11 +1340,8 @@ console.log(timeRemaining)
 //          }
 //        }
 
-//    }
+    }
 
-      if (command === "crash") {
-        if (["204316640735789056", config.ownerID].includes(message.author.id)) throw new Error("This is a test error.");
-      }
   }
 //These do not need "/" to function
   else {
