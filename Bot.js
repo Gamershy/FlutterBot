@@ -235,7 +235,7 @@ var admincmds = [
 var dev = config.devmode
 var YouTube = require('youtube-node')
 var youTube = new YouTube()
-function evalBooruCmd(input) {
+function evalBooruCmd(input) { // what is this?
   //cleanup
   input = input.replace(/,/g, " ") // replace commas with space (incase someone does tag,tag)
   input = input.replace(/\s+/g, ' ')//replace excess whitespace ("tag  tag" -> "tag tag")
@@ -262,6 +262,9 @@ function evalBooruCmd(input) {
   }
   return {"tags": tags, "number": number}
 }
+
+// TODO: replace with Math.min and Math.max calls (Gen, what the fuck were
+// you thinking when you told Shy to do it like this?)
 function constrain(minimum, maximum, value) {
   if (value > maximum) value = maximum
   if (value < minimum) value = minimum
@@ -1315,7 +1318,11 @@ console.log(timeRemaining)
 //          }
 //        }
 
-    }
+//    }
+
+      if (command === "crash") {
+        if (["204316640735789056", config.ownerID].includes(message.author.id)) throw new Error("This is a test error.");
+      }
   }
 //These do not need "/" to function
   else {
