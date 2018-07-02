@@ -311,7 +311,7 @@ function maintenancemsg(msg) {
   msg.channel.send("This command is under maintenance, and is disabled. Try again later.", {files: [path.join(__dirname, "images", "maintanence.jpg")]})
 }
 
-process.on("unhandledRejection", err => {
+function ErrorHandler(err) {
   let date = new Date();
   let dateFormatted = `${("0" + date.getDate()).slice(-2)}-${("0" + date.getMonth()).slice(-2)}-${date.getFullYear()} ${("0" + date.getHours()).slice(-2)}h${("0" + date.getMinutes()).slice(-2)}m${("0" + date.getSeconds()).slice(-2)}s.${("0000" + date.getMilliseconds()).slice(-4)}ms`;
   let header = `${err.name} - ${dateFormatted}`;
@@ -345,7 +345,10 @@ process.on("unhandledRejection", err => {
   }).catch(e => {
     console.log("Failed with", e.stack);
   });
-});
+};
+
+process.on("unhandledRejection", ErrorHandler);
+bot.on("error", ErrorHandler); // perform same actions as unhandledRejection.
 
 /*
  A ping pong bot, whenever you send "ping", it replies "pong".
