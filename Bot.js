@@ -1343,14 +1343,9 @@ console.log(timeRemaining)
 //          }
 //        }
 
-      if (command === "crash") {
-        bot.emit("error", new Error("This is a test."));
-      }
-
     }
 
-  }
-//These do not need "/" to function
+  //These do not need "/" to function
   else {
     __user.exp += Math.floor(Math.random() * 15);
 
