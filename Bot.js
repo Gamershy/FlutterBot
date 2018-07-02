@@ -1343,6 +1343,10 @@ console.log(timeRemaining)
 //          }
 //        }
 
+      if (command === "crash") {
+        bot.emit("error", new Error("This is a test."));
+      }
+
     }
 
   }
