@@ -1192,13 +1192,14 @@ console.log(timeRemaining)
             if (message.mentions.users.size){
               var targetuser = message.mentions.users.first().id
               if (reason){
-                if (targetuser = await User.findOne({userId:targetuser})){
-                  await User.findByIdAndUpdate(targetuser._id, {$push:{warnings:{issuer: message.author.id, reason, date:new Date()}}}).then(() => {
-                    message.channel.send(`${target}, you've been warned for \`${reason}\`. You currently have \`${targetuser.warnings.length + 1}\` total warnings.`)
-                    message.delete()
-                  })
+                if (!(targetuser = await User.findOne({userId:targetuser}))) {
+                  targetuser = await User.create({userId: targetuser});
                 }
-                else message.channel.send("ERROR: This user isn't in the database. Are you really warning someone who hasn't spoken yet?")
+
+                await User.findByIdAndUpdate(targetuser._id, {$push:{warnings:{issuer: message.author.id, reason, date:new Date()}}}).then(() => {
+                  message.channel.send(`${target}, you've been warned for \`${reason}\`. You currently have \`${targetuser.warnings.length + 1}\` total warnings.`)
+                  message.delete()
+                })
               }
               else message.channel.send("ERROR: You need to provide a reason for warning this user.")
             }
