@@ -347,19 +347,15 @@ function ErrorHandler(err) {
   });
 };
 
-process.on("unhandledRejection", ErrorHandler);
+rocess.on("unhandledRejection", ErrorHandler);
 bot.on("error", ErrorHandler); // perform same actions as unhandledRejection.
 
 process.on("exit", () => {
-  console.log("Closing...");
-
   let addonList = Object.entries(addons);
   let stack = [];
 
   for (let addon of addonList) {
     if (!addon[1]) continue;
-
-    console.log(`Closing ${addon[0]}`);
 
     addon[1].kill();
     addons[addon[0]] = undefined;
