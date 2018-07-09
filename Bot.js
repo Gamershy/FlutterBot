@@ -350,6 +350,19 @@ function ErrorHandler(err) {
 process.on("unhandledRejection", ErrorHandler);
 bot.on("error", ErrorHandler); // perform same actions as unhandledRejection.
 
+process.on("exit", () => {
+  let addonList = Object.entries(addons);
+  let stack = [];
+
+  for (let addon of addonList) {
+    if (!addon[1]) continue;
+
+    addon[1].kill();
+    addons[addon[0]] = undefined;
+    addonList[addon[0] = undefined;
+  }
+});
+
 /*
  A ping pong bot, whenever you send "ping", it replies "pong".
  */
@@ -742,7 +755,9 @@ bot.on('message', async message => {
       }
       if (command === "kill") {
         if (message.author.id == config.ownerID) {
-          message.channel.send("Shutting Down...").then(m => m.client.destroy().then(() => process.exit()))
+          message.channel.send("Shutting Down...")
+            .then(() => bot.destroy())
+            .then(() => process.exit())
         }
         else message.channel.send("Only Shy has permission to kill me...")
       }
