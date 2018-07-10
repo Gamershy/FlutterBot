@@ -347,7 +347,7 @@ function ErrorHandler(err) {
   });
 };
 
-rocess.on("unhandledRejection", ErrorHandler);
+process.on("unhandledRejection", ErrorHandler);
 bot.on("error", ErrorHandler); // perform same actions as unhandledRejection.
 
 process.on("exit", () => {
@@ -755,7 +755,9 @@ bot.on('message', async message => {
       }
       if (command === "kill") {
         if (message.author.id == config.ownerID) {
-          message.channel.send("Shutting Down...")
+          message.channel.send("Shutting down addons...")
+            .then(() => ipc.server.broadcast("shutdown", message.channel.id))
+            .then(() => message.channel.send("Shutting down..."))
             .then(() => bot.destroy())
             .then(() => process.exit())
         }

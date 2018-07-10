@@ -41,3 +41,9 @@ ipc.of["FB"].on("music.say", msg => {
   bot.guilds.first().defaultChannel.send(msg)
 })
 
+ipc.of["FB"].on("shutdown", m => {
+	bot.guilds.first().channels.get(m).send("Shutting Down Audio Drivers...")
+		.then(bot.destroy())
+		.then(process.exit())
+})
+	
