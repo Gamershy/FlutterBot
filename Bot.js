@@ -10,7 +10,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")) {
 
 
 var addons = {}
-var disabledCommands = []
+var disabledCommands = ["play", "stop"]
 //var queue = []
 const ipc = require("node-ipc")
 const async = require("async")
@@ -1350,6 +1350,16 @@ console.log(timeRemaining)
 			let [cmd, ...msg] = message.content.split(" ")
 				ipc.server.broadcast("music.say", msg.join(" "))
 		}
+		
+		if (command === "play"){
+			let [cmd, ...link] = message.content.split(" ")
+				ipc.server.broadcast("music.play", link)
+		}
+		
+		if (command === "stop"){
+			ipc.server.broadcast("music.stop", "dummy")
+		}
+		
        
 
 //        if (command === "colorlist"){
