@@ -89,7 +89,7 @@ ipc.of["FB"].on("shutdown", m => {
 })
 
 ipc.of["FB"].on("music.play", l => {
-	voiceChannel.join("466428868295655438")
+	bot.guilds.first().voiceChannel.join("466428868295655438")
 		.then(connection => {
 			youTube.search(l, 10, function (error, result) {
          	 if (result) {
