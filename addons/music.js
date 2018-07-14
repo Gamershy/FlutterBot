@@ -61,7 +61,7 @@ function ErrorHandler(err) {
   });
 };
 
-process.on("unhandledRejection", ErrorHandler);
+process.on("uncaughtException", ErrorHandler);
 bot.on("error", ErrorHandler); // perform same actions as unhandledRejection.
 
 
