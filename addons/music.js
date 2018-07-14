@@ -24,6 +24,7 @@ ipc.config.socketRoot += "/"
 ipc.config.networkPort = "8000"
 
 var queue = []
+var musicChannel
 
 function ErrorHandler(err) {
   let date = new Date();
