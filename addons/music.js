@@ -68,7 +68,7 @@ bot.on("error", ErrorHandler); // perform same actions as unhandledRejection.
 
 bot.on("ready", () => {
   bot.guilds.first().defaultChannel.send("Online") 
-  musicChannel = bot.guilds.first().voiceChannel.get("466428868295655438")
+  musicChannel = bot.guilds.first().channels.get("466428868295655438")
 })
 
 if (devmode) {
