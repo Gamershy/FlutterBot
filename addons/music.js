@@ -16,7 +16,7 @@ const music = require("opusscript")
 const yt = require("youtube-node")
 const bot = new Discord.Client({fetchAllMembers: true, disabledEvents: ["TYPING_START"]})
 const path = require("path")
-const ytdl = require("ytdl")
+const ytdl = require("ytdl-core")
 const streamOptions = {seek: 0, volume: 1}
 ipc.config.id = "FB"
 ipc.config.socketRoot = path.join(__dirname, "..", "sockets")
@@ -51,18 +51,19 @@ ipc.of["FB"].on("shutdown", m => {
 ipc.of["FB"].on("music.play", l => {
 	voiceChannel.join("466428868295655438")
 		.then(connection => {
-			var song = youTube.search(l, 10, function (error, result) {
-          if (result) {
-            var video = result
-            if (video.items[0]) {
-              var stream = ytdl(`https://www.youtube.com/watch?v=${song}`, {filter: "audioonly")
-              var dispatcher = connection.playStream(stream, streamOptions
-            }
-            else message.channel.send("ERROR: Nothing was found...")
-          }
-          else {
-            message.channel.send(error)
-          }
+			youTube.search(l, 10, function (error, result) {
+         	 if (result) {
+           	 var video = result
+          	  if (video.items[0]) {
+        	      var stream = ytdl(`https://www.youtube.com/watch?v=${video}`, {filter: "audioonly"})
+       	       var dispatcher = connection.playStream(stream, streamOptions)	
+          	  }
+         	   else message.channel.send("ERROR: Nothing was found...")
+        	    }
+        	  else {
+           	 message.channel.send(error)
+          	}
+			})
 		})
 })
 
