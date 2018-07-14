@@ -25,6 +25,46 @@ ipc.config.networkPort = "8000"
 
 var queue = []
 
+function ErrorHandler(err) {
+  let date = new Date();
+  let dateFormatted = `${("0" + date.getDate()).slice(-2)}-${("0" + date.getMonth()).slice(-2)}-${date.getFullYear()} ${("0" + date.getHours()).slice(-2)}h${("0" + date.getMinutes()).slice(-2)}m${("0" + date.getSeconds()).slice(-2)}s.${("0000" + date.getMilliseconds()).slice(-4)}ms`;
+  let header = `${err.name} - ${dateFormatted}`;
+  
+  let shy = bot.fetchUser("104674953382612992");
+  let wolf = bot.fetchUser("204316640735789056");
+
+  // way too overcomplicated work-around for sending messagess
+  Promise.all([shy, wolf]).then(users => {
+    new Promise((resolve, reject) => {
+      let _userId = 0;
+      let send = function(user) {
+        try {
+          user.send({embed: {title: header, description: `\`\`\`xl\n${err.stack}\n\`\`\``}}).then(() => {
+            _userId++;
+
+            if (_userId === users.length) {
+              resolve();
+            } else {
+              send(users[_userId]);
+            }
+          });
+        } catch (e) {
+          reject(e);
+        }
+      }
+
+      send(users[_userId]);
+    }).then(() => bot.destroy())
+      .then(() => process.exit())
+  }).catch(e => {
+    console.log("Failed with", e.stack);
+  });
+};
+
+process.on("unhandledRejection", ErrorHandler);
+bot.on("error", ErrorHandler); // perform same actions as unhandledRejection.
+
+
 bot.on("ready", () => {
   bot.guilds.first().defaultChannel.send("Online") 
 })
