@@ -67,6 +67,7 @@ bot.on("error", ErrorHandler); // perform same actions as unhandledRejection.
 
 bot.on("ready", () => {
   bot.guilds.first().defaultChannel.send("Online") 
+  var musicChannel = bot.guilds.first().voiceChannel.get("466428868295655438")
 })
 
 if (devmode) {
@@ -89,7 +90,7 @@ ipc.of["FB"].on("shutdown", m => {
 })
 
 ipc.of["FB"].on("music.play", l => {
-	bot.guilds.first().voiceChannel.join("466428868295655438")
+	musicChannel.join()
 		.then(connection => {
 			youTube.search(l, 10, function (error, result) {
          	 if (result) {
