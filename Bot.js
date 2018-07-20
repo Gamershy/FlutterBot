@@ -1382,7 +1382,7 @@ console.log(timeRemaining)
         },
         
         endCollector: function endCollector(reason) {
-          requestCollector.end(reason);
+          requestCollector.stop(reason);
         }
       }
 		  
