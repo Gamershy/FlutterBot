@@ -218,7 +218,8 @@ var commands = [
   {"name": "/lemmemoan", "result": "Get a role that'll alert you whenever there's a voice fap session about to start (@Voice Fapper)"},
   {"name": "/botwatch", "result": "Get pinged for every major update Flutterbot gets! (@botwatcher, effective in #Flutterbots_changelog)"},
   {"name": "/color", "result": "Get a new color (requires Daily Fapper role)"},
-  {"name": "/imtaken", "result": "Mark yourself as being in a relationship"}
+  {"name": "/imtaken", "result": "Mark yourself as being in a relationship"},
+  {"name": "/request", "result": "Make a suggestion for improvements to the server. I will give further details when the command is used. Suggestions are logged to <#469557897513271316>."}
 ]
 var admincmds = [
   {"name": "/mute @user", "result": "Mutes a user as punishment"},
@@ -230,8 +231,7 @@ var admincmds = [
     "result": "Send an announcement to #announcements, ALL ARGUMENTS REQUIRED. r = red, y = yellow, l = lightblue, b = blue. Blue doesn't tag @everyone."},
   {"name": "/warn <user> <reason>", "result": "Warn a user for breaking rules. REASON IS REQUIRED"},
   {"name": "/clearwarn <user>", "result": "Clear all warnings from a specified user. DO NOT ABUSE THIS COMMAND"},
-  {"name": "/viewwarn <user>", "result": "View the warnings given to a specified user. DM response"},
-  {"name": "/request", "result": "Make a suggestion for improvements to the server. I will give further details when the command is used. Suggestions are logged to <#469557897513271316>."}
+  {"name": "/viewwarn <user>", "result": "View the warnings given to a specified user. DM response"}
 ]
 
 var dev = config.devmode
