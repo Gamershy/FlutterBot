@@ -33,8 +33,9 @@ ipc.config.socketRoot = path.join(__dirname, "sockets")
 ipc.config.socketRoot += "/"
 
 //Schema Variables
-var User = db.model("User")
-var Warn = db.model("User")
+var User = db.model("User");
+var Warn = db.model("Warn");
+var Suggestion = db.model("Suggestion");
 //console.log(User.update)
 //var Item = db.model("Item")
 
@@ -229,7 +230,8 @@ var admincmds = [
     "result": "Send an announcement to #announcements, ALL ARGUMENTS REQUIRED. r = red, y = yellow, l = lightblue, b = blue. Blue doesn't tag @everyone."},
   {"name": "/warn <user> <reason>", "result": "Warn a user for breaking rules. REASON IS REQUIRED"},
   {"name": "/clearwarn <user>", "result": "Clear all warnings from a specified user. DO NOT ABUSE THIS COMMAND"},
-  {"name": "/viewwarn <user>", "result": "View the warnings given to a specified user. DM response"}
+  {"name": "/viewwarn <user>", "result": "View the warnings given to a specified user. DM response"},
+  {"name": "/request", "result": "Make a suggestion for improvements to the server. I will give further details when the command is used. Suggestions are logged to <#469557897513271316>."}
 ]
 
 var dev = config.devmode
@@ -1352,12 +1354,29 @@ console.log(timeRemaining)
 		}
 		
 		if (command === "play"){
-			let [cmd, ...link] = message.content.split(" ")
-				ipc.server.broadcast("music.play", link)
+			let [cmd, ...query] = message.content.split(" ")
+				ipc.server.broadcast("music.play", {q:query.join(" "), channel_id:message.channel.id})
 		}
 		
 		if (command === "stop"){
 			ipc.server.broadcast("music.stop", "dummy")
+		}
+		
+		if (command === "request") {
+		  const RequestCommand = {
+        messageFilter: function messageFilter(capturedMessage) {
+          if (message.author.id !== capturedMessage.author.id) return false;
+          if (!message.content.startsWith("--")) return false;
+          return true;
+        }
+    
+      	collectorCallback: function collectorCallback(collection) {
+          
+        }
+      }
+		  
+		  let requestCollector = message.channel.createMessageCollector(RequestCommand.messageFilter);
+		  requestCollector.on("end", RequestCommand.collectorCallback);
 		}
 		
        
@@ -1407,7 +1426,6 @@ console.log(timeRemaining)
     if (message.content.toLowerCase().indexOf("corn.") >= 0 && message.author.id === "269952003793354764") {
       message.channel.send("Fuck off, Senpoi.")
     }
-
 
     // increment the user's experience
     while (__user.exp >= __user.nxtlvl) {
@@ -1463,6 +1481,6 @@ if (config.devmode) {
 }
 
 ipc.server.on("start", () => {
-  addons.music = child_process.spawn("node", ["./addons/music.js"], ["ignore", process.stdout, process.stderr])
+ // addons.music = child_process.spawn("node", ["./addons/music.js"], ["ignore", process.stdout, process.stderr])
 })
 bot.login(config.botToken)
