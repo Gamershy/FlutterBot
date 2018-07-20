@@ -1362,22 +1362,36 @@ console.log(timeRemaining)
 			ipc.server.broadcast("music.stop", "dummy")
 		}
 		
-		if (command === "request") {
-		  const RequestCommand = {
+    if (command === "request") {
+      let requestCollector; // create a reference we can use later on
+		
+      const RequestCommand = {
         messageFilter: function messageFilter(capturedMessage) {
           if (message.author.id !== capturedMessage.author.id) return false;
-          if (!message.content.startsWith("--")) return false;
+          if (!capturedMessage.content.startsWith("--")) return false;
           return true;
-        }
+        },
     
-      	collectorCallback: function collectorCallback(collection) {
+        collectorCallback: function collectorCallback(collection) {
           
+        },
+        
+        collectedMessage: function collectedMessage(capturedMessage) {
+          console.log(`Collected message with content "${capturedMessage.cleanContent}".`);
+          if ((/end\.?$/i).test(capturedMessage.content)) RequestCommand.endCollector("SUGGESTION_END");
+        },
+        
+        endCollector: function endCollector(reason) {
+          requestCollector.end(reason);
         }
       }
 		  
-		  let requestCollector = message.channel.createMessageCollector(RequestCommand.messageFilter);
-		  requestCollector.on("end", RequestCommand.collectorCallback);
-		}
+      message.reply(["I am now listening for your suggestion. Please add `--` to the start of any message you wish for me to include in the suggestion content, and say `end` to end the suggestion. I will then ask if you wish to add anything else before I add it.", "Suggestions are limited to a maximum of 10,000 characters."]).then(() => {
+        requestCollector = message.channel.createMessageCollector(RequestCommand.messageFilter); // write to the created reference
+        requestCollector.on("collect", RequestCommand.collectedMessage);
+        requestCollector.on("end", RequestCommand.collectorCallback);
+      });
+    }
 		
        
 
