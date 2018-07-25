@@ -25,6 +25,7 @@ ipc.config.networkPort = "8000"
 
 var queue = []
 var musicChannel
+var debugChannel
 
 function ErrorHandler(err) {
   let date = new Date();
@@ -69,6 +70,7 @@ bot.on("error", ErrorHandler); // perform same actions as unhandledRejection.
 bot.on("ready", () => {
   bot.guilds.first().defaultChannel.send("Online") 
   musicChannel = bot.guilds.first().channels.get("466428868295655438")
+  debugChannel = bot.guilds.first().channels.get("249311166776606721")
 })
 
 if (devmode) {
@@ -90,27 +92,29 @@ ipc.of["FB"].on("shutdown", m => {
 	.then(process.exit())
 })
 
-ipc.of["FB"].on("music.play", l => {
-	musicChannel.join()
-		.then(connection => {
-			youTube.search(l, 10, function (error, result) {
-         	 if (result) {
-           	 var video = result
-          	  if (video.items[0]) {
-        	      var stream = ytdl(`https://www.youtube.com/watch?v=${video.items[0].id.videoId}`, {filter: "audioonly"})
-       	       var dispatcher = connection.playStream(stream, streamOptions)	
-          	  }
-         	   else message.channel.send("ERROR: Nothing was found...")
-        	    }
-        	  else {
-           	 message.channel.send(error)
-          	}
-			})
-		})
+ipc.of["FB"].on("music.play", args => {
+  console.log("Triggered: ipc:music.play")
+
+  musicChannel.join().then(connection => {
+    console.log("Searching for " + args.q + "...");
+    yt.search(args.q, 11, function (error, result) {
+      if (result) {
+        var video = result
+        if (video.items[0]) {
+          var stream = ytdl(`https://www.youtube.com/watch?v=${video.items[0].id.videoId}`, {filter: "audioonly"})
+          var dispatcher = connection.playStream(stream, streamOptions)	
+        }
+        else debugChannel.send("ERROR: Nothing was found...")
+      }
+      else {
+        debugChannel.send(error)
+      }
+    })
+  })
 })
 
 ipc.of["FB"].on("music.stop", s =>{
 	voiceChannel.disconnect()
 })
-	
-	
+
+exports.bot = bot;

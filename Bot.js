@@ -33,11 +33,15 @@ ipc.config.socketRoot = path.join(__dirname, "sockets")
 ipc.config.socketRoot += "/"
 
 //Schema Variables
-var User = db.model("User")
-var Warn = db.model("User")
+var User = db.model("User");
+var Warn = db.model("Warn");
+var Suggestion = db.model("Suggestion");
 //console.log(User.update)
 //var Item = db.model("Item")
 
+// you know what, imma just put my shit here -Zuris
+var suggestionsChannel;
+const reactions = {};
 
 const porntrigger = [
   "Porn is nice~",
@@ -217,7 +221,8 @@ var commands = [
   {"name": "/lemmemoan", "result": "Get a role that'll alert you whenever there's a voice fap session about to start (@Voice Fapper)"},
   {"name": "/botwatch", "result": "Get pinged for every major update Flutterbot gets! (@botwatcher, effective in #Flutterbots_changelog)"},
   {"name": "/color", "result": "Get a new color (requires Daily Fapper role)"},
-  {"name": "/imtaken", "result": "Mark yourself as being in a relationship"}
+  {"name": "/imtaken", "result": "Mark yourself as being in a relationship"},
+  {"name": "/request", "result": "Make a suggestion for improvements to the server. I will give further details when the command is used. Suggestions are logged to <#469557897513271316>."}
 ]
 var admincmds = [
   {"name": "/mute @user", "result": "Mutes a user as punishment"},
@@ -363,13 +368,13 @@ process.on("exit", () => {
   }
 });
 
-/*
- A ping pong bot, whenever you send "ping", it replies "pong".
- */
-// the ready event is vital, it means that your bot will only start reacting to information
-// from Discord _after_ ready is emitted.
-bot.on('ready', () => {
+// The ready event is fired when the bot begins receiving information from Discord.
+// Note to self: when pasting in a comment, don't accidentally delete the handler.
+bot.on("ready", () => {
   console.log("Online~")
+  suggestionsChannel = bot.channels.get("469557897513271316");
+  reactions.upvote = bot.guilds.first().emojis.get("469576069314510858");
+  reactions.downvote = bot.guilds.first().emojis.get("469576210368954378");
   var timer = setInterval(() => {
     bot.user.setActivity(playingmsg[Math.floor(Math.random() * playingmsg.length)], {type: "PLAYING"})
   }, 1000 * 60 * 60)
@@ -421,7 +426,7 @@ bot.on('ready', () => {
     guld.send(inputStr);
   })
   ipc.server.start()
-})
+});
 
 bot.on("guildMemberAdd", member => {
   member.guild.defaultChannel.send(`Whalecum ${member} to the server! Be sure to read <#249401654003105792> before you post.`)
@@ -1352,13 +1357,145 @@ console.log(timeRemaining)
 		}
 		
 		if (command === "play"){
-			let [cmd, ...link] = message.content.split(" ")
-				ipc.server.broadcast("music.play", link)
+			let [cmd, ...query] = message.content.split(" ")
+				ipc.server.broadcast("music.play", {q:query.join(" "), channel_id:message.channel.id})
 		}
 		
 		if (command === "stop"){
 			ipc.server.broadcast("music.stop", "dummy")
 		}
+		
+    if (command === "request") {
+      let requestCollector; // create a reference we can use later on
+		
+      const RequestCommand = {
+        // data
+        confirmCollector: null,
+        collection: null,
+
+        // functions
+        messageFilter: function messageFilter(capturedMessage) {
+          if (message.author.id !== capturedMessage.author.id) return false;
+          if (!capturedMessage.content.startsWith("--")) return false;
+          return true;
+        },
+    
+        collectorCallback: function collectorCallback(collection, endCode) {
+          console.log("Collection ended with reason:", endCode);
+
+          switch (endCode) {
+            case "SUGGESTION_END":
+              RequestCommand.confirmSuggestionIsComplete(collection);
+              break;
+            default:
+              message.channel.send("An unknown error occurred. Please re-use `/request` and try again.")
+          }
+        },
+        
+        collectedMessage: function collectedMessage(capturedMessage) {
+          console.log(`Collected message with content "${capturedMessage.cleanContent}".`);
+          if ((/end\.?$/i).test(capturedMessage.content)) RequestCommand.endCollector("SUGGESTION_END");
+        },
+        
+        endCollector: function endCollector(reason) {
+          requestCollector.stop(reason);
+        },
+
+        confirmSuggestionIsComplete: function confirmSuggestionIsComplete(collection) {
+          RequestCommand.collection = collection;
+
+          message.author.send("Here is the content of your request:").then(({channel}) => {
+            let series = [];
+            let index = 0;
+            
+            for (let currentMessage of collection.values()) { 
+              if (/^-- *end\.?$/i.test(currentMessage.content)) continue
+
+              index = index + 1;
+              let cIndex = index;
+              
+              series.push(function sendMessage(callback) {
+                channel.send({embed:{
+                  author: {name: message.author.tag, icon_url: message.author.displayAvatarURL},
+                  description: currentMessage.cleanContent.replace(/^-- */, ""),
+                  timestamp: currentMessage.createdAt
+                }}).then(embed => callback(null, embed), err => callback(err));
+              });
+            }
+
+            return new Promise((resolve, reject) => {
+              async.series(series, function callback(err, messages) {
+                if (err) reject(err);
+
+                resolve(channel, messages);
+              });
+            });
+          }).then(channel => {
+            return channel.send(["Is this suggestion correct and final? (`yes` or `no`)", "You have thirty seconds to respond, or `yes` will be assumed."]);
+          }).then(({channel}) => {
+            return RequestCommand.confirmCollector = channel.createMessageCollector(RequestCommand.confirmFilter, {time:30000});
+          }).then(collector => {
+            collector.on("collect", RequestCommand.gotConfirmationMessage);
+          }).catch(function postError(err) {
+            console.error(err);
+            message.reply("I was unable to send (or continue to send) confirmation to your DMs for an unknown reason. You blocked me, didn't you?");
+          });
+        },
+
+        confirmFilter: function confirmFilter(message) {
+          return ["yes", "no"].includes(message.content.trim().toLowerCase());
+        },
+
+        gotConfirmationMessage: function gotConfirmationMessage(capturedMessage) {
+          let content = capturedMessage.content.trim().toLowerCase();
+          RequestCommand.confirmCollector.stop(content);
+
+          switch (content) {
+            case "no":
+              capturedMessage.reply("Very well. Please edit your suggestion as you wish, then re-use /request in the server to re-submit it.");
+              break;
+            case "yes":
+            default: // in case something slipped through;
+              RequestCommand.postRequest();
+          }
+        },
+
+        postRequest: function postRequest() {
+          let series = [];
+          let index = 0;
+          
+          for (let currentMessage of RequestCommand.collection.values()) {
+            if (/^-- *end\.?$/i.test(currentMessage.content)) continue
+
+            index = index + 1;
+            let cIndex = index;
+            
+            series.push(function sendMessage(callback) {
+              suggestionsChannel.send({embed:{
+                author: {name: message.author.tag, icon_url: message.author.displayAvatarURL},
+                description: currentMessage.cleanContent.replace(/^-- */, ""),
+                timestamp: currentMessage.createdAt
+              }}).then(embed => callback(null, embed), err => callback(err));
+            });
+          }
+
+          new Promise((resolve, reject) => {
+            async.series(series, function callback(err, messages) {
+              if (err) reject(err);
+
+              resolve(messages);
+            });
+          }).then(messages => messages.pop().react(reactions.upvote))
+            .then(reaction => reaction.message.react(reactions.downvote))
+        }
+      }
+
+      message.reply(["I am now listening for your suggestion. Please add `--` to the start of any message you wish for me to include in the suggestion content, and say `end` to end the suggestion. I will then ask if you wish to add anything else before I add it.", "Suggestions are limited to a maximum of 10,000 characters."]).then(() => {
+        requestCollector = message.channel.createMessageCollector(RequestCommand.messageFilter, /*{time:2000}*/); // write to the created reference
+        requestCollector.on("collect", RequestCommand.collectedMessage);
+        requestCollector.on("end", RequestCommand.collectorCallback);
+      });
+    }
 		
        
 
@@ -1370,6 +1507,8 @@ console.log(timeRemaining)
 //                list.push(colors)
 //          }
 //        }
+
+        // what is this brace, and why is it needed?
         }
 
     }
@@ -1407,7 +1546,6 @@ console.log(timeRemaining)
     if (message.content.toLowerCase().indexOf("corn.") >= 0 && message.author.id === "269952003793354764") {
       message.channel.send("Fuck off, Senpoi.")
     }
-
 
     // increment the user's experience
     while (__user.exp >= __user.nxtlvl) {
@@ -1463,6 +1601,6 @@ if (config.devmode) {
 }
 
 ipc.server.on("start", () => {
-  addons.music = child_process.spawn("node", ["./addons/music.js"], ["ignore", process.stdout, process.stderr])
+ // addons.music = child_process.spawn("node", ["./addons/music.js"], ["ignore", process.stdout, process.stderr])
 })
 bot.login(config.botToken)
