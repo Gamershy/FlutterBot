@@ -1366,7 +1366,6 @@ console.log(timeRemaining)
 		}
 		
     if (command === "request") {
-      message.reply("fired command: request");
       let requestCollector; // create a reference we can use later on
 		
       const RequestCommand = {
@@ -1491,7 +1490,7 @@ console.log(timeRemaining)
         }
       }
 
-      message.reply(["I am now listening for your suggestion. Please add `--` to the start of any message you wish for me to include in the suggestion content, and say `end` to end the suggestion. I will then ask if you wish to add anything else before I add it.", "Suggestions are limited to a maximum of 10,000 characters."]).then(() => {
+      message.reply(["I am now listening for your suggestion. Please add `--` to the start of any message you wish for me to include in the suggestion content, and say `--end` to end the suggestion. I will then ask if you wish to add anything else before I add it.", "Suggestions are limited to a maximum of 10,000 characters."]).then(() => {
         requestCollector = message.channel.createMessageCollector(RequestCommand.messageFilter, /*{time:2000}*/); // write to the created reference
         requestCollector.on("collect", RequestCommand.collectedMessage);
         requestCollector.on("end", RequestCommand.collectorCallback);
@@ -1602,6 +1601,6 @@ if (config.devmode) {
 }
 
 ipc.server.on("start", () => {
- // addons.music = child_process.spawn("node", ["./addons/music.js"], ["ignore", process.stdout, process.stderr])
+ addons.music = child_process.spawn("node", ["./addons/music.js"], ["ignore", process.stdout, process.stderr])
 })
 bot.login(config.botToken)
