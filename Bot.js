@@ -1366,6 +1366,7 @@ console.log(timeRemaining)
 		}
 		
     if (command === "request") {
+      message.reply("fired command: request");
       let requestCollector; // create a reference we can use later on
 		
       const RequestCommand = {
