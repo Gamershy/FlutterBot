@@ -1490,7 +1490,7 @@ console.log(timeRemaining)
         }
       }
 
-      message.reply(["I am now listening for your suggestion. Please add `--` to the start of any message you wish for me to include in the suggestion content, and say `end` to end the suggestion. I will then ask if you wish to add anything else before I add it.", "Suggestions are limited to a maximum of 10,000 characters."]).then(() => {
+      message.reply(["I am now listening for your suggestion. Please add `--` to the start of any message you wish for me to include in the suggestion content, and say `--end` to end the suggestion. I will then ask if you wish to add anything else before I add it.", "Suggestions are limited to a maximum of 10,000 characters."]).then(() => {
         requestCollector = message.channel.createMessageCollector(RequestCommand.messageFilter, /*{time:2000}*/); // write to the created reference
         requestCollector.on("collect", RequestCommand.collectedMessage);
         requestCollector.on("end", RequestCommand.collectorCallback);
