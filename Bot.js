@@ -858,6 +858,23 @@ bot.on('message', async message => {
           message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
         });
       }
+      
+      if (command.split(" ").indexOf("db") == 0) {
+        var cmd = args.join(" ")
+        var eval = evalBooruCmd(cmd)
+        message.channel.startTyping()
+        booru.search("dp", eval.tags, {limit: constrain(1, 5, eval.number), random: true})
+          .then(booru.commonfy)
+          .then(images => {
+            for (let image of images) {
+              message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \n${image.file_url}`)
+            }
+            message.channel.stopTyping()
+          }).catch(() => {
+          message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
+        });
+      }
+      
       if (command === "sendnoods") {
         message.channel.startTyping();
         message.channel.send("", {files: ["https://cdn.discordapp.com/attachments/270372438825500672/292342878737399809/26bf6ac5b31209915df332272bee1cb890f12c7617850b5b3acd45d68dba7ee9_1.jpg"]}).then(m => m.channel.stopTyping())
