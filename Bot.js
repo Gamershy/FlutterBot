@@ -444,7 +444,7 @@ bot.on("guildMemberAdd", member => {
 bot.on("guildMemberRemove", member => {
   var selmsg = leavemsg[Math.floor(Math.random() * leavemsg.length)]
   var parseleave = selmsg.split("|")
-  member.guild.defaultChannel.send(`${parseleave[0]} + ${member.displayName} + ${parseleave[1]}`)
+  member.guild.defaultChannel.send(`${parseleave[0]} ${member.displayName} ${parseleave[1]}`)
   member.guild.channels.get("424870218414948367").send("User: " + member.user.username + " Left server at: " + new Date().toUTCString() )
 })
 
