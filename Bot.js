@@ -10,7 +10,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")) {
 
 
 var addons = {}
-var disabledCommands = ["play", "stop"]
+var disabledCommands = ["play", "stop", "request"]
 //var queue = []
 const ipc = require("node-ipc")
 const async = require("async")
@@ -187,6 +187,14 @@ const tagrespond = [
   "Hm hm hm... Stop.",
   "What do you want.?",
   "If you're tagging me for commands, just type `/commands`, it's that simple."
+]
+const leavemsg = [
+  "cya |, you probably won't be missed~",
+  "| has decided the porn was too much",
+  "No, wait |, come back! I didn't get to rape you!",
+  "| has left us. Press F to pay your respex",
+  "Error 404, | can no longer be found",
+  "RIP |, you might be missed"
 ]
 var commands = [
   {"name": "/ping", "result": "See how fast she responds."},
@@ -434,7 +442,9 @@ bot.on("guildMemberAdd", member => {
 })
 
 bot.on("guildMemberRemove", member => {
-  member.guild.defaultChannel.send(`Cya ${member.displayName}, you probably won't be missed~`)
+  var selmsg = leavemsg[Math.floor(Math.random() * leavemsg.length)]
+  var parseleave = leavemsg.split("|")
+  member.guild.defaultChannel.send(`${parseleave[0] + ${member.displayName} + ${parseleave[1]}`)
   member.guild.channels.get("424870218414948367").send("User: " + member.user.username + " Left server at: " + new Date().toUTCString() )
 })
 
