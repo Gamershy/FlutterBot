@@ -10,7 +10,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")) {
 
 
 var addons = {}
-var disabledCommands = ["play", "stop", "request"]
+var disabledCommands = ["play", "stop"]
 //var queue = []
 const ipc = require("node-ipc")
 const async = require("async")
