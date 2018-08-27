@@ -30,8 +30,12 @@ var debugChannel
 function ErrorHandler(err) {
   let date = new Date();
   let dateFormatted = `${("0" + date.getDate()).slice(-2)}-${("0" + date.getMonth()).slice(-2)}-${date.getFullYear()} ${("0" + date.getHours()).slice(-2)}h${("0" + date.getMinutes()).slice(-2)}m${("0" + date.getSeconds()).slice(-2)}s.${("0000" + date.getMilliseconds()).slice(-4)}ms`;
-  let header = `${err.name} - ${dateFormatted}`;
-
+  let errHeader;
+  let errBody;
+  
+  if (err.name) errHeader = `${err.name} - ${dateFormatted}`; else errHeader = `Error occurred - ${dateFormatted}`;
+  if (err.stack) errBody = err.stack; else errBody = err;
+  
   let shy = bot.fetchUser("104674953382612992");
   let wolf = bot.fetchUser("204316640735789056");
 
@@ -41,7 +45,7 @@ function ErrorHandler(err) {
       let _userId = 0;
       let send = function(user) {
         try {
-          user.send({embed: {title: header, description: `\`\`\`xl\n${err.stack}\n\`\`\``}}).then(() => {
+          user.send({embed: {title: errHeader, description: `\`\`\`xl\n${errBody}\n\`\`\``}}).then(() => {
             _userId++;
 
             if (_userId === users.length) {
