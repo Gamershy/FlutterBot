@@ -1,14 +1,8 @@
-Version 4.0.0
-  +++ FINALLY ADDED MUSIC FUNCTIONALITY (Thanks Zur)
-      + Added command: /play
-          pretty self explanitory. Plays the specified song searched from YouTube, or adds to a queue if a song is already playing.
-      + Added command: /skip
-          Instantly skips any song you added, otherwise initiates a skip vote.
-      + Added command: /queue
-          View the queue at any time.
-      + Added command: /shuffle
-          vote to fully randomize the queue.
-  + Admins have access to vote bypassing commands. ADMINS, DO NOT ABUSE THIS PRIVALIGE!
-  + Fixed a couple errors in some admin only things.
-  + Bob Ross night is coming back =3
-  - removed rogue AI
+Version 3.5.9
+Minor update with major background features
+  + Leave messages are now randomized, Flutterbot isn't a complete bitch to everyone anymore.
+  + Background music functionality is in the works. Streaming works, so all we need is the queue system.
+  + Very, very unstable /request code has been added, however, due to how volatile it is, the command is currently disabled
+  + /play and /stop are in experimental modes, and are currently disabled. Zuris and I may use the commands for testing, but you guys won't be able to use it yet.
+  + A few bugfixes here and there.
+  + Alot of old, unused code lines have been removed.

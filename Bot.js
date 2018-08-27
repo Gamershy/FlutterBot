@@ -10,7 +10,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")) {
 
 
 var addons = {}
-var disabledCommands = ["play", "stop"]
+var disabledCommands = ["play", "stop", "request"]
 //var queue = []
 const ipc = require("node-ipc")
 const async = require("async")
@@ -188,6 +188,14 @@ const tagrespond = [
   "What do you want.?",
   "If you're tagging me for commands, just type `/commands`, it's that simple."
 ]
+const leavemsg = [
+  "cya |, you probably won't be missed~",
+  "| has decided the porn was too much",
+  "No, wait |, come back! I didn't get to rape you!",
+  "| has left us. Press F to pay your respex",
+  "Error 404, | can no longer be found",
+  "RIP |, you might be missed"
+]
 var commands = [
   {"name": "/ping", "result": "See how fast she responds."},
   {"name": "/HDButt", "result": "Butts in HD ;3"},
@@ -319,7 +327,11 @@ function maintenancemsg(msg) {
 function ErrorHandler(err) {
   let date = new Date();
   let dateFormatted = `${("0" + date.getDate()).slice(-2)}-${("0" + date.getMonth()).slice(-2)}-${date.getFullYear()} ${("0" + date.getHours()).slice(-2)}h${("0" + date.getMinutes()).slice(-2)}m${("0" + date.getSeconds()).slice(-2)}s.${("0000" + date.getMilliseconds()).slice(-4)}ms`;
-  let header = `${err.name} - ${dateFormatted}`;
+  let errHeader;
+  let errBody;
+  
+  if (err.name) errHeader = `${err.name} - ${dateFormatted}`; else errHeader = `Error occurred - ${dateFormatted}`;
+  if (err.stack) errBody = err.stack; else errBody = err;
   
   let shy = bot.fetchUser("104674953382612992");
   let wolf = bot.fetchUser("204316640735789056");
@@ -330,7 +342,7 @@ function ErrorHandler(err) {
       let _userId = 0;
       let send = function(user) {
         try {
-          user.send({embed: {title: header, description: `\`\`\`xl\n${err.stack}\n\`\`\``}}).then(() => {
+          user.send({embed: {title: errHeader, description: `\`\`\`xl\n${errBody}\n\`\`\``}}).then(() => {
             _userId++;
 
             if (_userId === users.length) {
@@ -434,7 +446,9 @@ bot.on("guildMemberAdd", member => {
 })
 
 bot.on("guildMemberRemove", member => {
-  member.guild.defaultChannel.send(`Cya ${member.displayName}, you probably won't be missed~`)
+  var selmsg = leavemsg[Math.floor(Math.random() * leavemsg.length)]
+  var parseleave = selmsg.split("|")
+  member.guild.defaultChannel.send(`${parseleave[0]} ${member.displayName} ${parseleave[1]}`)
   member.guild.channels.get("424870218414948367").send("User: " + member.user.username + " Left server at: " + new Date().toUTCString() )
 })
 
@@ -858,6 +872,23 @@ bot.on('message', async message => {
           message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
         });
       }
+      
+      if (command.split(" ").indexOf("db") == 0) {
+        var cmd = args.join(" ")
+        var eval = evalBooruCmd(cmd)
+        message.channel.startTyping()
+        booru.search("dp", eval.tags, {limit: constrain(1, 5, eval.number), random: true})
+          .then(booru.commonfy)
+          .then(images => {
+            for (let image of images) {
+              message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \n${image.file_url}`)
+            }
+            message.channel.stopTyping()
+          }).catch(() => {
+          message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
+        });
+      }
+      
       if (command === "sendnoods") {
         message.channel.startTyping();
         message.channel.send("", {files: ["https://cdn.discordapp.com/attachments/270372438825500672/292342878737399809/26bf6ac5b31209915df332272bee1cb890f12c7617850b5b3acd45d68dba7ee9_1.jpg"]}).then(m => m.channel.stopTyping())
@@ -1601,6 +1632,6 @@ if (config.devmode) {
 }
 
 ipc.server.on("start", () => {
- // addons.music = child_process.spawn("node", ["./addons/music.js"], ["ignore", process.stdout, process.stderr])
+ addons.music = child_process.spawn("node", ["./addons/music.js"], ["ignore", process.stdout, process.stderr])
 })
 bot.login(config.botToken)
