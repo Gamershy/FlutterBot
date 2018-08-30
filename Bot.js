@@ -732,46 +732,47 @@ bot.on('message', async message => {
         message.channel.send(`Name:  ${message.guild.name} \nOwner:  ${message.guild.owner} \nID: ${message.guild.id}  \nMembers:  ${message.guild.memberCount} \nIcon URL: <${message.guild.iconURL}>\nCreated: ${message.guild.createdAt} \nFeatures: ${message.guild.features} \nRegion: ${message.guild.region} \nThanks to GeneralUltra758 for teaching me how to bot."`)
       }
 
-      if (command === "spin") {
-        if (__user.gem < 100) return message.channel.send("ERROR: You don't have enough gems to play slots..")
-        __user.gem -= 100
-        var slot1 = Math.ceil(Math.random() * 9),
-          slot2 = Math.ceil(Math.random() * 9),
-          slot3 = Math.ceil(Math.random() * 9),
-          winningAmount = 0,
-          losingAmount = 0,
-          canWin = true,
-          halfScore = false,
-          jackpot = 10000,
-          symbol = ["fuck", ":full_moon:", ":gem:", ":star:", ":dragon_face:", ":bat:", ":diamond_shape_with_a_dot_inside:", ":gun:", ":sunny:", ":no_entry_sign:"]
-        // loss scenarios
-        if ([slot1, slot2, slot3].includes(4)) canWin = false;
-        if ([slot1, slot2, slot3].includes(5)) halfScore = true
-        if (slot1 === slot2 && slot2 === slot3 && slot1 === 4) losingAmount = 1000;
+//      if (command === "spin") {
+//        if (__user.gem < 100) return message.channel.send("ERROR: You don't have enough gems to play slots..")
+//        __user.gem -= 100
+//        var slot1 = Math.ceil(Math.random() * 9),
+//          slot2 = Math.ceil(Math.random() * 9),
+//          slot3 = Math.ceil(Math.random() * 9),
+//          winningAmount = 0,
+//          losingAmount = 0,
+//          canWin = true,
+//          halfScore = false,
+//          jackpot = 10000,
+//          symbol = ["fuck", ":full_moon:", ":gem:", ":star:", ":dragon_face:", ":bat:", ":diamond_shape_with_a_dot_inside:", ":gun:", ":sunny:", ":no_entry_sign:"]
+//        // loss scenarios
+//        if ([slot1, slot2, slot3].includes(4)) canWin = false;
+//        if ([slot1, slot2, slot3].includes(5)) halfScore = true
+//        if (slot1 === slot2 && slot2 === slot3 && slot1 === 4) losingAmount = 1000;
+//
+//        // win scenarios
+//        if (slot1 === 2) winningAmount += 100
+//        if (slot2 === 2) winningAmount += 100
+//        if (slot3 === 2) winningAmount += 100
+//
+//        // minor jackpot scenarios
+//        if (slot1 === 6) winningAmount += 300;
+//        if (slot2 === 6) winningAmount += 300;
+//        if (slot3 === 6) winningAmount += 300;
+//
+//        // major jackpot scenario
+//        if (slot1 === slot2 && slot2 === slot3 && slot1 === 6) winningAmount = jackpot;
+//
+//        if (canWin) {
+//          if (halfScore === true) winningAmount /= 2
+//          message.channel.send(`${symbol[slot1]}${symbol[slot2]}${symbol[slot3]} \nYou've earned ${winningAmount} Gems!`)
+//          __user.gem += winningAmount
+//        }
+//        else {
+//          message.channel.send(`${symbol[slot1]}${symbol[slot2]}${symbol[slot3]} \n You lost ${losingAmount} Gems...`)
+//          __user.gem -= losingAmount
+//        }
+//      }
 
-        // win scenarios
-        if (slot1 === 2) winningAmount += 100
-        if (slot2 === 2) winningAmount += 100
-        if (slot3 === 2) winningAmount += 100
-
-        // minor jackpot scenarios
-        if (slot1 === 6) winningAmount += 300;
-        if (slot2 === 6) winningAmount += 300;
-        if (slot3 === 6) winningAmount += 300;
-
-        // major jackpot scenario
-        if (slot1 === slot2 && slot2 === slot3 && slot1 === 6) winningAmount = jackpot;
-
-        if (canWin) {
-          if (halfScore === true) winningAmount /= 2
-          message.channel.send(`${symbol[slot1]}${symbol[slot2]}${symbol[slot3]} \nYou've earned ${winningAmount} Gems!`)
-          __user.gem += winningAmount
-        }
-        else {
-          message.channel.send(`${symbol[slot1]}${symbol[slot2]}${symbol[slot3]} \n You lost ${losingAmount} Gems...`)
-          __user.gem -= losingAmount
-        }
-      }
       if (command === "kill") {
         if (message.author.id == config.ownerID) {
           message.channel.send("Shutting down addons...")
@@ -782,9 +783,11 @@ bot.on('message', async message => {
         }
         else message.channel.send("Only Shy has permission to kill me...")
       }
+
       if (command == "cat") {
         message.channel.send("http://thecatapi.com/api/images/get?format=src&type=gif&timestamp=" + Math.floor(Math.random() * 9999999999999))
       }
+
       else if (command.split(' ').indexOf("deadminify") == 0) {
         if (message.author.id == config.ownerID) {
           var target = args.join(" ")
@@ -802,6 +805,7 @@ bot.on('message', async message => {
           message.channel.send("Now why the fuck would you be able to give someone admin?")
         }
       }
+
       if (command === "kawaiipuss") {
         message.channel.startTyping();
         message.channel.send("", {files: ["https://cdn.discordapp.com/attachments/280250275342712833/286613607603765250/phil-jones-censored-pussy.jpg"]}).then(m => m.channel.stopTyping())
@@ -821,6 +825,7 @@ bot.on('message', async message => {
 
         })
       }
+
       if (command.split(" ").indexOf("r34top") == 0) {
         var cmd = args.join(" ")
         var eval = evalBooruCmd(cmd)
@@ -833,6 +838,7 @@ bot.on('message', async message => {
             }
           })
       }
+
       if (command.split(" ").indexOf("r34") == 0) {
         var cmd = args.join(" ")
         var eval = evalBooruCmd(cmd)
@@ -848,6 +854,7 @@ bot.on('message', async message => {
           message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
         });
       }
+
       if (command.split(" ").indexOf("roles") == 0) {
         var target = args.join(" ")
         var targetuser = message.mentions.users.first()
@@ -857,6 +864,7 @@ bot.on('message', async message => {
         }
         else message.channel.send("ERROR: You need to define someone...")
       }
+
       if (command.split(" ").indexOf("e6") == 0) {
         var cmd = args.join(" ")
         var eval = evalBooruCmd(cmd)
@@ -1063,95 +1071,95 @@ bot.on('message', async message => {
         }
       }
 
-      if (command === "stats") {
-      let [cmd, targetuser] = message.content.split(" ")
-        if (message.mentions.users.size){
-          var target = message.mentions.users.first().id
-          if (target = await User.findOne({userId:target})) {
-            message.channel.send({
-              embed: {
-                color: message.guild.member(target.userId).displayColor,
-                title: `${message.guild.member(target.userId).user.tag}'s Stats:`,
-                description: `Level: ${target.lvl} \nEXP/Next LVL: ${target.exp}/${target.nxtlvl} \nGems: ${target.gem} \nInventory: ${target.inv} \nCurrent Chain: ${target.rewardChain} \nLast Reward: ${target.lastReward.toUTCString()}`,
-                thumbnail: {url: message.guild.member(target.userId).user.avatarURL},
-                footer: {text: `Executed by: ${message.author.tag}`, iconURL: message.author.avatarURL}
-              }
-            })
-          }
-          else message.channel.send(`ERROR: That user isn't in the database yet. Make sure they've sent at least one non-command message.`)
-        }
-        else{
-          if (!__user) {
-            message.channel.send("You have no stats yet. Please send at least one message that's not a command.")
-          }
-          else {
-            message.channel.send({
-              embed: {
-                color: message.member.displayColor,
-                title: `${message.author.tag}'s Stats:`,
-                description: `Level: ${__user.lvl} \nEXP/Next LVL: ${__user.exp}/${__user.nxtlvl} \nGems: ${__user.gem} \nInventory: ${__user.inv} \nCurrent Chain: ${__user.rewardChain} \nLast Reward: ${__user.lastReward.toUTCString()}`,
-                thumbnail: {url: message.author.avatarURL}
-              }
-            });
-          }
-        }
-      }
+//      if (command === "stats") {
+//      let [cmd, targetuser] = message.content.split(" ")
+//        if (message.mentions.users.size){
+//          var target = message.mentions.users.first().id
+//          if (target = await User.findOne({userId:target})) {
+//            message.channel.send({
+//              embed: {
+//                color: message.guild.member(target.userId).displayColor,
+//                title: `${message.guild.member(target.userId).user.tag}'s Stats:`,
+//                description: `Level: ${target.lvl} \nEXP/Next LVL: ${target.exp}/${target.nxtlvl} \nGems: ${target.gem} \nInventory: ${target.inv} \nCurrent Chain: ${target.rewardChain} \nLast Reward: ${target.lastReward.toUTCString()}`,
+//                thumbnail: {url: message.guild.member(target.userId).user.avatarURL},
+//                footer: {text: `Executed by: ${message.author.tag}`, iconURL: message.author.avatarURL}
+//              }
+//            })
+//          }
+//          else message.channel.send(`ERROR: That user isn't in the database yet. Make sure they've sent at least one non-command message.`)
+//        }
+//        else{
+//          if (!__user) {
+//            message.channel.send("You have no stats yet. Please send at least one message that's not a command.")
+//          }
+//          else {
+//            message.channel.send({
+//              embed: {
+//                color: message.member.displayColor,
+//                title: `${message.author.tag}'s Stats:`,
+//                description: `Level: ${__user.lvl} \nEXP/Next LVL: ${__user.exp}/${__user.nxtlvl} \nGems: ${__user.gem} \nInventory: ${__user.inv} \nCurrent Chain: ${__user.rewardChain} \nLast Reward: ${__user.lastReward.toUTCString()}`,
+//                thumbnail: {url: message.author.avatarURL}
+//              }
+//            });
+//          }
+//        }
+//      }
 
-      if (command === "reward") {
-        let currentDate = new Date();
-        let lastActivationDate = __user.lastReward.getTime();
-        let day = (24 * 60 * 60 * 1000);
-        let timeRemaining = new Date((__user.lastReward.getTime()+day) - Date.now());
-console.log(timeRemaining)
-        let hours = timeRemaining.getUTCHours();
-        let minutes = timeRemaining.getUTCMinutes();
-        let seconds = timeRemaining.getUTCSeconds();
+//      if (command === "reward") {
+//        let currentDate = new Date();
+//        let lastActivationDate = __user.lastReward.getTime();
+//        let day = (24 * 60 * 60 * 1000);
+//        let timeRemaining = new Date((__user.lastReward.getTime()+day) - Date.now());
+//console.log(timeRemaining)
+//        let hours = timeRemaining.getUTCHours();
+//        let minutes = timeRemaining.getUTCMinutes();
+//        let seconds = timeRemaining.getUTCSeconds();
+//
+//        let daysSinceLastReward = (currentDate - lastActivationDate) / day;
+//
+//        if (daysSinceLastReward >= 1) {
+//          if (daysSinceLastReward >= 2) __user.rewardChain = 0;
+//
+//          ++__user.rewardChain;
+//          var gemsEarned = (255*__user.rewardChain)
+//          var expEarned = Math.ceil(Math.random() * 50)
+//          __user.exp += expEarned;
+//          __user.gem += gemsEarned;
+//          __user.lastReward = new Date();
+//          __user.markModified("lastReward");
+//          message.channel.send(`You've earned your daily reward!\n EXP + ${expEarned}, Gems + ${gemsEarned}`);
+//        } else {
+//          message.channel.send(`You need to wait ${hours} hour${hours!==1? "s" : ""}, ${minutes} minute${minutes!==1? "s" : ""}, and ${seconds} second${seconds!==1? "s" : ""} to use this command again.`);
+//        }
+//      }
 
-        let daysSinceLastReward = (currentDate - lastActivationDate) / day;
+//      if (command === "givexp") {
+//        if (message.member.roles.has(config.adminID)) {
+//          let [cmd, , val] = message.content.split(" ")
+//          var target = message.mentions.users.first().id
+//
+//          if (!target) return message.channel.send("You need to specify who you would like to give EXP to.");
+//
+//          if (target = await User.findOne({userId:target})) {
+//            target.exp += parseInt(val, 10);
+//            target.save();
+//          } else return message.channel.send("I could not find that user inside my database. Have they spoken yet?");
+//        }
+//      }
 
-        if (daysSinceLastReward >= 1) {
-          if (daysSinceLastReward >= 2) __user.rewardChain = 0;
-
-          ++__user.rewardChain;
-          var gemsEarned = (255*__user.rewardChain)
-          var expEarned = Math.ceil(Math.random() * 50)
-          __user.exp += expEarned;
-          __user.gem += gemsEarned;
-          __user.lastReward = new Date();
-          __user.markModified("lastReward");
-          message.channel.send(`You've earned your daily reward!\n EXP + ${expEarned}, Gems + ${gemsEarned}`);
-        } else {
-          message.channel.send(`You need to wait ${hours} hour${hours!==1? "s" : ""}, ${minutes} minute${minutes!==1? "s" : ""}, and ${seconds} second${seconds!==1? "s" : ""} to use this command again.`);
-        }
-      }
-
-      if (command === "givexp") {
-        if (message.member.roles.has(config.adminID)) {
-          let [cmd, , val] = message.content.split(" ")
-          var target = message.mentions.users.first().id
-
-          if (!target) return message.channel.send("You need to specify who you would like to give EXP to.");
-
-          if (target = await User.findOne({userId:target})) {
-            target.exp += parseInt(val, 10);
-            target.save();
-          } else return message.channel.send("I could not find that user inside my database. Have they spoken yet?");
-        }
-      }
-
-      if (command === "givegems") {
-        if (message.member.roles.has(config.adminID)) {
-          let [cmd, , val] = message.content.split(" ")
-          var target = message.mentions.users.first().id
-
-          if (!target) return message.channel.send("You need to specify who you would like to give gems to.");
-
-          if (target = await User.findOne({userId:target})) {
-            target.gem += parseInt(val, 10);
-            target.save();
-          } else return message.channel.send("I could not find that user inside my database. Have they spoken yet?");
-        }
-      }
+//      if (command === "givegems") {
+//        if (message.member.roles.has(config.adminID)) {
+//          let [cmd, , val] = message.content.split(" ")
+//          var target = message.mentions.users.first().id
+//
+//          if (!target) return message.channel.send("You need to specify who you would like to give gems to.");
+//
+//          if (target = await User.findOne({userId:target})) {
+//            target.gem += parseInt(val, 10);
+//            target.save();
+//          } else return message.channel.send("I could not find that user inside my database. Have they spoken yet?");
+//        }
+//      }
 
       if (command === "dmuser"){
         if (message.member.roles.has(config.adminID)){
@@ -1166,27 +1174,28 @@ console.log(timeRemaining)
         }
       }
 
-      if (command === "tradegems"){
-        let [cmd, value, target] = message.content.split(" ")
-        var targetuser = message.mentions.users.first().id
-            val = parseInt(value, 10)
-            if (!targetuser) return message.channel.send("ERROR: You need to define someone...")
-            if (val !== val || val <=0) return message.channel.send("ERROR: You need to give a real number of gems, negatives aren't allowed.")
-              if (val <= __user.gem){
-                if (targetuser = await User.findOne({userId:targetuser})){
-                  targetuser.gem += val
-                  targetuser.save()
-                  __user.gem -= val
-		  message.channel.send(`Successfully sent ${val} Gems to ${message.guild.member(targetuser.userId).user.tag}`)
-                }
-		else{
-		  message.channel.send("ERROR: The user isn't in the database yet... make sure they've sent at least one non-command message")
-                }
-              }
-              else{
-                message.channel.send("You don't have enough gems...")
-              }
-       }
+//      if (command === "tradegems"){
+//        let [cmd, value, target] = message.content.split(" ")
+//        var targetuser = message.mentions.users.first().id
+//            val = parseInt(value, 10)
+//            if (!targetuser) return message.channel.send("ERROR: You need to define someone...")
+//            if (val !== val || val <=0) return message.channel.send("ERROR: You need to give a real number of gems, negatives aren't allowed.")
+//              if (val <= __user.gem){
+//                if (targetuser = await User.findOne({userId:targetuser})){
+//                  targetuser.gem += val
+//                  targetuser.save()
+//                  __user.gem -= val
+//		  message.channel.send(`Successfully sent ${val} Gems to ${message.guild.member(targetuser.userId).user.tag}`)
+//                }
+//		else{
+//		  message.channel.send("ERROR: The user isn't in the database yet... make sure they've sent at least one non-command message")
+//                }
+//              }
+//              else{
+//                message.channel.send("You don't have enough gems...")
+//              }
+//       }
+
         if (command === "color" || command === "colour"){
           let [cmd, ...color] = message.content.split(" ")
           var rolename = `color - ${args.join(" ")}`,
@@ -1238,115 +1247,115 @@ console.log(timeRemaining)
           }
         }
 
-        if(command === "warn"){
-          let [cmd, target, ...reason] = message.content.split(" ")
-              reason = reason.join(" ")
-          if (message.member.roles.has(config.adminID)){
-            if (message.mentions.users.size){
-              var targetuser = message.mentions.users.first().id
-              if (reason){
-                if (!(targetuser = await User.findOne({userId:targetuser}))) {
-                  targetuser = await User.create({userId: targetuser});
-                }
+//        if(command === "warn"){
+//          let [cmd, target, ...reason] = message.content.split(" ")
+//              reason = reason.join(" ")
+//          if (message.member.roles.has(config.adminID)){
+//            if (message.mentions.users.size){
+//              var targetuser = message.mentions.users.first().id
+//              if (reason){
+//                if (!(targetuser = await User.findOne({userId:targetuser}))) {
+//                  targetuser = await User.create({userId: targetuser});
+//                }
+//
+//                await User.findByIdAndUpdate(targetuser._id, {$push:{warnings:{issuer: message.author.id, reason, date:new Date()}}}).then(() => {
+//                  message.channel.send(`${target}, you've been warned for \`${reason}\`. You currently have \`${targetuser.warnings.length + 1}\` total warnings.`)
+//                  message.delete()
+//                })
+//              }
+//              else message.channel.send("ERROR: You need to provide a reason for warning this user.")
+//            }
+//            else message.channel.send("ERROR: You need to define someone.")
+//          }
+//          else message.channel.send("Does it look like you're an admin?")
+//        }
 
-                await User.findByIdAndUpdate(targetuser._id, {$push:{warnings:{issuer: message.author.id, reason, date:new Date()}}}).then(() => {
-                  message.channel.send(`${target}, you've been warned for \`${reason}\`. You currently have \`${targetuser.warnings.length + 1}\` total warnings.`)
-                  message.delete()
-                })
-              }
-              else message.channel.send("ERROR: You need to provide a reason for warning this user.")
-            }
-            else message.channel.send("ERROR: You need to define someone.")
-          }
-          else message.channel.send("Does it look like you're an admin?")
-        }
 
+//        if (command === "viewwarn"){
+//          if (message.member.roles.has(config.adminID)){
+//            if (message.mentions.users.size){
+//              var targetuser = message.mentions.users.first().id
+//              var user = message.mentions.users.first().tag
+//                if (targetuser = await User.findOne({userId:targetuser})){
+//                  if (targetuser.warnings.length){
+//                    var stack = []
+//                    for (let i = 0; i < targetuser.warnings.length; ++i){
+//                      stack.push(function (callback){
+//                        bot.fetchUser(targetuser.warnings[i].issuer).then(user => callback(null, user.tag), err => callback(err))
+//                      })
+//                    }
+//
+//                    async.series(stack, function(err, userIDs){
+//                      if (err){
+//                        message.channel.send("ERROR: Unknown")
+//                        return console.error(err.stack)
+//                      }
+//
+//                      var msg = []
+//                      targetuser.warnings.forEach((warning, index) => {
+//                        msg.push(`Issued by: ${userIDs[index]}\nReason: ${warning.reason}\nDate: ${warning.date},\n`)
+//                      })
+//                      message.author.send(`Warnings for ${user}`)
+//                      message.author.send(msg)
+//                      message.delete()
+//                    })
+//                  }
+//                  else message.channel.send("This user has no recorded warnings.")
+//                }
+//                else message.channel.send("ERROR: That user isn't in the database yet. Make sure they've sent at least one non-command message.")
+//            }
+//            else message.channel.send("ERROR: You need to define someone")
+//          }
+//          else message.channel.send("Does it look like you're an admin?")
+//        }
 
-        if (command === "viewwarn"){
-          if (message.member.roles.has(config.adminID)){
-            if (message.mentions.users.size){
-              var targetuser = message.mentions.users.first().id
-              var user = message.mentions.users.first().tag
-                if (targetuser = await User.findOne({userId:targetuser})){
-                  if (targetuser.warnings.length){
-                    var stack = []
-                    for (let i = 0; i < targetuser.warnings.length; ++i){
-                      stack.push(function (callback){
-                        bot.fetchUser(targetuser.warnings[i].issuer).then(user => callback(null, user.tag), err => callback(err))
-                      })
-                    }
+//        if (command === "clearwarn"){
+//          let [cmd, user] = message.content.split(" ")
+//          if (message.member.roles.has(config.adminID)){
+//            if (message.mentions.users.size){
+//              var targetuser = message.mentions.users.first().id
+//              if (targetuser = await User.findOne({userId:targetuser})){
+//                targetuser.warnings = []
+//                targetuser.markModified("warnings")
+//                targetuser.save()
+//                message.channel.send(`Cleared the warnings for ${message.guild.member(targetuser.userId).user.tag}`)
+//                message.delete()
+//              }
+//            }
+//          }
+//          else (message.channel.send("Does it look like you're an admin?"))
+//        }
 
-                    async.series(stack, function(err, userIDs){
-                      if (err){
-                        message.channel.send("ERROR: Unknown")
-                        return console.error(err.stack)
-                      }
-
-                      var msg = []
-                      targetuser.warnings.forEach((warning, index) => {
-                        msg.push(`Issued by: ${userIDs[index]}\nReason: ${warning.reason}\nDate: ${warning.date},\n`)
-                      })
-                      message.author.send(`Warnings for ${user}`)
-                      message.author.send(msg)
-                      message.delete()
-                    })
-                  }
-                  else message.channel.send("This user has no recorded warnings.")
-                }
-                else message.channel.send("ERROR: That user isn't in the database yet. Make sure they've sent at least one non-command message.")
-            }
-            else message.channel.send("ERROR: You need to define someone")
-          }
-          else message.channel.send("Does it look like you're an admin?")
-        }
-
-        if (command === "clearwarn"){
-          let [cmd, user] = message.content.split(" ")
-          if (message.member.roles.has(config.adminID)){
-            if (message.mentions.users.size){
-              var targetuser = message.mentions.users.first().id
-              if (targetuser = await User.findOne({userId:targetuser})){
-                targetuser.warnings = []
-                targetuser.markModified("warnings")
-                targetuser.save()
-                message.channel.send(`Cleared the warnings for ${message.guild.member(targetuser.userId).user.tag}`)
-                message.delete()
-              }
-            }
-          }
-          else (message.channel.send("Does it look like you're an admin?"))
-        }
-
-        if (command === "lb" || command === "leaderboard" || command === "top10"){
-          let [ cmd, sort] = message.content.split(" ")
-              sort = (sort === "gems") ? "gem" : sort
-              sort = (["level", "levels", "lvl"].includes(sort)) ? "lvl" : sort
-
-              if (!["exp", "gem", "lvl"].includes(sort)) return message.channel.send("You can only sort by `exp`, `lvl`, and `gems`.")
-              const result = await User.find({}, `userId ${sort}`, {sort:{[sort]:-1}, limit:10})
-
-              let stack = [];
-              result.map(r => stack.push(callback => {
-                bot.fetchUser(r.userId).then(user => callback(null, {user:user.tag, result:r[sort]}), err => callback(err));
-              }));
-
-              async.series(stack, function(err, result) {
-                if (err) {
-                  message.channel.send("ERROR: Unknown");
-                  console.error(err.stack);
-                }
-
-                let msg = []
-                msg.push("```")
-                result.forEach((userId, index) => {
-                  msg.push(`${index + 1}. ${userId.user} | ${sort} ${userId.result}`)
-                })
-                msg.push("```")
-                message.author.send(`Sorted by ${sort}`)
-                message.author.send(msg)
-                message.delete()
-              });
-        	}
+//        if (command === "lb" || command === "leaderboard" || command === "top10"){
+//          let [ cmd, sort] = message.content.split(" ")
+//              sort = (sort === "gems") ? "gem" : sort
+//              sort = (["level", "levels", "lvl"].includes(sort)) ? "lvl" : sort
+//
+//              if (!["exp", "gem", "lvl"].includes(sort)) return message.channel.send("You can only sort by `exp`, `lvl`, and `gems`.")
+//              const result = await User.find({}, `userId ${sort}`, {sort:{[sort]:-1}, limit:10})
+//
+//              let stack = [];
+//              result.map(r => stack.push(callback => {
+//                bot.fetchUser(r.userId).then(user => callback(null, {user:user.tag, result:r[sort]}), err => callback(err));
+//              }));
+//
+//              async.series(stack, function(err, result) {
+//                if (err) {
+//                  message.channel.send("ERROR: Unknown");
+//                  console.error(err.stack);
+//                }
+//
+//                let msg = []
+//                msg.push("```")
+//                result.forEach((userId, index) => {
+//                  msg.push(`${index + 1}. ${userId.user} | ${sort} ${userId.result}`)
+//                })
+//                msg.push("```")
+//                message.author.send(`Sorted by ${sort}`)
+//                message.author.send(msg)
+//                message.delete()
+//              });
+//        	}
         
         if (command === "newcmd"){
         if (message.author.id != config.ownerID) return message.channel.send("ERROR: Only the owner can use this command.")
@@ -1364,23 +1373,23 @@ console.log(timeRemaining)
 			message.delete()
         }
         
-        if (command === "dblookup"){
-        	let [cmd, target] = message.content.split(" ")
-        		if (target){
-        			if (target = await User.findOne({userId:target})){
-						message.channel.send({
-              		  	embed: {
-                				color: message.member.displayColor,
-             				   title: `Stats for ${target.userId}:`,
-            				    description: `Level: ${target.lvl} \nEXP/Next LVL: ${target.exp}/${target.nxtlvl} \nGems: ${target.gem} \nInventory: ${target.inv} \nCurrent Chain: ${target.rewardChain} \nLast Reward: ${target.lastReward.toUTCString()}`,
-     			  	         footer: {text: `Executed by: ${message.author.tag}`, iconURL: message.author.avatarURL}
-          			   	 }
-         			    })
-        			}
-        			else message.channel.send("ERROR: No user with that ID exists in the database.")
-				}
-				else message.channel.send("ERROR: You need to define an ID")
-		}
+//        if (command === "dblookup"){
+//        	let [cmd, target] = message.content.split(" ")
+//        		if (target){
+//        			if (target = await User.findOne({userId:target})){
+//						message.channel.send({
+//              		  	embed: {
+//                				color: message.member.displayColor,
+//             				   title: `Stats for ${target.userId}:`,
+//            				    description: `Level: ${target.lvl} \nEXP/Next LVL: ${target.exp}/${target.nxtlvl} \nGems: ${target.gem} \nInventory: ${target.inv} \nCurrent Chain: ${target.rewardChain} \nLast Reward: ${target.lastReward.toUTCString()}`,
+//     			  	         footer: {text: `Executed by: ${message.author.tag}`, iconURL: message.author.avatarURL}
+//          			   	 }
+//         			    })
+//        			}
+//        			else message.channel.send("ERROR: No user with that ID exists in the database.")
+//				}
+//				else message.channel.send("ERROR: You need to define an ID")
+//		}
 		
 		if (command === "msay"){
 			let [cmd, ...msg] = message.content.split(" ")
@@ -1578,54 +1587,54 @@ console.log(timeRemaining)
       message.channel.send("Fuck off, Senpoi.")
     }
 
-    // increment the user's experience
-    while (__user.exp >= __user.nxtlvl) {
-      __user.lvl += 1
-      __user.nxtlvl += (__user.lvl * 100 * 1.3)
-    }
+//    // increment the user's experience
+//    while (__user.exp >= __user.nxtlvl) {
+//      __user.lvl += 1
+//      __user.nxtlvl += (__user.lvl * 100 * 1.3)
+//    }
   }
 
-    // overcomplicated rank adding code
-    if (__user.lvl >= 5){
-      if (!message.member.roles.has("403125967939436545")){
-        message.member.addRole("403125967939436545")
-	message.author.send("You've ranked up to `NewCummer`!")
-      }
-    }
-
-    if (__user.lvl >= 10){
-      if (!message.member.roles.has("403126021500567552")){
-        message.member.addRole("403126021500567552")
-	message.author.send("You've ranked up to `Daily Fapper`! \nYou can now use the command `/color`. ")
-      }
-    }
-
-    if (__user.lvl >= 30){
-      if (!message.member.roles.has("403126248487780372")){
-        message.member.addRole("403126248487780372")
-	message.author.send("You've ranked up to `Addicted to Porn`!")
-      }
-    }
-
-    if (__user.lvl >= 60){
-      if (!message.member.roles.has("403126385981521941")){
-        message.member.addRole("403126385981521941")
-	message.author.send("You've ranked up to `Pervert!`")
-      }
-    }
-
-    if (__user.lvl >= 100){
-      if (!message.member.roles.has("403126466210037771")){
-        message.member.addRole("403126466210037771")
-	message.author.send("Holy shit, you've become a `God of Lewdness`.. This is the highest possible rank you can get!")
-      }
-    }
-
-
-  __user.isModified()? __user.save() : void 0 ;
+//    // overcomplicated rank adding code
+//    if (__user.lvl >= 5){
+//      if (!message.member.roles.has("403125967939436545")){
+//        message.member.addRole("403125967939436545")
+//	message.author.send("You've ranked up to `NewCummer`!")
+//      }
+//    }
+//
+//    if (__user.lvl >= 10){
+//      if (!message.member.roles.has("403126021500567552")){
+//        message.member.addRole("403126021500567552")
+//	message.author.send("You've ranked up to `Daily Fapper`! \nYou can now use the command `/color`. ")
+//      }
+//    }
+//
+//    if (__user.lvl >= 30){
+//      if (!message.member.roles.has("403126248487780372")){
+//        message.member.addRole("403126248487780372")
+//	message.author.send("You've ranked up to `Addicted to Porn`!")
+//      }
+//    }
+//
+//    if (__user.lvl >= 60){
+//      if (!message.member.roles.has("403126385981521941")){
+//        message.member.addRole("403126385981521941")
+//	message.author.send("You've ranked up to `Pervert!`")
+//      }
+//    }
+//
+//    if (__user.lvl >= 100){
+//      if (!message.member.roles.has("403126466210037771")){
+//        message.member.addRole("403126466210037771")
+//	message.author.send("Holy shit, you've become a `God of Lewdness`.. This is the highest possible rank you can get!")
+//      }
+//    }
+//
+//
+//  __user.isModified()? __user.save() : void 0 ;
 })
 
-if (config.devmode) {
+if (config.devmode) { // is this even needed still? -Zuris
   ipc.serveNet()
 } else {
   ipc.serve()
