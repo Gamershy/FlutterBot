@@ -34,7 +34,7 @@ function ErrorHandler(err) {
   let errBody;
   
   if (err.name) errHeader = `${err.name} - ${dateFormatted}`; else errHeader = `Error occurred - ${dateFormatted}`;
-  if (err.stack) errBody = err.stack; else errBody = err;
+  if (err.stack) errBody = err.stack; else errBody = JSON.stringify(err);
   
   let shy = bot.fetchUser("104674953382612992");
   let wolf = bot.fetchUser("204316640735789056");
