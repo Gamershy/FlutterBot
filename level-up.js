@@ -1,10 +1,4 @@
 //    TODO: re-implement
-//    // increment the user's experience
-//    while (__user.exp >= __user.nxtlvl) {
-//      __user.lvl += 1
-//      __user.nxtlvl += (__user.lvl * 100 * 1.3)
-//    }
-
 //    // overcomplicated rank adding code
 //    if (__user.lvl >= 5){
 //      if (!message.member.roles.has("403125967939436545")){
@@ -43,3 +37,21 @@
 //
 //
 //  __user.isModified()? __user.save() : void 0 ;
+
+const User = db.model("User");
+
+function callback(document) {
+  if (document.exp > document.nxtlvl) {
+    return User.findOneAndUpdate({ userId:this.author.id },
+                                 { $inc: { lvl:1, nxtlvl:(document.lvl * 100 * 1.3) } },
+                                 { "upsert":true, "setDefaultsOnInsert":true, "new":true }, bind(this));
+  }
+
+
+};
+
+function bind(message) {
+  return callback.bind(message);
+}
+
+module.exports = bind;
