@@ -498,13 +498,6 @@ bot.on('message', async message => {
     return;
   }
 
-  let __user = await User.findOne({userId: message.author.id});
-
-  // create a new user if one doesn't exist already
-  if (!__user) __user = new User({
-    userId: message.author.id
-  });
-
   if (/^(\/|>|!|\?|%|\$|&|#|\=|\+)/.test(message.content)) {
     const [command, ...args] = message.content.slice(-(message.content.length - "/".length)).split(" ");
     var logchan = message.guild.channels.get("364658410605772802")
