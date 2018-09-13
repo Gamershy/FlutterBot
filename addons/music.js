@@ -14,6 +14,7 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")) {
 
 const music = require("opusscript");
 const yt = require("youtube-node");
+// noinspection JSCheckFunctionSignatures
 const bot = new Discord.Client({
   fetchAllMembers: true,
   disabledEvents: ["TYPING_START"]
@@ -99,7 +100,7 @@ ipc.of["FB"].on("music.say", msg => {
   bot.guilds.first().defaultChannel.send(msg)
 });
 
-ipc.of["FB"].on("shutdown", m => {
+ipc.of["FB"].on("shutdown", () => {
   bot.destroy()
     .then(process.exit())
 });
@@ -125,7 +126,7 @@ ipc.of["FB"].on("music.play", args => {
   })
 });
 
-ipc.of["FB"].on("music.stop", s => {
+ipc.of["FB"].on("music.stop", () => {
   voiceChannel.disconnect()
 });
 
