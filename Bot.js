@@ -17,6 +17,7 @@ const ipc = require("node-ipc");
 const async = require("async");
 const path = require("path");
 const config = require('./config.js');
+// noinspection JSCheckFunctionSignatures
 const bot = new Discord.Client({
   fetchAllMembers: true,
   disabledEvents: ["TYPING_START"]
@@ -31,6 +32,7 @@ const rl = readline.createInterface({
 const fs = require("fs");
 
 const bindUpdateCallback = require("./level-up");
+const roller = Fawn.Roller();
 
 ipc.config.id = "FB";
 ipc.config.socketRoot = path.join(__dirname, "sockets");
@@ -277,8 +279,7 @@ function evalBooruCmd(input) { // what is this?
   return {"tags": tags, "number": number}
 }
 
-// TODO: replace with Math.min and Math.max calls (Gen, what the fuck were
-// you thinking when you told Shy to do it like this?)
+// TODO: replace with Math.min and Math.max calls (Gen, what the fuck were you thinking when you told Shy to do it like this?)
 function constrain(minimum, maximum, value) {
   if (value > maximum) value = maximum;
   if (value < minimum) value = minimum;
@@ -288,12 +289,8 @@ function constrain(minimum, maximum, value) {
 //sorting stuff
 function predicatBy(prop) {
   return function (a, b) {
-    if (a[prop] > b[prop]) {
-      return 1;
-    } else if (a[prop] < b[prop]) {
-      return -1;
-    }
-    return 0;
+    // Much better way of doing things. Just don't pass strings XD
+    return a[prop] - b[prop];
   }
 }
 
@@ -304,11 +301,14 @@ function predicatBy(prop) {
  */
 function sortBooru(data, num) {
   var common = [];
-  for (image of data) {
+
+  for (let image of data) {
     common.push(image.common)
   }
+
   //for (image of data) { console.log(image.common) }
   common.sort(predicatBy("score")).reverse();
+
   //console.log("commonyfied data: ")
   //for (image of common){console.log(image.score)}
   if (common.length > num) {
@@ -834,11 +834,10 @@ bot.on('message', async message => {
         var cmd = args.join(" ");
         var eval = evalBooruCmd(cmd);
         booru.search("r34", eval.tags, {limit: 5, random: true})
-          .then(booru.commonfy)
           .then(images => {
             var sorted = sortBooru(images, constrain(1, 5, eval.number));
             for (let image of sorted) {
-              message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \nhttps:${image.file_url}`)
+              message.channel.send(`\`Rating: ${image.common.rating}\` \n\`Score: ${image.common.score}\` \nhttps:${image.common.file_url}`)
             }
           })
       }
@@ -848,16 +847,15 @@ bot.on('message', async message => {
         var eval = evalBooruCmd(cmd);
         message.channel.startTyping();
         booru.search("r34", eval.tags, {
-            limit: constrain(1, 5, eval.number),
-            random: true
-          })
-          .then(booru.commonfy)
-          .then(images => {
-            for (let image of images) {
-              message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \n${image.file_url}`)
-            }
-            message.channel.stopTyping()
-          }).catch(() => {
+          limit: constrain(1, 5, eval.number),
+          random: true
+        })
+        .then(images => {
+          for (let image of images) {
+            message.channel.send(`\`Rating: ${image.common.rating}\` \n\`Score: ${image.common.score}\` \n${image.common.file_url}`)
+          }
+          message.channel.stopTyping()
+        }).catch(() => {
           message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
         });
       }
@@ -876,16 +874,14 @@ bot.on('message', async message => {
         var eval = evalBooruCmd(cmd);
         message.channel.startTyping();
         booru.search("e6", eval.tags, {
-            limit: constrain(1, 5, eval.number),
-            random: true
-          })
-          .then(booru.commonfy)
-          .then(images => {
-            for (let image of images) {
-              message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \n${image.file_url}`)
-            }
-            message.channel.stopTyping()
-          }).catch(() => {
+          limit: constrain(1, 5, eval.number),
+          random: true
+        }).then(images => {
+          for (let image of images) {
+            message.channel.send(`\`Rating: ${image.common.rating}\` \n\`Score: ${image.common.score}\` \n${image.common.file_url}`)
+          }
+          message.channel.stopTyping()
+        }).catch(() => {
           message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
         });
       }
@@ -895,16 +891,15 @@ bot.on('message', async message => {
         var eval = evalBooruCmd(cmd);
         message.channel.startTyping();
         booru.search("dp", eval.tags, {
-            limit: constrain(1, 5, eval.number),
-            random: true
-          })
-          .then(booru.commonfy)
-          .then(images => {
-            for (let image of images) {
-              message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \n${image.file_url}`)
-            }
-            message.channel.stopTyping()
-          }).catch(() => {
+          limit: constrain(1, 5, eval.number),
+          random: true
+        })
+        .then(images => {
+          for (let image of images) {
+            message.channel.send(`\`Rating: ${image.common.rating}\` \n\`Score: ${image.common.score}\` \n${image.common.file_url}`)
+          }
+          message.channel.stopTyping()
+        }).catch(() => {
           message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
         });
       }
@@ -1210,27 +1205,55 @@ bot.on('message', async message => {
         }
       }
 
-//      if (command === "tradegems"){
-//        let [, value, target] = message.content.split(" ")
-//        var targetuser = message.mentions.users.first().id
-//            val = parseInt(value, 10)
-//            if (!targetuser) return message.channel.send("ERROR: You need to define someone...")
-//            if (val !== val || val <=0) return message.channel.send("ERROR: You need to give a real number of gems, negatives aren't allowed.")
-//              if (val <= __user.gem){
-//                if (targetuser = await User.findOne({userId:targetuser})){
-//                  targetuser.gem += val
-//                  targetuser.save()
-//                  __user.gem -= val
-//		  message.channel.send(`Successfully sent ${val} Gems to ${message.guild.member(targetuser.userId).user.tag}`)
-//                }
-//		else{
-//		  message.channel.send("ERROR: The user isn't in the database yet... make sure they've sent at least one non-command message")
-//                }
-//              }
-//              else{
-//                message.channel.send("You don't have enough gems...")
-//              }
-//       }
+      if (command === "tradegems") {
+        let [, value] = message.content.split(" ");
+        var target_user = message.mentions.users.first();
+        value = parseInt(value, 10);
+        if (!target_user) return message.channel.send("ERROR: You need to define someone...");
+        if (value !== value || value <= 0) return message.channel.send("ERROR: You need to give a real number of gems, negatives aren't allowed.");
+
+        User.findOne({userId:message.author.id}, {userId:1, gem:1}, function handle(err, results) {
+          const trade = Fawn.Task();
+
+          if (err) {
+            console.log(err);
+            return message.reply("There was an unknown error when attempting to transfer gems. "
+              + "Please wait for confirmation that the problem has been solved, "
+              + "and then try again.");
+          }
+
+          if (!results) {
+            return User.create({userId:message.author.id}, handle);
+          }
+
+          if (results.gem - value < 0) return message.reply("You do not have enough gems! "
+            + `(Current: ${results.gem}, required: ${value} or more.)`)
+            .then(m => m.delete(5000));
+
+          message.reply("Transferring :gem:" + value + " to " + target_user.tag)
+            .then(m => m.delete(5000));
+
+          function then() {
+            message.reply("Successfully transferred :gem:" + value + " to " + target_user.tag + "!")
+              .then(m => m.delete(5000))
+              .then(() => message.delete());
+          }
+
+          function error(err) {
+            console.log(err);
+            return message.reply("There was an unknown error when attempting to transfer gems. "
+              + "Please wait for confirmation that the problem has been solved, "
+              + "and then try again.")
+              .then(m => m.delete(5000))
+              .then(() => message.delete());
+          }
+
+          trade.update(User, {userId:results.userId}, {$inc: {gem:-value}})
+            .update(User, {userId:target_user.id}, {$inc: {gem:value}})
+            .run({"useMongoose": true})
+            .then(then, error);
+        });
+      }
 
       if (command === "color" || command === "colour") {
         let [, ...color] = message.content.split(" ");
@@ -1409,23 +1432,23 @@ bot.on('message', async message => {
         message.delete()
       }
 
-//        if (command === "dblookup"){
-//        	let [, target] = message.content.split(" ")
-//        		if (target){
-//        			if (target = await User.findOne({userId:target})){
-//						message.channel.send({
-//              		  	embed: {
-//                				color: message.member.displayColor,
-//             				   title: `Stats for ${target.userId}:`,
-//            				    description: `Level: ${target.lvl} \nEXP/Next LVL: ${target.exp}/${target.nxtlvl} \nGems: ${target.gem} \nInventory: ${target.inv} \nCurrent Chain: ${target.rewardChain} \nLast Reward: ${target.lastReward.toUTCString()}`,
-//     			  	         footer: {text: `Executed by: ${message.author.tag}`, iconURL: message.author.avatarURL}
-//          			   	 }
-//         			    })
-//        			}
-//        			else message.channel.send("ERROR: No user with that ID exists in the database.")
-//				}
-//				else message.channel.send("ERROR: You need to define an ID")
-//		}
+      if (command === "dblookup"){
+        let [, target] = message.content.split(" ")
+        if (target){
+          if (target = await User.findOne({userId:target})){
+            message.channel.send({
+              embed: {
+                color: message.member.displayColor,
+                title: `Stats for ${target.userId}:`,
+                description: `Level: ${target.lvl} \nEXP/Next LVL: ${target.exp}/${target.nxtlvl} \nGems: ${target.gem} \nInventory: ${target.inv} \nCurrent Chain: ${target.rewardChain} \nLast Reward: ${target.lastReward.toUTCString()}`,
+                footer: {text: `Executed by: ${message.author.tag}`, iconURL: message.author.avatarURL}
+              }
+            })
+          }
+          else message.channel.send("ERROR: No user with that ID exists in the database.")
+        }
+        else message.channel.send("ERROR: You need to define an ID")
+      }
 
       if (command === "msay") {
         let [, ...msg] = message.content.split(" ");
@@ -1607,11 +1630,8 @@ bot.on('message', async message => {
   else {
     User.findOneAndUpdate({userId: message.author.id},
       {$inc: {exp: Math.floor(Math.random() * 15)}},
-      {
-        "upsert": true,
-        "setDefaultsOnInsert": true,
-        "new": true
-      }, bindUpdateCallback(message));
+      {"upsert": true, "setDefaultsOnInsert": true, "new": true})
+      .then(...bindUpdateCallback(message));
 
     console.log("[" + message.channel.name + "] " + message.author.tag + "> " + message.content);
 
@@ -1654,4 +1674,6 @@ if (config.devmode) { // is this even needed still? -Zuris
 ipc.server.on("start", () => {
   addons.music = child_process.spawn("node", ["./addons/music.js"], ["ignore", process.stdout, process.stderr])
 });
-bot.login(config.botToken);
+
+// Roll back all incomplete transactions before starting the bot
+roller.roll().then(() => bot.login(config.botToken));
