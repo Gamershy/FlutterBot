@@ -12,6 +12,7 @@
   "author": "Gamershy",
   "license": "ISC",
   "dependencies": {
+    "async": "^2.6.1",
     "booru": "^0.5.0",
     "discord.js": "^11.3.0",
     "ffmpeg": "0.0.4",

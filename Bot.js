@@ -1,4 +1,4 @@
-const Discord = require('discord.js')
+const Discord = require('discord.js');
 if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")) {
   Object.defineProperty(Discord.Guild.prototype, "defaultChannel", {
     get: function () {
@@ -8,30 +8,33 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")) {
   });
 }
 
-var addons = {}
-var disabledCommands = ["play", "stop"]
+var addons = {};
+var disabledCommands = ["play", "stop"];
 //var queue = []
-const ipc = require("node-ipc")
-const async = require("async")
-const path = require("path")
-const mongoose = require("./Mongoose/index.js")
-const config = require('./config.js')
-const permban = require(`./permban.js`)
-const bot = new Discord.Client({fetchAllMembers: true, disabledEvents: ["TYPING_START"]})
-const readline = require("readline")
-const booru = require("booru")
-const child_process = require("child_process")
+const ipc = require("node-ipc");
+const async = require("async");
+const path = require("path");
+const mongoose = require("./Mongoose/index.js");
+const config = require('./config.js');
+const permban = require(`./permban.js`);
+const bot = new Discord.Client({
+  fetchAllMembers: true,
+  disabledEvents: ["TYPING_START"]
+});
+const readline = require("readline");
+const booru = require("booru");
+const child_process = require("child_process");
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
-})
-const fs = require("fs")
+});
+const fs = require("fs");
 
 const bindUpdateCallback = require("./level-up");
 
-ipc.config.id = "FB"
-ipc.config.socketRoot = path.join(__dirname, "sockets")
-ipc.config.socketRoot += "/"
+ipc.config.id = "FB";
+ipc.config.socketRoot = path.join(__dirname, "sockets");
+ipc.config.socketRoot += "/";
 
 //Schema Variables
 var User = db.model("User");
@@ -69,7 +72,7 @@ const porntrigger = [
   "Porn?",
   "Yep, that's what this server is for.",
   "Anal is the best way to avoid teen pregnancy."
-]
+];
 const size = [
   "8================D",
   "8=====D",
@@ -78,7 +81,7 @@ const size = [
   ".",
   "8=============D",
   "8==============================D"
-]
+];
 const playingmsg = [
   "with tools in slot 'A'",
   "Banned from Equestria",
@@ -111,7 +114,7 @@ const playingmsg = [
   "with Shy's food",
   "Wondering how the fuck a pony can turn into a dragon",
   "Anime is for plebs."
-]
+];
 
 const pingmsg = [
   "Porn, I mean, Pong!",
@@ -132,7 +135,7 @@ const pingmsg = [
   "pong, ping, pong, ping, pong",
   "<insert spammy response here>",
 
-]
+];
 
 const BoopImg = [
   "https://cdn.discordapp.com/attachments/270372438825500672/283016843030036481/271618__UNOPT__safe_animated_scrunchy-face_boop_marker-pony_extreme-speed-animation.gif",
@@ -148,7 +151,7 @@ const BoopImg = [
   "https://cdn.discordapp.com/attachments/313132381488021524/333866852197466112/386aeecf-8e2b-499d-802f-0bf099d557fc.gif",
   "https://cdn.discordapp.com/attachments/313132381488021524/333867183828500480/24ed5466-02ad-405d-8155-9e4c59807ddd.gif",
   "https://cdn.discordapp.com/attachments/334886087925301250/334886120431288341/image.gif",
-]
+];
 const tagrespond = [
   "What the fuck do you want?",
   "Don't you know it's rude to tag a girl while she's hoof deep in her pussy?",
@@ -188,7 +191,7 @@ const tagrespond = [
   "Hm hm hm... Stop.",
   "What do you want.?",
   "If you're tagging me for commands, just type `/commands`, it's that simple."
-]
+];
 const leavemsg = [
   "cya |, you probably won't be missed~",
   "| has decided the porn was too much",
@@ -196,7 +199,7 @@ const leavemsg = [
   "| has left us. Press F to pay your respex",
   "Error 404, | can no longer be found",
   "RIP |, you might be missed"
-]
+];
 var commands = [
   {"name": "/ping", "result": "See how fast she responds."},
   {"name": "/HDButt", "result": "Butts in HD ;3"},
@@ -212,10 +215,7 @@ var commands = [
   {"name": "/cat", "result": "Meow~"},
   {"name": "/kawaiipuss", "result": "See some sexy pussy"},
   {"name": "/yt <query>", "result": "Search youtube for a video"},
-  {
-    "name": "/r34 <Tags> [Number]",
-    "result": "Search R34 for some porn. Leaving the tags blank will yield random results"
-  },
+  {"name": "/r34 <Tags> [Number]", "result": "Search R34 for some porn. Leaving the tags blank will yield random results"},
   {"name": "/r34top <Tags> [Number]", "result": "Search R34 for the top scored porn."},
   {"name": "/gudbat", "result": "Good bat~"},
   {"name": "/loodbat", "result": "Lewd Bat."},
@@ -232,46 +232,46 @@ var commands = [
   {"name": "/color", "result": "Get a new color (requires Daily Fapper role)"},
   {"name": "/imtaken", "result": "Mark yourself as being in a relationship"},
   {"name": "/request", "result": "Make a suggestion for improvements to the server. I will give further details when the command is used. Suggestions are logged to <#469557897513271316>."}
-]
+];
 var admincmds = [
   {"name": "/mute @user", "result": "Mutes a user as punishment"},
   {"name": "/unmute @user", "result": "Unmutes a user"},
   {"name": "/kick @user", "result": "Kicks a user from the server"},
   {"name": "/ban <@user> [reason]", "result": "Bans a user from the server. Talk to Shy about unbanning."},
   {"name": "/info @user", "result": "Displays information about a user. Useful for seeing when accounts were made."},
-  {"name": "/announce <r/y/l/b> <title> <content>",
-    "result": "Send an announcement to #announcements, ALL ARGUMENTS REQUIRED. r = red, y = yellow, l = lightblue, b = blue. Blue doesn't tag @everyone."},
+  {"name": "/announce <r/y/l/b> <title> <content>", "result": "Send an announcement to #announcements, ALL ARGUMENTS REQUIRED. r = red, y = yellow, l = lightblue, b = blue. Blue doesn't tag @everyone."},
   {"name": "/warn <user> <reason>", "result": "Warn a user for breaking rules. REASON IS REQUIRED"},
   {"name": "/clearwarn <user>", "result": "Clear all warnings from a specified user. DO NOT ABUSE THIS COMMAND"},
   {"name": "/viewwarn <user>", "result": "View the warnings given to a specified user. DM response"}
-]
+];
 
-var dev = config.devmode
-var YouTube = require('youtube-node')
-var youTube = new YouTube()
+var dev = config.devmode;
+var YouTube = require('youtube-node');
+var youTube = new YouTube();
+
 function evalBooruCmd(input) { // what is this?
   //cleanup
-  input = input.replace(/,/g, " ") // replace commas with space (incase someone does tag,tag)
-  input = input.replace(/\s+/g, ' ')//replace excess whitespace ("tag  tag" -> "tag tag")
-  input = input.trim() //remove trailing whitespace ("tag tag " -> "tag tag")
+  input = input.replace(/,/g, " "); // replace commas with space (incase someone does tag,tag)
+  input = input.replace(/\s+/g, ' ');//replace excess whitespace ("tag  tag" -> "tag tag")
+  input = input.trim(); //remove trailing whitespace ("tag tag " -> "tag tag")
 
-  var values = input.split(" ")
-  var tags
-  var integerFound = false
+  var values = input.split(" ");
+  var tags;
+  var integerFound = false;
   for (n in values) {
     if (parseInt(values[n])) {
       //integer found.
-      tags = values.splice(0, n)
+      tags = values.splice(0, n);
       //values now has the integer tags has the tags
       integerFound = true //yep we found a integer
     }
   }
 
-  var number
+  var number;
   if (integerFound) {
     number = parseInt(values[0])
   } else {
-    number = 1
+    number = 1;
     tags = values //didnt find a integer so "values" only contains tags
   }
   return {"tags": tags, "number": number}
@@ -280,8 +280,8 @@ function evalBooruCmd(input) { // what is this?
 // TODO: replace with Math.min and Math.max calls (Gen, what the fuck were
 // you thinking when you told Shy to do it like this?)
 function constrain(minimum, maximum, value) {
-  if (value > maximum) value = maximum
-  if (value < minimum) value = minimum
+  if (value > maximum) value = maximum;
+  if (value < minimum) value = minimum;
   return value
 }
 
@@ -303,16 +303,16 @@ function predicatBy(prop) {
  * @param {number} num number of results to get
  */
 function sortBooru(data, num) {
-  var common = []
+  var common = [];
   for (image of data) {
     common.push(image.common)
   }
   //for (image of data) { console.log(image.common) }
-  common.sort(predicatBy("score")).reverse()
+  common.sort(predicatBy("score")).reverse();
   //console.log("commonyfied data: ")
   //for (image of common){console.log(image.score)}
   if (common.length > num) {
-    var ret = []
+    var ret = [];
     for (var n = 0; n < num; n++) {
       ret.push(common[n])
     }
@@ -341,9 +341,14 @@ function ErrorHandler(err) {
   Promise.all([shy, wolf]).then(users => {
     new Promise((resolve, reject) => {
       let _userId = 0;
-      let send = function(user) {
+      let send = function (user) {
         try {
-          user.send({embed: {title: errHeader, description: `\`\`\`xl\n${errBody}\n\`\`\``}}).then(() => {
+          user.send({
+            embed: {
+              title: errHeader,
+              description: `\`\`\`xl\n${errBody}\n\`\`\``
+            }
+          }).then(() => {
             _userId++;
 
             if (_userId === users.length) {
@@ -355,7 +360,7 @@ function ErrorHandler(err) {
         } catch (e) {
           reject(e);
         }
-      }
+      };
 
       send(users[_userId]);
     }).then(() => bot.destroy())
@@ -363,8 +368,7 @@ function ErrorHandler(err) {
   }).catch(e => {
     console.log("Failed with", e.stack);
   });
-};
-
+}
 process.on("unhandledRejection", ErrorHandler);
 bot.on("error", ErrorHandler); // perform same actions as unhandledRejection.
 
@@ -384,16 +388,16 @@ process.on("exit", () => {
 // The ready event is fired when the bot begins receiving information from Discord.
 // Note to self: when pasting in a comment, don't accidentally delete the handler.
 bot.on("ready", () => {
-  console.log("Online~")
+  console.log("Online~");
   suggestionsChannel = bot.channels.get("469557897513271316");
   reactions.upvote = bot.guilds.first().emojis.get("469576069314510858");
   reactions.downvote = bot.guilds.first().emojis.get("469576210368954378");
   var timer = setInterval(() => {
     bot.user.setActivity(playingmsg[Math.floor(Math.random() * playingmsg.length)], {type: "PLAYING"})
-  }, 1000 * 60 * 60)
-  var guld = bot.guilds.first().defaultChannel
+  }, 1000 * 60 * 60);
+  var guld = bot.guilds.first().defaultChannel;
 
-  youTube.setKey(config.ytKey)
+  youTube.setKey(config.ytKey);
   if (dev == true) {
     guld.send(`Dev Build ${config.devver}`)
   }
@@ -437,57 +441,57 @@ bot.on("ready", () => {
     });
 
     guld.send(inputStr);
-  })
+  });
   ipc.server.start()
 });
 
 bot.on("guildMemberAdd", member => {
-  member.guild.defaultChannel.send(`Whalecum ${member} to the server! Be sure to read <#249401654003105792> before you post.`)
+  member.guild.defaultChannel.send(`Whalecum ${member} to the server! Be sure to read <#249401654003105792> before you post.`);
   member.guild.channels.get("424870218414948367").send("User: " + member.user.username + "\nID: " + member.id + "\nStatus: " + member.presence.status + "\nAccount Created: " + member.user.createdAt + "\nJoined Server: " + member.joinedAt + "\nAvatar URL: " + "<" + member.user.avatarURL + ">" + "\nBot?: " + member.user.bot)
-})
+});
 
 bot.on("guildMemberRemove", member => {
-  var selmsg = leavemsg[Math.floor(Math.random() * leavemsg.length)]
-  var parseleave = selmsg.split("|")
-  member.guild.defaultChannel.send(`${parseleave[0]} ${member.displayName} ${parseleave[1]}`)
-  member.guild.channels.get("424870218414948367").send("User: " + member.user.username + " Left server at: " + new Date().toUTCString() )
-})
+  var selmsg = leavemsg[Math.floor(Math.random() * leavemsg.length)];
+  var parseleave = selmsg.split("|");
+  member.guild.defaultChannel.send(`${parseleave[0]} ${member.displayName} ${parseleave[1]}`);
+  member.guild.channels.get("424870218414948367").send("User: " + member.user.username + " Left server at: " + new Date().toUTCString())
+});
 
 bot.on("roleDelete", delrole => {
   if (delrole.guild) {
     delrole.guild.defaultChannel.send(`The role "` + delrole.name + `" has been deleted.`)
   }
-})
+});
 
 bot.on("channelCreate", createchnl => {
   if (createchnl.guild) {
     createchnl.guild.defaultChannel.send("Created new channel: " + createchnl)
   }
-})
+});
 bot.on("channelDelete", delchnl => {
   if (delchnl.guild) {
     delchnl.guild.defaultChannel.send("Deleted Channel: " + delchnl.name)
   }
-})
+});
 
 bot.on("messageDelete", message => {
-	var logchan = message.guild.channels.get("364658410605772802")
-		logchan.send({
-  	  	embed: {
-    			author: {
-      		  	name: `${message.member.displayName} | ${message.author.tag} (${message.author.id})`,
-      			  icon_url: message.author.displayAvatarURL
-    			},
-    			color: message.member.displayColor,
-    			title: `Message posted ${message.createdAt.toUTCString()} ${message.id}`,
-    			description: message.cleanContent,
-    			footer: {
-      		  	text: `Deleted from #${message.channel.name} at ${new Date().toUTCString()}`
-    			}
- 			}
-		}
- )
-})
+  var logchan = message.guild.channels.get("364658410605772802");
+  logchan.send({
+      embed: {
+        author: {
+          name: `${message.member.displayName} | ${message.author.tag} (${message.author.id})`,
+          icon_url: message.author.displayAvatarURL
+        },
+        color: message.member.displayColor,
+        title: `Message posted ${message.createdAt.toUTCString()} ${message.id}`,
+        description: message.cleanContent,
+        footer: {
+          text: `Deleted from #${message.channel.name} at ${new Date().toUTCString()}`
+        }
+      }
+    }
+  )
+});
 
 // create an event listener for messages
 bot.on('message', async message => {
@@ -500,10 +504,10 @@ bot.on('message', async message => {
 
   if (/^(\/|>|!|\?|%|\$|&|#|\=|\+)/.test(message.content)) {
     const [command, ...args] = message.content.slice(-(message.content.length - "/".length)).split(" ");
-    var logchan = message.guild.channels.get("364658410605772802")
-    var announcechan = message.guild.channels.get("250781565817192458")
-    logchan.send(`{${message.channel.name}}[${message.author.tag}]: ${message.cleanContent}`)
-    if (disabledCommands.includes(command) && ![config.ownerID, "204316640735789056"].includes(message.author.id)) return maintenancemsg(message)
+    var logchan = message.guild.channels.get("364658410605772802");
+    var announcechan = message.guild.channels.get("250781565817192458");
+    logchan.send(`{${message.channel.name}}[${message.author.tag}]: ${message.cleanContent}`);
+    if (disabledCommands.includes(command) && ![config.ownerID, "204316640735789056"].includes(message.author.id)) return maintenancemsg(message);
     if (message.guild) {
       //Everything below here requires "/"
       if (command === "ping") {
@@ -515,7 +519,7 @@ bot.on('message', async message => {
 
       if (command === "randgame") {
         if (message.author.id == config.ownerID) {
-          bot.user.setActivity(Math.floor(Math.random() * playingmsg.length), {type: "PLAYING"})
+          bot.user.setActivity(playingmsg[Math.floor(Math.random() * playingmsg.length)], {type: "PLAYING"});
           message.delete()
         }
         else message.channel.send("Only Shy can play with me...")
@@ -527,7 +531,7 @@ bot.on('message', async message => {
       }
 
       if (command.split(' ').indexOf("ava") == 0) {
-        var targetuser = message.mentions.users.first()
+        var targetuser = message.mentions.users.first();
         if (targetuser) {
           message.channel.send(targetuser.displayAvatarURL)
         }
@@ -536,7 +540,7 @@ bot.on('message', async message => {
 
       if (command.split(' ').indexOf("setgame") == 0) {
         if (message.author.id == config.ownerID) {
-          bot.user.setActivity(args.join(" "), {type: "PLAYING"})
+          bot.user.setActivity(args.join(" "), {type: "PLAYING"});
           message.delete()
         }
         else {
@@ -546,23 +550,23 @@ bot.on('message', async message => {
       }
 
       if (["commands", "help"].includes(command)) {
-	let [cmd, num] = message.content.split(" ")
-	let pagenum = parseInt(num|| 1, 10)
-        var data = new Discord.RichEmbed()
-        data.setColor("#191970")
-        data.setTitle("COMMANDS")
- console.log(pagenum === 1 ? 0 : pagenum * 25)
-    console.log(pagenum === 1 ? 24 : ((pagenum + 1) * 25) - 1)
-	let commandsLocal = commands.slice(pagenum === 1 ? 0 : (pagenum - 1) * 25, pagenum === 1 ? 24 : (pagenum * 25) - 1)
+        let [cmd, num] = message.content.split(" ");
+        let pagenum = parseInt(num || 1, 10);
+        var data = new Discord.RichEmbed();
+        data.setColor("#191970");
+        data.setTitle("COMMANDS");
+        console.log(pagenum === 1 ? 0 : pagenum * 25);
+        console.log(pagenum === 1 ? 24 : ((pagenum + 1) * 25) - 1);
+        let commandsLocal = commands.slice(pagenum === 1 ? 0 : (pagenum - 1) * 25, pagenum === 1 ? 24 : (pagenum * 25) - 1);
         for (cmds of commandsLocal) {
           data.addField(cmds.name, cmds.result)
         }
-        message.author.send(`Page ${pagenum} of 2`, {embed: data})
-        message.delete()
+        message.author.send(`Page ${pagenum} of 2`, {embed: data});
+        message.delete();
         if (message.member.roles.has(config.adminID)) {
-          var data = new Discord.RichEmbed()
-          data.setColor("#FF0000")
-          data.setTitle("ADMIN COMMANDS")
+          var data = new Discord.RichEmbed();
+          data.setColor("#FF0000");
+          data.setTitle("ADMIN COMMANDS");
           for (cmds of admincmds) {
             data.addField(cmds.name, cmds.result)
           }
@@ -578,10 +582,10 @@ bot.on('message', async message => {
 
       else if (command.split(' ').indexOf("mute") == 0) {
         if (message.author.id == config.ownerID | message.member.roles.has(config.adminID)) {
-          var target = args.join(" ")
-          var targetuser = message.mentions.users.first()
+          var target = args.join(" ");
+          var targetuser = message.mentions.users.first();
           if (targetuser) {
-            await message.guild.member(targetuser).addRole("249616536573050900")
+            await message.guild.member(targetuser).addRole("249616536573050900");
             message.channel.send(target + " has been muted...")
           }
           else {
@@ -595,11 +599,11 @@ bot.on('message', async message => {
 
       else if (command.split(' ').indexOf("unmute") == 0) {
         if (message.author.id == config.ownerID | message.member.roles.has(config.adminID)) {
-          var target = args.join(" ")
-          var targetuser = message.mentions.users.first()
+          var target = args.join(" ");
+          var targetuser = message.mentions.users.first();
           if (targetuser) {
-            await message.guild.member(targetuser).removeRole("249616536573050900")
-            message.channel.send(target + " is no longer being gagged!")
+            await message.guild.member(targetuser).removeRole("249616536573050900");
+            message.channel.send(target + " is no longer being gagged!");
             message.delete()
           } else {
             message.channel.send("ERROR: You need to define someone...")
@@ -616,11 +620,11 @@ bot.on('message', async message => {
 
       else if (command.split(" ").indexOf("kick") == 0) {
         if (message.member.roles.has(config.adminID)) {
-          var target = args.join(" ")
-          var targetuser = message.mentions.users.first()
+          var target = args.join(" ");
+          var targetuser = message.mentions.users.first();
           if (targetuser) {
-            message.guild.member(targetuser).kick()
-            message.channel.send(targetuser.username + " has been kicked in the ass..")
+            message.guild.member(targetuser).kick();
+            message.channel.send(targetuser.username + " has been kicked in the ass..");
             message.delete()
           }
           else message.channel.send("ERROR: You need to define someone...")
@@ -631,14 +635,14 @@ bot.on('message', async message => {
       else if (command.split(" ").indexOf("ban") == 0) {
         if (message.member.roles.has(config.adminID)) {
           let [cmd, user, ...reason] = message.content.split(" ");
-          un = message.mentions.users.first().tag
-          reason = reason || []
-          reason = reason.join(" ")
+          un = message.mentions.users.first().tag;
+          reason = reason || [];
+          reason = reason.join(" ");
           let guildMember = (message.mentions.members.size) ?
-            message.mentions.members.first() : message.guild.member(user)
+            message.mentions.members.first() : message.guild.member(user);
           if (guildMember) {
 
-            message.channel.send(`${un} has been banned by ${message.author} for ${reason};`).then(guildMember.ban(`${message.author.tag}: ${reason}`))
+            message.channel.send(`${un} has been banned by ${message.author} for ${reason};`).then(guildMember.ban(`${message.author.tag}: ${reason}`));
             message.delete()
           }
           else {
@@ -650,7 +654,7 @@ bot.on('message', async message => {
         }
       }
       if (command === "roledata") {
-        console.log(message.guild.roles.entries())
+        console.log(message.guild.roles.entries());
         message.channel.send("Logging Role Data...")
       }
       if (command === "loli") {
@@ -659,7 +663,7 @@ bot.on('message', async message => {
       }
       else if (command.split(" ").indexOf("say") == 0) {
         if (message.author.id == config.ownerID) {
-          message.channel.send(args.join(" "))
+          message.channel.send(args.join(" "));
           message.delete()
         }
         else (message.channel.send("Only Shy can tell me what to do.."))
@@ -673,7 +677,7 @@ bot.on('message', async message => {
 
       }
       if (command === "myroles") {
-        message.channel.send(message.author + "'s Roles:")
+        message.channel.send(message.author + "'s Roles:");
         message.channel.send(message.guild.member(message.author).roles.array().map(role => role.name.replace("@everyone", "")))
       }
       if (command === "loop") {
@@ -691,19 +695,19 @@ bot.on('message', async message => {
       }
       else if (command.split(" ").indexOf("createrole") == 0) {
         if (message.member.roles.has(config.adminID)) {
-          message.guild.createRole({name:args.join(" ")})
-          message.channel.send(`A new role "` + args.join(" ") + `" has been created.`)
+          message.guild.createRole({name: args.join(" ")});
+          message.channel.send(`A new role "` + args.join(" ") + `" has been created.`);
           message.delete()
         }
         else (message.channel.send("Does it look like you're an admin?"))
       }
       else if (command.split(' ').indexOf("adminify") == 0) {
         if (message.author.id == config.ownerID) {
-          var target = args.join(" ")
-          var targetuser = message.mentions.users.first()
+          var target = args.join(" ");
+          var targetuser = message.mentions.users.first();
           if (targetuser) {
-            message.guild.member(targetuser).addRole(config.adminID)
-            message.channel.send(target + " has become an admin!")
+            message.guild.member(targetuser).addRole(config.adminID);
+            message.channel.send(target + " has become an admin!");
             message.delete()
           } else {
             message.channel.send("ERROR: You need to define someone...")
@@ -715,8 +719,8 @@ bot.on('message', async message => {
       }
       else if (command.split(" ").indexOf("info") == 0) {
         if (message.member.roles.has(config.adminID)) {
-          var target = args.join(" ")
-          var targetuser = message.mentions.users.first()
+          var target = args.join(" ");
+          var targetuser = message.mentions.users.first();
           if (targetuser) {
             message.channel.send("User: " + targetuser.username + "\nID: " + targetuser.id + "\nStatus: " + targetuser.presence.status + "\nAccount Created: " + targetuser.createdAt + "\nJoined Server: " + message.guild.member(targetuser).joinedAt + "\nAvatar URL: " + "<" + targetuser.avatarURL + ">" + "\nBot?: " + targetuser.bot)
           }
@@ -784,12 +788,12 @@ bot.on('message', async message => {
 
       else if (command.split(' ').indexOf("deadminify") == 0) {
         if (message.author.id == config.ownerID) {
-          var target = args.join(" ")
-          var targetuser = message.mentions.users.first()
+          var target = args.join(" ");
+          var targetuser = message.mentions.users.first();
           if (targetuser) {
             //console.log(message.guild.roles.entries())
-            message.guild.member(targetuser).removeRole(config.adminID)
-            message.channel.send(target + " is no longer admin...")
+            message.guild.member(targetuser).removeRole(config.adminID);
+            message.channel.send(target + " is no longer admin...");
             message.delete()
           } else {
             message.channel.send("ERROR: You need to define someone...")
@@ -807,7 +811,7 @@ bot.on('message', async message => {
       if (command.split(" ").indexOf("yt") == 0) {
         youTube.search(args.join(" "), 10, function (error, result) {
           if (result) {
-            var video = result
+            var video = result;
             if (video.items[0]) {
               message.channel.send("https://www.youtube.com/watch?v=" + video.items[0].id.videoId)
             }
@@ -821,12 +825,12 @@ bot.on('message', async message => {
       }
 
       if (command.split(" ").indexOf("r34top") == 0) {
-        var cmd = args.join(" ")
-        var eval = evalBooruCmd(cmd)
+        var cmd = args.join(" ");
+        var eval = evalBooruCmd(cmd);
         booru.search("r34", eval.tags, {limit: 5, random: true})
           .then(booru.commonfy)
           .then(images => {
-            var sorted = sortBooru(images, constrain(1, 5, eval.number))
+            var sorted = sortBooru(images, constrain(1, 5, eval.number));
             for (let image of sorted) {
               message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \nhttps:${image.file_url}`)
             }
@@ -834,10 +838,13 @@ bot.on('message', async message => {
       }
 
       if (command.split(" ").indexOf("r34") == 0) {
-        var cmd = args.join(" ")
-        var eval = evalBooruCmd(cmd)
-        message.channel.startTyping()
-        booru.search("r34", eval.tags, {limit: constrain(1, 5, eval.number), random: true})
+        var cmd = args.join(" ");
+        var eval = evalBooruCmd(cmd);
+        message.channel.startTyping();
+        booru.search("r34", eval.tags, {
+            limit: constrain(1, 5, eval.number),
+            random: true
+          })
           .then(booru.commonfy)
           .then(images => {
             for (let image of images) {
@@ -850,20 +857,23 @@ bot.on('message', async message => {
       }
 
       if (command.split(" ").indexOf("roles") == 0) {
-        var target = args.join(" ")
-        var targetuser = message.mentions.users.first()
+        var target = args.join(" ");
+        var targetuser = message.mentions.users.first();
         if (targetuser) {
-          message.channel.send(targetuser.username + "'s Roles:")
+          message.channel.send(targetuser.username + "'s Roles:");
           message.channel.send(message.guild.member(targetuser).roles.array().map(role => role.name.replace("@everyone", "")))
         }
         else message.channel.send("ERROR: You need to define someone...")
       }
 
       if (command.split(" ").indexOf("e6") == 0) {
-        var cmd = args.join(" ")
-        var eval = evalBooruCmd(cmd)
-        message.channel.startTyping()
-        booru.search("e6", eval.tags, {limit: constrain(1, 5, eval.number), random: true})
+        var cmd = args.join(" ");
+        var eval = evalBooruCmd(cmd);
+        message.channel.startTyping();
+        booru.search("e6", eval.tags, {
+            limit: constrain(1, 5, eval.number),
+            random: true
+          })
           .then(booru.commonfy)
           .then(images => {
             for (let image of images) {
@@ -876,10 +886,13 @@ bot.on('message', async message => {
       }
 
       if (command.split(" ").indexOf("db") == 0) {
-        var cmd = args.join(" ")
-        var eval = evalBooruCmd(cmd)
-        message.channel.startTyping()
-        booru.search("dp", eval.tags, {limit: constrain(1, 5, eval.number), random: true})
+        var cmd = args.join(" ");
+        var eval = evalBooruCmd(cmd);
+        message.channel.startTyping();
+        booru.search("dp", eval.tags, {
+            limit: constrain(1, 5, eval.number),
+            random: true
+          })
           .then(booru.commonfy)
           .then(images => {
             for (let image of images) {
@@ -911,14 +924,14 @@ bot.on('message', async message => {
           message.channel.send("Unable to set nickname, it exceeds 32 characters")
         }
         else {
-          message.guild.member(message.author).setNickname(args.join(" "))
+          message.guild.member(message.author).setNickname(args.join(" "));
           message.channel.send(message.author.username + ", your name has been set")
         }
       }
 
       if (command.split(" ").indexOf("purge") == 0) {
         if (message.member.roles.has(config.adminID)) {
-          message.delete()
+          message.delete();
           message.channel.bulkDelete(args.join(" "))
         }
         else message.channel.send("Does it look like you're an admin?")
@@ -931,32 +944,32 @@ bot.on('message', async message => {
 
       if (command === "announce") {
         if (message.member.roles.has(config.adminID)) {
-          var announcechan = message.guild.channels.get("250781565817192458")
-          let [cmd, color, title, ...text] = message.cleanContent.split(" ")
+          var announcechan = message.guild.channels.get("250781565817192458");
+          let [cmd, color, title, ...text] = message.cleanContent.split(" ");
           if (color === "r") {
-            var hex = "ff0000"
-            var tagall = true
+            var hex = "ff0000";
+            var tagall = true;
             var bool = "Color - Red"
           }
           if (color === "y") {
-            var hex = "ffff00"
-            var tagall = true
+            var hex = "ffff00";
+            var tagall = true;
             var bool = "Color = Yellow"
           }
           if (color === "b") {
-            var hex = "0000ff"
-            var tagall = false
+            var hex = "0000ff";
+            var tagall = false;
             var bool = "Color - Blue"
           }
           if (color === "l") {
-            var hex = "a7a7ff"
-            var tagall = true
+            var hex = "a7a7ff";
+            var tagall = true;
             var bool = "Color - Light Blue"
           }
           if (tagall === true) {
             announcechan.send("@everyone")
           }
-          announcechan.send({embed: new Discord.RichEmbed().setAuthor(`Author: ${message.member.displayName} | ${message.author.tag}`).setColor(hex).setTitle(`Title: ${title}`).setDescription(text.join(" ")).setTimestamp(new Date())})
+          announcechan.send({embed: new Discord.RichEmbed().setAuthor(`Author: ${message.member.displayName} | ${message.author.tag}`).setColor(hex).setTitle(`Title: ${title}`).setDescription(text.join(" ")).setTimestamp(new Date())});
           announcechan.send(`\`\`\`${title} | ${bool} | ${message.member.displayName} / ${message.author.tag} \n ${text.join(" ")}\`\`\``).then(m => message.delete())
         }
         else {
@@ -965,15 +978,15 @@ bot.on('message', async message => {
       }
 
       if (command === "flip") {
-        var coinside = Math.floor(Math.random() * 2)
+        var coinside = Math.floor(Math.random() * 2);
         if (coinside === 0) {
           //heads
-          var sidename = "heads"
+          var sidename = "heads";
           var sideimg = "https://cdn.discordapp.com/attachments/249311166776606721/382040020409909248/coin_heads.png"
         }
         else {
           //tails
-          var sidename = "tails"
+          var sidename = "tails";
           var sideimg = "https://cdn.discordapp.com/attachments/249311166776606721/382040887649239063/coin_tails.png"
         }
         message.channel.send({embed: new Discord.RichEmbed().setColor("0000ff").setTitle("Coin Flip!").setDescription(`${message.author.tag} flipped ${sidename}!`).setImage(sideimg)})
@@ -991,7 +1004,7 @@ bot.on('message', async message => {
 
       if (command === "img") {
         if (message.author.id === config.ownerID) {
-          let [path, ...filename] = args.split("/")
+          let [path, ...filename] = args.split("/");
           message.channel.send("", {files: [path.join(__dirname, path, filename)]})
         }
       }
@@ -1008,7 +1021,7 @@ bot.on('message', async message => {
             if (content.constructor === Buffer) content = content.toString();
 
             let [version, ...changes] = content.split("\n");
-            message.guild.channels.get("382608948378730496").send("<@&380371674647756800>")
+            message.guild.channels.get("382608948378730496").send("<@&380371674647756800>");
             message.guild.channels.get("382608948378730496").send({
               embed: {
                 title: version,
@@ -1146,7 +1159,7 @@ bot.on('message', async message => {
           return;
         }
 
-        let [cmd, , val] = message.content.split(" ")
+        let [cmd, , val] = message.content.split(" ");
         var target = message.mentions.users.first();
 
         if (!target) return message.channel.send("You need to specify who you would like to give gems to.");
@@ -1161,17 +1174,17 @@ bot.on('message', async message => {
           message.reply(`I have given :gem:${val} to ${target}.`).then(m => m.delete(5000));
         }
 
-        User.findOneAndUpdate({ userId:target.id },
-                              { $inc:{ gem:val } },
-                              { "upsert":true, "setDefaultsOnInsert":true }).then(then);
+        User.findOneAndUpdate({userId: target.id},
+          {$inc: {gem: val}},
+          {"upsert": true, "setDefaultsOnInsert": true}).then(then);
       }
 
-      if (command === "dmuser"){
-        if (message.member.roles.has(config.adminID)){
-          let [cmd, target, ...msg] = message.content.split(" ")
-          var targetuser = message.mentions.users.first()
-              if (!targetuser) return message.channel.send("ERROR: You need to define someone...")
-              targetuser.send(`${msg.join(" ")} - sent by ${message.author.tag}`)
+      if (command === "dmuser") {
+        if (message.member.roles.has(config.adminID)) {
+          let [cmd, target, ...msg] = message.content.split(" ");
+          var targetuser = message.mentions.users.first();
+          if (!targetuser) return message.channel.send("ERROR: You need to define someone...");
+          targetuser.send(`${msg.join(" ")} - sent by ${message.author.tag}`);
           message.delete()
         }
         else {
@@ -1201,56 +1214,56 @@ bot.on('message', async message => {
 //              }
 //       }
 
-        if (command === "color" || command === "colour"){
-          let [cmd, ...color] = message.content.split(" ")
-          var rolename = `color - ${args.join(" ")}`,
-              role
-          var currentRole;
+      if (command === "color" || command === "colour") {
+        let [cmd, ...color] = message.content.split(" ");
+        var rolename = `color - ${args.join(" ")}`,
+          role;
+        var currentRole;
 
-          if (message.member.roles.has("403126021500567552")){
+        if (message.member.roles.has("403126021500567552")) {
 
-              if (role = message.guild.roles.findKey("name", rolename)){
-                while (currentRole = message.member.roles.find(role => role.name.startsWith("color - "))) {
-                  await message.member.removeRole(currentRole)
-                }
-                  message.guild.member(message.author.id).addRole(role).then(_ => {
-                  message.channel.send(`Gave you the color ${color.join(" ")}`)
-                })
-              }
-
-              else{
-                  message.channel.send("That color doesn't exist, makes sure you spelled it correctly, or ask Shy or an admin to create it")
-              }
-		  }
-          else{
-              message.channel.send('You need the "Daily Fapper" role to use this command')
+          if (role = message.guild.roles.findKey("name", rolename)) {
+            while (currentRole = message.member.roles.find(role => role.name.startsWith("color - "))) {
+              await message.member.removeRole(currentRole)
+            }
+            message.guild.member(message.author.id).addRole(role).then(_ => {
+              message.channel.send(`Gave you the color ${color.join(" ")}`)
+            })
           }
-		}
 
-
-        if (command === "removecolor"){
-          let [cmd, ...color] = message.content.split(" ")
-          var rolename = `color - ${args.join(" ").toLowerCase()}`,
-              role
-          if (message.member.roles.has("403126021500567552")){
-              if (role = message.guild.roles.findKey("name", rolename)){
-                  if (message.member.roles.has(role)){
-                    message.guild.member(message.author.id).removeRole(role).then(_ => {
-                    message.channel.send(`Removed the color ${color.join(" ")}`)
-                  })
-                  }
-                  else{
-                    message.channel.send("You don't have that color")
-                  }
-              }
-              else{
-                  message.channel.send("That color doesn't exist, makes sure you spelled it correctly, or ask Shy or an admin to create it")
-              }
-          }
-          else{
-              message.channel.send('You need the "Daily Fapper" role to use this command')
+          else {
+            message.channel.send("That color doesn't exist, makes sure you spelled it correctly, or ask Shy or an admin to create it")
           }
         }
+        else {
+          message.channel.send('You need the "Daily Fapper" role to use this command')
+        }
+      }
+
+
+      if (command === "removecolor") {
+        let [cmd, ...color] = message.content.split(" ");
+        var rolename = `color - ${args.join(" ").toLowerCase()}`,
+          role;
+        if (message.member.roles.has("403126021500567552")) {
+          if (role = message.guild.roles.findKey("name", rolename)) {
+            if (message.member.roles.has(role)) {
+              message.guild.member(message.author.id).removeRole(role).then(_ => {
+                message.channel.send(`Removed the color ${color.join(" ")}`)
+              })
+            }
+            else {
+              message.channel.send("You don't have that color")
+            }
+          }
+          else {
+            message.channel.send("That color doesn't exist, makes sure you spelled it correctly, or ask Shy or an admin to create it")
+          }
+        }
+        else {
+          message.channel.send('You need the "Daily Fapper" role to use this command')
+        }
+      }
 
 //        if(command === "warn"){
 //          let [cmd, target, ...reason] = message.content.split(" ")
@@ -1362,21 +1375,21 @@ bot.on('message', async message => {
 //              });
 //        	}
 
-        if (command === "newcmd"){
-        if (message.author.id != config.ownerID) return message.channel.send("ERROR: Only the owner can use this command.")
-        	let [cmd, syn, ...desc] = args.join(" ").split(",")
-        	announcechan.send("@everyone NEW COMMAND")
-			announcechan.send({
-				embed: {
-					title: `New Command: /${cmd}`,
-					description: desc.join(","),
-					footer: {
-						text: `Syntax: ${syn}`
-					}
-				}
-			})
-			message.delete()
-        }
+      if (command === "newcmd") {
+        if (message.author.id != config.ownerID) return message.channel.send("ERROR: Only the owner can use this command.");
+        let [cmd, syn, ...desc] = args.join(" ").split(",");
+        announcechan.send("@everyone NEW COMMAND");
+        announcechan.send({
+          embed: {
+            title: `New Command: /${cmd}`,
+            description: desc.join(","),
+            footer: {
+              text: `Syntax: ${syn}`
+            }
+          }
+        });
+        message.delete()
+      }
 
 //        if (command === "dblookup"){
 //        	let [cmd, target] = message.content.split(" ")
@@ -1396,152 +1409,164 @@ bot.on('message', async message => {
 //				else message.channel.send("ERROR: You need to define an ID")
 //		}
 
-		if (command === "msay"){
-			let [cmd, ...msg] = message.content.split(" ")
-				ipc.server.broadcast("music.say", msg.join(" "))
-		}
+      if (command === "msay") {
+        let [cmd, ...msg] = message.content.split(" ");
+        ipc.server.broadcast("music.say", msg.join(" "))
+      }
 
-		if (command === "play"){
-			let [cmd, ...query] = message.content.split(" ")
-				ipc.server.broadcast("music.play", {q:query.join(" "), channel_id:message.channel.id})
-		}
+      if (command === "play") {
+        let [cmd, ...query] = message.content.split(" ");
+        ipc.server.broadcast("music.play", {
+          q: query.join(" "),
+          channel_id: message.channel.id
+        })
+      }
 
-		if (command === "stop"){
-			ipc.server.broadcast("music.stop", "dummy")
-		}
+      if (command === "stop") {
+        ipc.server.broadcast("music.stop", "dummy")
+      }
 
-    if (command === "request") {
-      let requestCollector; // create a reference we can use later on
+      if (command === "request") {
+        let requestCollector; // create a reference we can use later on
 
-      const RequestCommand = {
-        // data
-        confirmCollector: null,
-        collection: null,
+        const RequestCommand = {
+          // data
+          confirmCollector: null,
+          collection: null,
 
-        // functions
-        messageFilter: function messageFilter(capturedMessage) {
-          if (message.author.id !== capturedMessage.author.id) return false;
-          if (!capturedMessage.content.startsWith("--")) return false;
-          return true;
-        },
+          // functions
+          messageFilter: function messageFilter(capturedMessage) {
+            if (message.author.id !== capturedMessage.author.id) return false;
+            if (!capturedMessage.content.startsWith("--")) return false;
+            return true;
+          },
 
-        collectorCallback: function collectorCallback(collection, endCode) {
-          console.log("Collection ended with reason:", endCode);
+          collectorCallback: function collectorCallback(collection, endCode) {
+            console.log("Collection ended with reason:", endCode);
 
-          switch (endCode) {
-            case "SUGGESTION_END":
-              RequestCommand.confirmSuggestionIsComplete(collection);
-              break;
-            default:
-              message.channel.send("An unknown error occurred. Please re-use `/request` and try again.")
-          }
-        },
+            switch (endCode) {
+              case "SUGGESTION_END":
+                RequestCommand.confirmSuggestionIsComplete(collection);
+                break;
+              default:
+                message.channel.send("An unknown error occurred. Please re-use `/request` and try again.")
+            }
+          },
 
-        collectedMessage: function collectedMessage(capturedMessage) {
-          console.log(`Collected message with content "${capturedMessage.cleanContent}".`);
-          if ((/end\.?$/i).test(capturedMessage.content)) RequestCommand.endCollector("SUGGESTION_END");
-        },
+          collectedMessage: function collectedMessage(capturedMessage) {
+            console.log(`Collected message with content "${capturedMessage.cleanContent}".`);
+            if ((/end\.?$/i).test(capturedMessage.content)) RequestCommand.endCollector("SUGGESTION_END");
+          },
 
-        endCollector: function endCollector(reason) {
-          requestCollector.stop(reason);
-        },
+          endCollector: function endCollector(reason) {
+            requestCollector.stop(reason);
+          },
 
-        confirmSuggestionIsComplete: function confirmSuggestionIsComplete(collection) {
-          RequestCommand.collection = collection;
+          confirmSuggestionIsComplete: function confirmSuggestionIsComplete(collection) {
+            RequestCommand.collection = collection;
 
-          message.author.send("Here is the content of your request:").then(({channel}) => {
+            message.author.send("Here is the content of your request:").then(({channel}) => {
+              let series = [];
+              let index = 0;
+
+              for (let currentMessage of collection.values()) {
+                if (/^-- *end\.?$/i.test(currentMessage.content)) continue;
+
+                index = index + 1;
+                let cIndex = index;
+
+                series.push(function sendMessage(callback) {
+                  channel.send({
+                    embed: {
+                      author: {
+                        name: message.author.tag,
+                        icon_url: message.author.displayAvatarURL
+                      },
+                      description: currentMessage.cleanContent.replace(/^-- */, ""),
+                      timestamp: currentMessage.createdAt
+                    }
+                  }).then(embed => callback(null, embed), err => callback(err));
+                });
+              }
+
+              return new Promise((resolve, reject) => {
+                async.series(series, function callback(err, messages) {
+                  if (err) reject(err);
+
+                  resolve(channel, messages);
+                });
+              });
+            }).then(channel => {
+              return channel.send(["Is this suggestion correct and final? (`yes` or `no`)", "You have thirty seconds to respond, or `yes` will be assumed."]);
+            }).then(({channel}) => {
+              return RequestCommand.confirmCollector = channel.createMessageCollector(RequestCommand.confirmFilter, {time: 30000});
+            }).then(collector => {
+              collector.on("collect", RequestCommand.gotConfirmationMessage);
+            }).catch(function postError(err) {
+              console.error(err);
+              message.reply("I was unable to send (or continue to send) confirmation to your DMs for an unknown reason. You blocked me, didn't you?");
+            });
+          },
+
+          confirmFilter: function confirmFilter(message) {
+            return ["yes", "no"].includes(message.content.trim().toLowerCase());
+          },
+
+          gotConfirmationMessage: function gotConfirmationMessage(capturedMessage) {
+            let content = capturedMessage.content.trim().toLowerCase();
+            RequestCommand.confirmCollector.stop(content);
+
+            switch (content) {
+              case "no":
+                capturedMessage.reply("Very well. Please edit your suggestion as you wish, then re-use /request in the server to re-submit it.");
+                break;
+              case "yes":
+              default: // in case something slipped through;
+                RequestCommand.postRequest();
+            }
+          },
+
+          postRequest: function postRequest() {
             let series = [];
             let index = 0;
 
-            for (let currentMessage of collection.values()) {
-              if (/^-- *end\.?$/i.test(currentMessage.content)) continue
+            for (let currentMessage of RequestCommand.collection.values()) {
+              if (/^-- *end\.?$/i.test(currentMessage.content)) continue;
 
               index = index + 1;
               let cIndex = index;
 
               series.push(function sendMessage(callback) {
-                channel.send({embed:{
-                  author: {name: message.author.tag, icon_url: message.author.displayAvatarURL},
-                  description: currentMessage.cleanContent.replace(/^-- */, ""),
-                  timestamp: currentMessage.createdAt
-                }}).then(embed => callback(null, embed), err => callback(err));
+                suggestionsChannel.send({
+                  embed: {
+                    author: {
+                      name: message.author.tag,
+                      icon_url: message.author.displayAvatarURL
+                    },
+                    description: currentMessage.cleanContent.replace(/^-- */, ""),
+                    timestamp: currentMessage.createdAt
+                  }
+                }).then(embed => callback(null, embed), err => callback(err));
               });
             }
 
-            return new Promise((resolve, reject) => {
+            new Promise((resolve, reject) => {
               async.series(series, function callback(err, messages) {
                 if (err) reject(err);
 
-                resolve(channel, messages);
+                resolve(messages);
               });
-            });
-          }).then(channel => {
-            return channel.send(["Is this suggestion correct and final? (`yes` or `no`)", "You have thirty seconds to respond, or `yes` will be assumed."]);
-          }).then(({channel}) => {
-            return RequestCommand.confirmCollector = channel.createMessageCollector(RequestCommand.confirmFilter, {time:30000});
-          }).then(collector => {
-            collector.on("collect", RequestCommand.gotConfirmationMessage);
-          }).catch(function postError(err) {
-            console.error(err);
-            message.reply("I was unable to send (or continue to send) confirmation to your DMs for an unknown reason. You blocked me, didn't you?");
-          });
-        },
-
-        confirmFilter: function confirmFilter(message) {
-          return ["yes", "no"].includes(message.content.trim().toLowerCase());
-        },
-
-        gotConfirmationMessage: function gotConfirmationMessage(capturedMessage) {
-          let content = capturedMessage.content.trim().toLowerCase();
-          RequestCommand.confirmCollector.stop(content);
-
-          switch (content) {
-            case "no":
-              capturedMessage.reply("Very well. Please edit your suggestion as you wish, then re-use /request in the server to re-submit it.");
-              break;
-            case "yes":
-            default: // in case something slipped through;
-              RequestCommand.postRequest();
+            }).then(messages => messages.pop().react(reactions.upvote))
+              .then(reaction => reaction.message.react(reactions.downvote))
           }
-        },
+        };
 
-        postRequest: function postRequest() {
-          let series = [];
-          let index = 0;
-
-          for (let currentMessage of RequestCommand.collection.values()) {
-            if (/^-- *end\.?$/i.test(currentMessage.content)) continue
-
-            index = index + 1;
-            let cIndex = index;
-
-            series.push(function sendMessage(callback) {
-              suggestionsChannel.send({embed:{
-                author: {name: message.author.tag, icon_url: message.author.displayAvatarURL},
-                description: currentMessage.cleanContent.replace(/^-- */, ""),
-                timestamp: currentMessage.createdAt
-              }}).then(embed => callback(null, embed), err => callback(err));
-            });
-          }
-
-          new Promise((resolve, reject) => {
-            async.series(series, function callback(err, messages) {
-              if (err) reject(err);
-
-              resolve(messages);
-            });
-          }).then(messages => messages.pop().react(reactions.upvote))
-            .then(reaction => reaction.message.react(reactions.downvote))
-        }
+        message.reply(["I am now listening for your suggestion. Please add `--` to the start of any message you wish for me to include in the suggestion content, and say `--end` to end the suggestion. I will then ask if you wish to add anything else before I add it.", "Suggestions are limited to a maximum of 10,000 characters."]).then(() => {
+          requestCollector = message.channel.createMessageCollector(RequestCommand.messageFilter, /*{time:2000}*/); // write to the created reference
+          requestCollector.on("collect", RequestCommand.collectedMessage);
+          requestCollector.on("end", RequestCommand.collectorCallback);
+        });
       }
-
-      message.reply(["I am now listening for your suggestion. Please add `--` to the start of any message you wish for me to include in the suggestion content, and say `--end` to end the suggestion. I will then ask if you wish to add anything else before I add it.", "Suggestions are limited to a maximum of 10,000 characters."]).then(() => {
-        requestCollector = message.channel.createMessageCollector(RequestCommand.messageFilter, /*{time:2000}*/); // write to the created reference
-        requestCollector.on("collect", RequestCommand.collectedMessage);
-        requestCollector.on("end", RequestCommand.collectorCallback);
-      });
-    }
-
 
 
 //        if (command === "colorlist"){
@@ -1553,18 +1578,22 @@ bot.on('message', async message => {
 //          }
 //        }
 
-        // what is this brace, and why is it needed?
-        }
-
+      // what is this brace, and why is it needed?
     }
+
+  }
 
   //These do not need "/" to function
   else {
-    User.findOneAndUpdate({ userId:message.author.id },
-                          { $inc:{ exp:Math.floor(Math.random() * 15) } },
-                          { "upsert":true, "setDefaultsOnInsert":true, "new":true }, bindUpdateCallback(message));
+    User.findOneAndUpdate({userId: message.author.id},
+      {$inc: {exp: Math.floor(Math.random() * 15)}},
+      {
+        "upsert": true,
+        "setDefaultsOnInsert": true,
+        "new": true
+      }, bindUpdateCallback(message));
 
-    console.log("[" + message.channel.name + "] " + message.author.tag + "> " + message.content)
+    console.log("[" + message.channel.name + "] " + message.author.tag + "> " + message.content);
 
     if (message.content === "bip") {
       message.channel.send("bop")
@@ -1594,7 +1623,7 @@ bot.on('message', async message => {
       message.channel.send("Fuck off, Senpoi.")
     }
   }
-})
+});
 
 if (config.devmode) { // is this even needed still? -Zuris
   ipc.serveNet()
@@ -1603,6 +1632,6 @@ if (config.devmode) { // is this even needed still? -Zuris
 }
 
 ipc.server.on("start", () => {
- addons.music = child_process.spawn("node", ["./addons/music.js"], ["ignore", process.stdout, process.stderr])
-})
-bot.login(config.botToken)
+  addons.music = child_process.spawn("node", ["./addons/music.js"], ["ignore", process.stdout, process.stderr])
+});
+bot.login(config.botToken);
