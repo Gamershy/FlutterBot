@@ -14,9 +14,7 @@ var disabledCommands = ["play", "stop"];
 const ipc = require("node-ipc");
 const async = require("async");
 const path = require("path");
-const mongoose = require("./Mongoose/index.js");
 const config = require('./config.js');
-const permban = require(`./permban.js`);
 const bot = new Discord.Client({
   fetchAllMembers: true,
   disabledEvents: ["TYPING_START"]
@@ -31,6 +29,8 @@ const rl = readline.createInterface({
 const fs = require("fs");
 
 const bindUpdateCallback = require("./level-up");
+
+require("./Mongoose/index.js");
 
 ipc.config.id = "FB";
 ipc.config.socketRoot = path.join(__dirname, "sockets");
@@ -258,7 +258,7 @@ function evalBooruCmd(input) { // what is this?
   var values = input.split(" ");
   var tags;
   var integerFound = false;
-  for (n in values) {
+  for (let n in values) {
     if (parseInt(values[n])) {
       //integer found.
       tags = values.splice(0, n);
@@ -374,7 +374,6 @@ bot.on("error", ErrorHandler); // perform same actions as unhandledRejection.
 
 process.on("exit", () => {
   let addonList = Object.entries(addons);
-  let stack = [];
 
   for (let addon of addonList) {
     if (!addon[1]) continue;
@@ -392,7 +391,7 @@ bot.on("ready", () => {
   suggestionsChannel = bot.channels.get("469557897513271316");
   reactions.upvote = bot.guilds.first().emojis.get("469576069314510858");
   reactions.downvote = bot.guilds.first().emojis.get("469576210368954378");
-  var timer = setInterval(() => {
+  setInterval(() => {
     bot.user.setActivity(playingmsg[Math.floor(Math.random() * playingmsg.length)], {type: "PLAYING"})
   }, 1000 * 60 * 60);
   var guld = bot.guilds.first().defaultChannel;
@@ -502,7 +501,7 @@ bot.on('message', async message => {
     return;
   }
 
-  if (/^(\/|>|!|\?|%|\$|&|#|\=|\+)/.test(message.content)) {
+  if (/^([\/>!?%$&#=+])/.test(message.content)) {
     const [command, ...args] = message.content.slice(-(message.content.length - "/".length)).split(" ");
     var logchan = message.guild.channels.get("364658410605772802");
     var announcechan = message.guild.channels.get("250781565817192458");
@@ -550,7 +549,7 @@ bot.on('message', async message => {
       }
 
       if (["commands", "help"].includes(command)) {
-        let [cmd, num] = message.content.split(" ");
+        let [, num] = message.content.split(" ");
         let pagenum = parseInt(num || 1, 10);
         var data = new Discord.RichEmbed();
         data.setColor("#191970");
@@ -558,8 +557,8 @@ bot.on('message', async message => {
         console.log(pagenum === 1 ? 0 : pagenum * 25);
         console.log(pagenum === 1 ? 24 : ((pagenum + 1) * 25) - 1);
         let commandsLocal = commands.slice(pagenum === 1 ? 0 : (pagenum - 1) * 25, pagenum === 1 ? 24 : (pagenum * 25) - 1);
-        for (cmds of commandsLocal) {
-          data.addField(cmds.name, cmds.result)
+        for (let cmd of commandsLocal) {
+          data.addField(cmd.name, cmd.result)
         }
         message.author.send(`Page ${pagenum} of 2`, {embed: data});
         message.delete();
@@ -567,8 +566,8 @@ bot.on('message', async message => {
           var data = new Discord.RichEmbed();
           data.setColor("#FF0000");
           data.setTitle("ADMIN COMMANDS");
-          for (cmds of admincmds) {
-            data.addField(cmds.name, cmds.result)
+          for (let cmd of admincmds) {
+            data.addField(cmd.name, cmd.result)
           }
           message.author.send("", {embed: data})
         }
@@ -581,7 +580,7 @@ bot.on('message', async message => {
       }
 
       else if (command.split(' ').indexOf("mute") == 0) {
-        if (message.author.id == config.ownerID | message.member.roles.has(config.adminID)) {
+        if (message.author.id == config.ownerID || message.member.roles.has(config.adminID)) {
           var target = args.join(" ");
           var targetuser = message.mentions.users.first();
           if (targetuser) {
@@ -598,7 +597,7 @@ bot.on('message', async message => {
       }
 
       else if (command.split(' ').indexOf("unmute") == 0) {
-        if (message.author.id == config.ownerID | message.member.roles.has(config.adminID)) {
+        if (message.author.id == config.ownerID || message.member.roles.has(config.adminID)) {
           var target = args.join(" ");
           var targetuser = message.mentions.users.first();
           if (targetuser) {
@@ -620,7 +619,6 @@ bot.on('message', async message => {
 
       else if (command.split(" ").indexOf("kick") == 0) {
         if (message.member.roles.has(config.adminID)) {
-          var target = args.join(" ");
           var targetuser = message.mentions.users.first();
           if (targetuser) {
             message.guild.member(targetuser).kick();
@@ -634,15 +632,15 @@ bot.on('message', async message => {
 
       else if (command.split(" ").indexOf("ban") == 0) {
         if (message.member.roles.has(config.adminID)) {
-          let [cmd, user, ...reason] = message.content.split(" ");
-          un = message.mentions.users.first().tag;
+          let [, user, ...reason] = message.content.split(" ");
+          let un = message.mentions.users.first();
           reason = reason || [];
           reason = reason.join(" ");
           let guildMember = (message.mentions.members.size) ?
             message.mentions.members.first() : message.guild.member(user);
           if (guildMember) {
 
-            message.channel.send(`${un} has been banned by ${message.author} for ${reason};`).then(guildMember.ban(`${message.author.tag}: ${reason}`));
+            message.channel.send(`${un.tag} has been banned by ${message.author} for ${reason};`).then(guildMember.ban(`${message.author.tag}: ${reason}`));
             message.delete()
           }
           else {
@@ -681,7 +679,7 @@ bot.on('message', async message => {
         message.channel.send(message.guild.member(message.author).roles.array().map(role => role.name.replace("@everyone", "")))
       }
       if (command === "loop") {
-        if (message.author.id == config.ownerID | message.author.id == config.botID) {
+        if (message.author.id == config.ownerID || message.author.id == config.botID) {
           message.channel.send("/loop")
         }
         else (message.channel.send("Nice try."))
@@ -719,7 +717,6 @@ bot.on('message', async message => {
       }
       else if (command.split(" ").indexOf("info") == 0) {
         if (message.member.roles.has(config.adminID)) {
-          var target = args.join(" ");
           var targetuser = message.mentions.users.first();
           if (targetuser) {
             message.channel.send("User: " + targetuser.username + "\nID: " + targetuser.id + "\nStatus: " + targetuser.presence.status + "\nAccount Created: " + targetuser.createdAt + "\nJoined Server: " + message.guild.member(targetuser).joinedAt + "\nAvatar URL: " + "<" + targetuser.avatarURL + ">" + "\nBot?: " + targetuser.bot)
@@ -865,7 +862,6 @@ bot.on('message', async message => {
       }
 
       if (command.split(" ").indexOf("roles") == 0) {
-        var target = args.join(" ");
         var targetuser = message.mentions.users.first();
         if (targetuser) {
           message.channel.send(targetuser.username + "'s Roles:");
@@ -953,7 +949,7 @@ bot.on('message', async message => {
       if (command === "announce") {
         if (message.member.roles.has(config.adminID)) {
           var announcechan = message.guild.channels.get("250781565817192458");
-          let [cmd, color, title, ...text] = message.cleanContent.split(" ");
+          let [, color, title, ...text] = message.cleanContent.split(" ");
           if (color === "r") {
             var hex = "ff0000";
             var tagall = true;
@@ -978,7 +974,7 @@ bot.on('message', async message => {
             announcechan.send("@everyone")
           }
           announcechan.send({embed: new Discord.RichEmbed().setAuthor(`Author: ${message.member.displayName} | ${message.author.tag}`).setColor(hex).setTitle(`Title: ${title}`).setDescription(text.join(" ")).setTimestamp(new Date())});
-          announcechan.send(`\`\`\`${title} | ${bool} | ${message.member.displayName} / ${message.author.tag} \n ${text.join(" ")}\`\`\``).then(m => message.delete())
+          announcechan.send(`\`\`\`${title} | ${bool} | ${message.member.displayName} / ${message.author.tag} \n ${text.join(" ")}\`\`\``).then(() => message.delete())
         }
         else {
           message.channel.send("Does it look like you're an admin?")
@@ -1087,7 +1083,7 @@ bot.on('message', async message => {
       }
 
 //      if (command === "stats") {
-//      let [cmd, targetuser] = message.content.split(" ")
+//      let [, targetuser] = message.content.split(" ")
 //        if (message.mentions.users.size){
 //          var target = message.mentions.users.first().id
 //          if (target = await User.findOne({userId:target})) {
@@ -1150,7 +1146,7 @@ bot.on('message', async message => {
 
 //      if (command === "givexp") {
 //        if (message.member.roles.has(config.adminID)) {
-//          let [cmd, , val] = message.content.split(" ")
+//          let [, , val] = message.content.split(" ")
 //          var target = message.mentions.users.first().id
 //
 //          if (!target) return message.channel.send("You need to specify who you would like to give EXP to.");
@@ -1167,7 +1163,7 @@ bot.on('message', async message => {
           return;
         }
 
-        let [cmd, , val] = message.content.split(" ");
+        let [, , val] = message.content.split(" ");
         var target = message.mentions.users.first();
 
         if (!target) return message.channel.send("You need to specify who you would like to give gems to.");
@@ -1189,7 +1185,7 @@ bot.on('message', async message => {
 
       if (command === "dmuser") {
         if (message.member.roles.has(config.adminID)) {
-          let [cmd, target, ...msg] = message.content.split(" ");
+          let [, , ...msg] = message.content.split(" ");
           var targetuser = message.mentions.users.first();
           if (!targetuser) return message.channel.send("ERROR: You need to define someone...");
           targetuser.send(`${msg.join(" ")} - sent by ${message.author.tag}`);
@@ -1201,7 +1197,7 @@ bot.on('message', async message => {
       }
 
 //      if (command === "tradegems"){
-//        let [cmd, value, target] = message.content.split(" ")
+//        let [, value, target] = message.content.split(" ")
 //        var targetuser = message.mentions.users.first().id
 //            val = parseInt(value, 10)
 //            if (!targetuser) return message.channel.send("ERROR: You need to define someone...")
@@ -1223,7 +1219,7 @@ bot.on('message', async message => {
 //       }
 
       if (command === "color" || command === "colour") {
-        let [cmd, ...color] = message.content.split(" ");
+        let [, ...color] = message.content.split(" ");
         var rolename = `color - ${args.join(" ")}`,
           role;
         var currentRole;
@@ -1234,7 +1230,7 @@ bot.on('message', async message => {
             while (currentRole = message.member.roles.find(role => role.name.startsWith("color - "))) {
               await message.member.removeRole(currentRole)
             }
-            message.guild.member(message.author.id).addRole(role).then(_ => {
+            message.guild.member(message.author.id).addRole(role).then(() => {
               message.channel.send(`Gave you the color ${color.join(" ")}`)
             })
           }
@@ -1250,13 +1246,13 @@ bot.on('message', async message => {
 
 
       if (command === "removecolor") {
-        let [cmd, ...color] = message.content.split(" ");
+        let [, ...color] = message.content.split(" ");
         var rolename = `color - ${args.join(" ").toLowerCase()}`,
           role;
         if (message.member.roles.has("403126021500567552")) {
           if (role = message.guild.roles.findKey("name", rolename)) {
             if (message.member.roles.has(role)) {
-              message.guild.member(message.author.id).removeRole(role).then(_ => {
+              message.guild.member(message.author.id).removeRole(role).then(() => {
                 message.channel.send(`Removed the color ${color.join(" ")}`)
               })
             }
@@ -1274,7 +1270,7 @@ bot.on('message', async message => {
       }
 
 //        if(command === "warn"){
-//          let [cmd, target, ...reason] = message.content.split(" ")
+//          let [, target, ...reason] = message.content.split(" ")
 //              reason = reason.join(" ")
 //          if (message.member.roles.has(config.adminID)){
 //            if (message.mentions.users.size){
@@ -1336,7 +1332,7 @@ bot.on('message', async message => {
 //        }
 
 //        if (command === "clearwarn"){
-//          let [cmd, user] = message.content.split(" ")
+//          let [, user] = message.content.split(" ")
 //          if (message.member.roles.has(config.adminID)){
 //            if (message.mentions.users.size){
 //              var targetuser = message.mentions.users.first().id
@@ -1385,7 +1381,7 @@ bot.on('message', async message => {
 
       if (command === "newcmd") {
         if (message.author.id != config.ownerID) return message.channel.send("ERROR: Only the owner can use this command.");
-        let [cmd, syn, ...desc] = args.join(" ").split(",");
+        let [, syn, ...desc] = args.join(" ").split(",");
         announcechan.send("@everyone NEW COMMAND");
         announcechan.send({
           embed: {
@@ -1400,7 +1396,7 @@ bot.on('message', async message => {
       }
 
 //        if (command === "dblookup"){
-//        	let [cmd, target] = message.content.split(" ")
+//        	let [, target] = message.content.split(" ")
 //        		if (target){
 //        			if (target = await User.findOne({userId:target})){
 //						message.channel.send({
@@ -1418,12 +1414,12 @@ bot.on('message', async message => {
 //		}
 
       if (command === "msay") {
-        let [cmd, ...msg] = message.content.split(" ");
+        let [, ...msg] = message.content.split(" ");
         ipc.server.broadcast("music.say", msg.join(" "))
       }
 
       if (command === "play") {
-        let [cmd, ...query] = message.content.split(" ");
+        let [, ...query] = message.content.split(" ");
         ipc.server.broadcast("music.play", {
           q: query.join(" "),
           channel_id: message.channel.id
@@ -1445,8 +1441,8 @@ bot.on('message', async message => {
           // functions
           messageFilter: function messageFilter(capturedMessage) {
             if (message.author.id !== capturedMessage.author.id) return false;
-            if (!capturedMessage.content.startsWith("--")) return false;
-            return true;
+            return capturedMessage.content.startsWith("--");
+
           },
 
           collectorCallback: function collectorCallback(collection, endCode) {
@@ -1481,6 +1477,7 @@ bot.on('message', async message => {
                 if (/^-- *end\.?$/i.test(currentMessage.content)) continue;
 
                 index = index + 1;
+                // noinspection JSUnusedLocalSymbols
                 let cIndex = index;
 
                 series.push(function sendMessage(callback) {
@@ -1542,6 +1539,7 @@ bot.on('message', async message => {
               if (/^-- *end\.?$/i.test(currentMessage.content)) continue;
 
               index = index + 1;
+              // noinspection JSUnusedLocalSymbols
               let cIndex = index;
 
               series.push(function sendMessage(callback) {
