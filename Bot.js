@@ -11,6 +11,8 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")) {
 var addons = {};
 var disabledCommands = ["play", "stop"];
 //var queue = []
+
+require("./Mongoose/index.js");
 const ipc = require("node-ipc");
 const async = require("async");
 const path = require("path");
@@ -29,8 +31,6 @@ const rl = readline.createInterface({
 const fs = require("fs");
 
 const bindUpdateCallback = require("./level-up");
-
-require("./Mongoose/index.js");
 
 ipc.config.id = "FB";
 ipc.config.socketRoot = path.join(__dirname, "sockets");
@@ -503,6 +503,7 @@ bot.on('message', async message => {
 
   if (/^([\/>!?%$&#=+])/.test(message.content)) {
     const [command, ...args] = message.content.slice(-(message.content.length - "/".length)).split(" ");
+    console.log(`{${message.channel.name}}[${message.author.tag}]: ${message.cleanContent}`);
     var logchan = message.guild.channels.get("364658410605772802");
     var announcechan = message.guild.channels.get("250781565817192458");
     logchan.send(`{${message.channel.name}}[${message.author.tag}]: ${message.cleanContent}`);
@@ -1145,7 +1146,7 @@ bot.on('message', async message => {
 //      }
 
       if (command === "givexp") {
-        if (message.member.roles.has(config.adminID)) {
+        if (!message.member.roles.has(config.adminID)) {
           return;
         }
 
@@ -1154,23 +1155,24 @@ bot.on('message', async message => {
 
         if (!target) return message.channel.send("You need to specify who you would like to give gems to.");
 
-        function then(err) {
-          if (err) {
-            message.reply("I could not complete your request due to an unknown error. Please wait for confirmation that the problem"
-              + " has been solved, and then try again.");
-            throw err;
-          }
-
+        function then() {
           message.reply(`I have given ${val} EXP to ${target}.`).then(m => m.delete(5000));
+        }
+
+        function error(err) {
+          message.reply("I could not complete your request due to an unknown error. Please wait for confirmation that the problem"
+            + " has been solved, and then try again.");
+
+          console.log(err);
         }
 
         User.findOneAndUpdate({userId: target.id},
           {$inc: {exp: parseInt(val, 10)}},
-          {"upsert": true, "setDefaultsOnInsert": true}).then(then);
+          {"upsert": true, "setDefaultsOnInsert": true}).then(then, error);
       }
 
       if (command === "givegems") {
-        if (message.member.roles.has(config.adminID)) {
+        if (!message.member.roles.has(config.adminID)) {
           return;
         }
 
@@ -1179,19 +1181,20 @@ bot.on('message', async message => {
 
         if (!target) return message.channel.send("You need to specify who you would like to give gems to.");
 
-        function then(err) {
-          if (err) {
-            message.reply("I could not complete your request due to an unknown error. Please wait for confirmation that the problem"
-              + " has been solved, and then try again.");
-            throw err;
-          }
-
+        function then() {
           message.reply(`I have given :gem:${val} to ${target}.`).then(m => m.delete(5000));
+        }
+
+        function error(err) {
+          message.reply("I could not complete your request due to an unknown error. Please wait for confirmation that the problem"
+            + " has been solved, and then try again.");
+
+          console.log(err);
         }
 
         User.findOneAndUpdate({userId: target.id},
           {$inc: {gem: parseInt(val, 10)}},
-          {"upsert": true, "setDefaultsOnInsert": true}).then(then);
+          {"upsert": true, "setDefaultsOnInsert": true}).then(then, error);
       }
 
       if (command === "dmuser") {
