@@ -1,6 +1,6 @@
-const {Schema} = require("mongoose")
-const ItemSchema = require("./Item")
-const WarnSchema = require("./Warn")
+const {Schema} = require("mongoose");
+const ItemSchema = require("./Item");
+const WarnSchema = require("./Warn");
 var UserSchema = new Schema({
   userId:       {type:String, index: true},
   exp:          {type:Number, default:0},
@@ -11,6 +11,6 @@ var UserSchema = new Schema({
   lastReward:   {type:Date, default:new Date()},
   rewardChain:  {type:Number, default:0},
   warnings:     [WarnSchema]
-})
+});
 
-module.exports = UserSchema
+module.exports = UserSchema;

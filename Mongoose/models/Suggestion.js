@@ -1,2 +1,2 @@
-const SuggestionSchema = require("../schemas/Suggestion")
-var Suggestion = db.model('Suggestion', SuggestionSchema)
+const SuggestionSchema = require("../schemas/Suggestion");
+var Suggestion = db.model('Suggestion', SuggestionSchema);
