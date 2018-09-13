@@ -727,7 +727,15 @@ bot.on('message', async message => {
         } else message.channel.send("Do you look like an Admin?")
       }
       if (command === "serverinfo") {
-        message.channel.send(`Name:  ${message.guild.name} \nOwner:  ${message.guild.owner} \nID: ${message.guild.id}  \nMembers:  ${message.guild.memberCount} \nIcon URL: <${message.guild.iconURL}>\nCreated: ${message.guild.createdAt} \nFeatures: ${message.guild.features} \nRegion: ${message.guild.region} \nThanks to GeneralUltra758 for teaching me how to bot."`)
+        message.channel.send(`Name: ${message.guild.name}\n`
+          + `Owner: ${message.guild.owner}\n`
+          + `ID: ${message.guild.id}\n`
+          + `Members: ${message.guild.memberCount}\n`
+          + `Icon URL: <${message.guild.iconURL}>\n`
+          + `Created: ${message.guild.createdAt}\n`
+          + `Features: ${message.guild.features}\n`
+          + `Region: ${message.guild.region}\n`
+          + `Thanks to GeneralUltra758 for teaching me how to bot.`);
       }
 
 //      if (command === "spin") {
