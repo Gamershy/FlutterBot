@@ -1144,19 +1144,30 @@ bot.on('message', async message => {
 //        }
 //      }
 
-//      if (command === "givexp") {
-//        if (message.member.roles.has(config.adminID)) {
-//          let [, , val] = message.content.split(" ")
-//          var target = message.mentions.users.first().id
-//
-//          if (!target) return message.channel.send("You need to specify who you would like to give EXP to.");
-//
-//          if (target = await User.findOne({userId:target})) {
-//            target.exp += parseInt(val, 10);
-//            target.save();
-//          } else return message.channel.send("I could not find that user inside my database. Have they spoken yet?");
-//        }
-//      }
+      if (command === "givexp") {
+        if (message.member.roles.has(config.adminID)) {
+          return;
+        }
+
+        let [, , val] = message.content.split(" ");
+        var target = message.mentions.users.first();
+
+        if (!target) return message.channel.send("You need to specify who you would like to give gems to.");
+
+        function then(err) {
+          if (err) {
+            message.reply("I could not complete your request due to an unknown error. Please wait for confirmation that the problem"
+              + " has been solved, and then try again.");
+            throw err;
+          }
+
+          message.reply(`I have given ${val} EXP to ${target}.`).then(m => m.delete(5000));
+        }
+
+        User.findOneAndUpdate({userId: target.id},
+          {$inc: {exp: parseInt(val, 10)}},
+          {"upsert": true, "setDefaultsOnInsert": true}).then(then);
+      }
 
       if (command === "givegems") {
         if (message.member.roles.has(config.adminID)) {
@@ -1179,7 +1190,7 @@ bot.on('message', async message => {
         }
 
         User.findOneAndUpdate({userId: target.id},
-          {$inc: {gem: val}},
+          {$inc: {gem: parseInt(val, 10)}},
           {"upsert": true, "setDefaultsOnInsert": true}).then(then);
       }
 
