@@ -330,10 +330,10 @@ function ErrorHandler(err) {
   let dateFormatted = `${("0" + date.getDate()).slice(-2)}-${("0" + date.getMonth()).slice(-2)}-${date.getFullYear()} ${("0" + date.getHours()).slice(-2)}h${("0" + date.getMinutes()).slice(-2)}m${("0" + date.getSeconds()).slice(-2)}s.${("0000" + date.getMilliseconds()).slice(-4)}ms`;
   let errHeader;
   let errBody;
-  
+
   if (err.name) errHeader = `${err.name} - ${dateFormatted}`; else errHeader = `Error occurred - ${dateFormatted}`;
   if (err.stack) errBody = err.stack; else errBody = JSON.stringify(err);
-  
+
   let shy = bot.fetchUser("104674953382612992");
   let wolf = bot.fetchUser("204316640735789056");
 
@@ -488,7 +488,7 @@ bot.on("messageDelete", message => {
 		}
  )
 })
- 
+
 // create an event listener for messages
 bot.on('message', async message => {
   if (message.channel.type === "dm") {
@@ -637,7 +637,7 @@ bot.on('message', async message => {
           let guildMember = (message.mentions.members.size) ?
             message.mentions.members.first() : message.guild.member(user)
           if (guildMember) {
-            
+
             message.channel.send(`${un} has been banned by ${message.author} for ${reason};`).then(guildMember.ban(`${message.author.tag}: ${reason}`))
             message.delete()
           }
@@ -874,7 +874,7 @@ bot.on('message', async message => {
           message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
         });
       }
-      
+
       if (command.split(" ").indexOf("db") == 0) {
         var cmd = args.join(" ")
         var eval = evalBooruCmd(cmd)
@@ -890,7 +890,7 @@ bot.on('message', async message => {
           message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
         });
       }
-      
+
       if (command === "sendnoods") {
         message.channel.startTyping();
         message.channel.send("", {files: ["https://cdn.discordapp.com/attachments/270372438825500672/292342878737399809/26bf6ac5b31209915df332272bee1cb890f12c7617850b5b3acd45d68dba7ee9_1.jpg"]}).then(m => m.channel.stopTyping())
@@ -1055,7 +1055,7 @@ bot.on('message', async message => {
           message.guild.member(message.author).removeRole("411777943711252480").then(() => message.channel.send(`${message.author}, you are no longer registered as an artist.`))
         }
       }
-      
+
       if (command === "imtaken") {
         if (!message.guild.member(message.author).roles.has("431145333867675659")) {
           message.guild.member(message.author).addRole("431145333867675659").then(() => message.channel.send(`No touchy, ${message.author} is in a relationship~`))
@@ -1141,19 +1141,30 @@ bot.on('message', async message => {
 //        }
 //      }
 
-//      if (command === "givegems") {
-//        if (message.member.roles.has(config.adminID)) {
-//          let [cmd, , val] = message.content.split(" ")
-//          var target = message.mentions.users.first().id
-//
-//          if (!target) return message.channel.send("You need to specify who you would like to give gems to.");
-//
-//          if (target = await User.findOne({userId:target})) {
-//            target.gem += parseInt(val, 10);
-//            target.save();
-//          } else return message.channel.send("I could not find that user inside my database. Have they spoken yet?");
-//        }
-//      }
+      if (command === "givegems") {
+        if (message.member.roles.has(config.adminID)) {
+          return;
+        }
+
+        let [cmd, , val] = message.content.split(" ")
+        var target = message.mentions.users.first();
+
+        if (!target) return message.channel.send("You need to specify who you would like to give gems to.");
+
+        function then(err) {
+          if (err) {
+            message.reply("I could not complete your request due to an unknown error. Please wait for confirmation that the problem"
+              + " has been solved, and then try again.");
+            throw err;
+          }
+
+          message.reply(`I have given :gem:${val} to ${target}.`).then(m => m.delete(5000));
+        }
+
+        User.findOneAndUpdate({ userId:target.id },
+                              { $inc:{ gem:val } },
+                              { "upsert":true, "setDefaultsOnInsert":true }).then(then);
+      }
 
       if (command === "dmuser"){
         if (message.member.roles.has(config.adminID)){
@@ -1197,7 +1208,7 @@ bot.on('message', async message => {
           var currentRole;
 
           if (message.member.roles.has("403126021500567552")){
- 
+
               if (role = message.guild.roles.findKey("name", rolename)){
                 while (currentRole = message.member.roles.find(role => role.name.startsWith("color - "))) {
                   await message.member.removeRole(currentRole)
@@ -1206,7 +1217,7 @@ bot.on('message', async message => {
                   message.channel.send(`Gave you the color ${color.join(" ")}`)
                 })
               }
-           
+
               else{
                   message.channel.send("That color doesn't exist, makes sure you spelled it correctly, or ask Shy or an admin to create it")
               }
@@ -1215,7 +1226,7 @@ bot.on('message', async message => {
               message.channel.send('You need the "Daily Fapper" role to use this command')
           }
 		}
-        
+
 
         if (command === "removecolor"){
           let [cmd, ...color] = message.content.split(" ")
@@ -1350,7 +1361,7 @@ bot.on('message', async message => {
 //                message.delete()
 //              });
 //        	}
-        
+
         if (command === "newcmd"){
         if (message.author.id != config.ownerID) return message.channel.send("ERROR: Only the owner can use this command.")
         	let [cmd, syn, ...desc] = args.join(" ").split(",")
@@ -1366,7 +1377,7 @@ bot.on('message', async message => {
 			})
 			message.delete()
         }
-        
+
 //        if (command === "dblookup"){
 //        	let [cmd, target] = message.content.split(" ")
 //        		if (target){
@@ -1384,24 +1395,24 @@ bot.on('message', async message => {
 //				}
 //				else message.channel.send("ERROR: You need to define an ID")
 //		}
-		
+
 		if (command === "msay"){
 			let [cmd, ...msg] = message.content.split(" ")
 				ipc.server.broadcast("music.say", msg.join(" "))
 		}
-		
+
 		if (command === "play"){
 			let [cmd, ...query] = message.content.split(" ")
 				ipc.server.broadcast("music.play", {q:query.join(" "), channel_id:message.channel.id})
 		}
-		
+
 		if (command === "stop"){
 			ipc.server.broadcast("music.stop", "dummy")
 		}
-		
+
     if (command === "request") {
       let requestCollector; // create a reference we can use later on
-		
+
       const RequestCommand = {
         // data
         confirmCollector: null,
@@ -1413,7 +1424,7 @@ bot.on('message', async message => {
           if (!capturedMessage.content.startsWith("--")) return false;
           return true;
         },
-    
+
         collectorCallback: function collectorCallback(collection, endCode) {
           console.log("Collection ended with reason:", endCode);
 
@@ -1425,12 +1436,12 @@ bot.on('message', async message => {
               message.channel.send("An unknown error occurred. Please re-use `/request` and try again.")
           }
         },
-        
+
         collectedMessage: function collectedMessage(capturedMessage) {
           console.log(`Collected message with content "${capturedMessage.cleanContent}".`);
           if ((/end\.?$/i).test(capturedMessage.content)) RequestCommand.endCollector("SUGGESTION_END");
         },
-        
+
         endCollector: function endCollector(reason) {
           requestCollector.stop(reason);
         },
@@ -1441,13 +1452,13 @@ bot.on('message', async message => {
           message.author.send("Here is the content of your request:").then(({channel}) => {
             let series = [];
             let index = 0;
-            
-            for (let currentMessage of collection.values()) { 
+
+            for (let currentMessage of collection.values()) {
               if (/^-- *end\.?$/i.test(currentMessage.content)) continue
 
               index = index + 1;
               let cIndex = index;
-              
+
               series.push(function sendMessage(callback) {
                 channel.send({embed:{
                   author: {name: message.author.tag, icon_url: message.author.displayAvatarURL},
@@ -1497,13 +1508,13 @@ bot.on('message', async message => {
         postRequest: function postRequest() {
           let series = [];
           let index = 0;
-          
+
           for (let currentMessage of RequestCommand.collection.values()) {
             if (/^-- *end\.?$/i.test(currentMessage.content)) continue
 
             index = index + 1;
             let cIndex = index;
-            
+
             series.push(function sendMessage(callback) {
               suggestionsChannel.send({embed:{
                 author: {name: message.author.tag, icon_url: message.author.displayAvatarURL},
@@ -1530,8 +1541,8 @@ bot.on('message', async message => {
         requestCollector.on("end", RequestCommand.collectorCallback);
       });
     }
-		
-       
+
+
 
 //        if (command === "colorlist"){
 //          if (message.member.roles.has("403126021500567552")){
