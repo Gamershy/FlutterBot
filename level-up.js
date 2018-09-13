@@ -1,8 +1,6 @@
 const User = db.model("User");
 
-function callback(err, document) {
-  if (err) {throw err; return}
-  
+function callback(document) {
   // Sorry Shy, but it runs quicker.
   switch(true) {
     case (document.lvl == 5):
@@ -35,12 +33,18 @@ function callback(err, document) {
   if (document.exp > document.nxtlvl) {
     return User.findOneAndUpdate({ userId:this.author.id },
                                  { $inc: { lvl:1, nxtlvl:(document.lvl * 100 * 1.3) } },
-                                 { "upsert":true, "setDefaultsOnInsert":true, "new":true }, bind(this));
+                                 { "upsert":true, "setDefaultsOnInsert":true, "new":true }, ...bind(this));
   }
-};
+}
+
+function error(err) {
+  console.error(err);
+  this.guild.defaultChannel.send(`${this.guild.owner} <@204316640735789056> There was a problem when assigning experience to a user.`
+    + " This error has been logged to STDERR, and written to `~gamershy/bot/err.txt`.");
+}
 
 function bind(message) {
-  return callback.bind(message);
+  return [callback.bind(message), error.bind(message)];
 }
 
 module.exports = bind;
