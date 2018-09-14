@@ -752,7 +752,6 @@ bot.on('message', async message => {
               ":diamond_shape_with_a_dot_inside:", ":gun:", ":sunny:", ":no_entry_sign:"];
             let slots = [-1, -1, -1];
             let jackpot = 10000;
-            let status = {win:true, half:false};
 
             if (result.gem < 100) return message.reply("You don't have enough gems to play slots...");
 
