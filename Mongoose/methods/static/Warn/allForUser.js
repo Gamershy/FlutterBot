@@ -1,4 +1,9 @@
-function allForUser(userId, {active = true, grabAll = false, limit = 0} = {}) {
+function allForUser(userId, {
+  active = true,
+  grabAll = false,
+  limit = 0,
+  sort = {}
+} = {}) {
   return new Promise((resolve, reject) => {
     function userFindOneCallback(err, user) {
       if (err) return reject(err);
@@ -8,7 +13,7 @@ function allForUser(userId, {active = true, grabAll = false, limit = 0} = {}) {
       }
 
       let find = {user:user._id};
-      let options = {};
+      let options = {sort};
 
       if (!grabAll) find.active = active;
       if (limit) options.limit = limit;
