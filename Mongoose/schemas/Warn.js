@@ -8,6 +8,6 @@ var WarnSchema = new Schema({
   date:     {type: Date, default: Date.now}
 });
 
-WarnSchema.statics.forUser = require("../methods/static/Warn/forUser");
+WarnSchema.statics.allForUser = require("../methods/static/Warn/allForUser");
 
 module.exports = WarnSchema;
