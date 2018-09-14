@@ -1121,7 +1121,7 @@ bot.on('message', async message => {
           return function(callback) {
             User.findOne({userId}, "lvl exp nxtlvl gem inv rewardChain lastReward", function handle(err, result) {
               if (err) {
-                callback({err, user:user.tag});
+                return callback({err, user:user.tag});
               }
 
               if (result) {
@@ -1180,33 +1180,60 @@ bot.on('message', async message => {
         });
       }
 
-//      if (command === "reward") {
-//        let currentDate = new Date();
-//        let lastActivationDate = __user.lastReward.getTime();
-//        let day = (24 * 60 * 60 * 1000);
-//        let timeRemaining = new Date((__user.lastReward.getTime()+day) - Date.now());
-//console.log(timeRemaining)
-//        let hours = timeRemaining.getUTCHours();
-//        let minutes = timeRemaining.getUTCMinutes();
-//        let seconds = timeRemaining.getUTCSeconds();
-//
-//        let daysSinceLastReward = (currentDate - lastActivationDate) / day;
-//
-//        if (daysSinceLastReward >= 1) {
-//          if (daysSinceLastReward >= 2) __user.rewardChain = 0;
-//
-//          ++__user.rewardChain;
-//          var gemsEarned = (255*__user.rewardChain)
-//          var expEarned = Math.ceil(Math.random() * 50)
-//          __user.exp += expEarned;
-//          __user.gem += gemsEarned;
-//          __user.lastReward = new Date();
-//          __user.markModified("lastReward");
-//          message.channel.send(`You've earned your daily reward!\n EXP + ${expEarned}, Gems + ${gemsEarned}`);
-//        } else {
-//          message.channel.send(`You need to wait ${hours} hour${hours!==1? "s" : ""}, ${minutes} minute${minutes!==1? "s" : ""}, and ${seconds} second${seconds!==1? "s" : ""} to use this command again.`);
-//        }
-//      }
+      if (command === "reward") {
+        User.findOne({userId:message.author.id}, "userId lastReward rewardChain", function handle(err, result) {
+          if (err) {
+            console.error(err);
+            return message.reply("There was an unknown error when retrieving your profile to calculate your reward.");
+          }
+
+          if (result) {
+            let currentDate = new Date();
+            let lastActivationDate = result.lastReward.getTime();
+            let day = (24 * 60 * 60 * 1000);
+            let timeRemaining = new Date((result.lastReward.getTime() + day) - Date.now());
+            let hours = timeRemaining.getUTCHours();
+            let minutes = timeRemaining.getUTCMinutes();
+            let seconds = timeRemaining.getUTCSeconds();
+
+            let rewardChainOffset = 1;
+            let daysSinceLastReward = (currentDate - lastActivationDate) / day;
+
+            if (daysSinceLastReward >= 1) {
+              if (daysSinceLastReward >= 2) rewardChainOffset -= result.rewardChain;
+
+              let gemsEarned = (255 * (result.rewardChain + rewardChainOffset));
+              let expEarned = Math.ceil(Math.random() * 50);
+
+              let updateBy = {
+                $inc: {gem: gemsEarned, exp: expEarned, rewardChain: rewardChainOffset},
+                $currentDate: {lastReward: 1}
+              };
+
+              User.findByIdAndUpdate(result._id, updateBy, function(err) {
+                if (err) {
+                  console.error(err);
+                  return message.reply("There was an unknown error when granting your calculated reward to you.\n"
+                    + "Please ask either <@104674953382612992> or <@204316640735789056> to grant you the following:\n"
+                    + `**•** :gem:${gemsEarned}.\n`
+                    + `**•** ${expEarned} EXP.\n\n`
+                    + `In addition, <@204316640735789056> needs to increment your \`rewardChain\` by ${rewardChainOffset} and set your `
+                    + `\`lastReward\` to the current date.\n\n`
+                    + `(Or you could just try again and hope it works this time; it's up to you. —Zuris)`);
+                }
+
+                message.reply(`You've earned your daily reward!\nEXP + ${expEarned}, Gems + ${gemsEarned}`);
+              });
+            } else {
+              message.reply(`You need to wait ${hours} hour${hours !== 1 ? "s" : ""}, ${minutes} minute${minutes !== 1 ? "s" : ""}, and ${seconds} second${seconds !== 1 ? "s" : ""} to use this command again.`);
+            }
+
+            return;
+          }
+
+          User.create({userId:message.author.id}, handle);
+        });
+      }
 
       if (command === "givexp") {
         if (!message.member.roles.has(config.adminID)) {
@@ -1223,8 +1250,9 @@ bot.on('message', async message => {
         }
 
         function error(err) {
-          message.reply("I could not complete your request due to an unknown error. Please wait for confirmation that the problem"
-            + " has been solved, and then try again.");
+          message.reply("I could not complete your request due to an unknown error. "
+            + "Please wait for confirmation that the problem "
+            + "has been solved, and then try again.");
 
           console.error(err);
         }
@@ -1486,7 +1514,7 @@ bot.on('message', async message => {
 
       if (command === "newcmd") {
         if (message.author.id != config.ownerID) return message.channel.send("ERROR: Only the owner can use this command.");
-        let [, syn, ...desc] = args.join(" ").split(",");
+        let [cmd, syn, ...desc] = args.join(" ").split(",");
         announcechan.send("@everyone NEW COMMAND");
         announcechan.send({
           embed: {
@@ -1497,7 +1525,7 @@ bot.on('message', async message => {
             }
           }
         });
-        message.delete()
+        message.delete();
       }
 
       if (command === "dblookup"){
