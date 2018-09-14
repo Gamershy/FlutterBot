@@ -334,7 +334,7 @@ function ErrorHandler(err) {
   let errBody;
 
   if (err.name) errHeader = `${err.name} - ${dateFormatted}`; else errHeader = `Error occurred - ${dateFormatted}`;
-  if (err.stack) errBody = err.stack; else errBody = JSON.stringify(err);
+  if (err.stack || err) errBody = err.stack; else errBody = JSON.stringify(err);
 
   let shy = bot.fetchUser("104674953382612992");
   let wolf = bot.fetchUser("204316640735789056");
@@ -742,7 +742,7 @@ bot.on('message', async message => {
       if (command === "spin") {
         User.findOne({userId:message.author.id}, "gem", function handle(err, result) {
           if (err) {
-            console.error(err);
+            console.error(err.stack || err);
             return message.reply("There was an unknown error when retrieving your profile to play slots.");
           }
 
@@ -784,7 +784,7 @@ bot.on('message', async message => {
 
             User.findByIdAndUpdate(result._id, {$inc: {gem: winnings-100}}, function(err) {
               if (err) {
-                console.error(err);
+                console.error(err.stack || err);
                 return message.reply("There was an unknown error when transferring your winnings to you. "
                   + "The operation has been aborted and your gem count remains unchanged.");
               }
@@ -1168,7 +1168,7 @@ bot.on('message', async message => {
 
         async.series(stack, function(err, results) {
           if (err) {
-            console.error(err.err);
+            console.error(err.err.stack || err);
             return message.reply("There was an unknown error when attempting to retrieve the "
               + "user " + err.user + ". Please wait for confirmation that the problem has been "
               + "solved, and then try again.");
@@ -1183,7 +1183,7 @@ bot.on('message', async message => {
       if (command === "reward") {
         User.findOne({userId:message.author.id}, "userId lastReward rewardChain", function handle(err, result) {
           if (err) {
-            console.error(err);
+            console.error(err.stack || err);
             return message.reply("There was an unknown error when retrieving your profile to calculate your reward.");
           }
 
@@ -1212,7 +1212,7 @@ bot.on('message', async message => {
 
               User.findByIdAndUpdate(result._id, updateBy, function(err) {
                 if (err) {
-                  console.error(err);
+                  console.error(err.stack || err);
                   return message.reply("There was an unknown error when granting your calculated reward to you.\n"
                     + "Please ask either <@104674953382612992> or <@204316640735789056> to grant you the following:\n"
                     + `**•** :gem:${gemsEarned}.\n`
@@ -1254,7 +1254,7 @@ bot.on('message', async message => {
             + "Please wait for confirmation that the problem "
             + "has been solved, and then try again.");
 
-          console.error(err);
+          console.error(err.stack || err);
         }
 
         User.findOneAndUpdate({userId: target.id},
@@ -1280,7 +1280,7 @@ bot.on('message', async message => {
           message.reply("I could not complete your request due to an unknown error. Please wait for confirmation that the problem"
             + " has been solved, and then try again.");
 
-          console.error(err);
+          console.error(err.stack || err);
         }
 
         User.findOneAndUpdate({userId: target.id},
@@ -1312,7 +1312,7 @@ bot.on('message', async message => {
           const trade = Fawn.Task();
 
           if (err) {
-            console.error(err);
+            console.error(err.stack || err);
             return message.reply("There was an unknown error when attempting to transfer gems. "
               + "Please wait for confirmation that the problem has been solved, "
               + "and then try again.");
@@ -1333,7 +1333,7 @@ bot.on('message', async message => {
             }
 
             function error(err) {
-              console.error(err);
+              console.error(err.stack || err);
               return message.reply("There was an unknown error when attempting to transfer gems. "
                 + "Please wait for confirmation that the problem has been solved, "
                 + "and then try again.")
@@ -1413,13 +1413,11 @@ bot.on('message', async message => {
         if (!reason) return message.reply("You cannot warn someone without providing a reason.");
 
         User.findOne({userId:target.id}, "userId")
-          .then(result => {
-            result.warn(message.author.id, reason)
-          })
+          .then(result => result.warn(message.author.id, reason))
           .then(() => message.guild.defaultChannel.send(`${target} has been warned by ${message.author} for ${reason}`))
           .catch(err => {
-            console.error(err);
-            return message.guild.defaultChannel.send("An unknown error occurred while warning this user.")
+            console.error(err.stack || err);
+            return message.guild.defaultChannel.send("An unknown error occurred while warning this user.");
           })
           .then(() => message.delete());
       }
@@ -1488,7 +1486,7 @@ bot.on('message', async message => {
           limit: 10
         }, function(err, result) {
           if (err) {
-            console.error(err);
+            console.error(err.stack || err);
             return message.reply("There was an error when getting statistics for the leaderboard.")
               .then(() => message.delete(5000));
           }
@@ -1504,7 +1502,7 @@ bot.on('message', async message => {
           async.series(stack, function (err, result) {
             if (err) {
               message.channel.send("ERROR: Unknown");
-              console.error(err.stack);
+              console.error(err.stack || err);
             }
 
             let msg = [];
@@ -1542,7 +1540,7 @@ bot.on('message', async message => {
         if (target) {
           User.findOne({userId:target}, "lvl exp nxtlvl gem inv rewardChain lastReward", function handle(err, result) {
             if (err) {
-              console.error(err);
+              console.error(err.stack || err);
               return message.reply("There was an unknown error when attempting to retrieve the "
                 + "user. Please wait for confirmation that the problem has been "
                 + "solved, and then try again.");
@@ -1665,7 +1663,7 @@ bot.on('message', async message => {
             }).then(collector => {
               collector.on("collect", RequestCommand.gotConfirmationMessage);
             }).catch(function postError(err) {
-              console.error(err);
+              console.error(err.stack || err);
               message.reply("I was unable to send (or continue to send) confirmation to your DMs for an unknown reason. You blocked me, didn't you?");
             });
           },
