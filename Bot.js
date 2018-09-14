@@ -1425,7 +1425,52 @@ bot.on('message', async message => {
       }
 
       if (command === "viewwarn") {
+        let target = message.mentions.users.first() || message.author;
+        let limit = args.find(elem => Number.isInteger(+elem) && elem > 0) || 5;
+        limit = Math.min(limit, 10);
 
+        message.channel.startTyping();
+
+        Warn.allForUser(target.id, {
+            active: true,
+            limit: limit,
+            sort: "date",
+            lean: true
+          })
+          .then(({count, warnings}) => {
+            if (!count) return message.author.send(`The user ${target.tag} has no warnings.`);
+
+            let response = [`The user ${target.tag} has ${count} warnings. Displaying the `
+              + `final ${Math.min(count, limit)} warnings:`];
+            let stack = [];
+
+            for (let warning of warnings.reverse()) {
+              stack.push(function(callback) {
+                User.findById(warning.issuer, "userId")
+                  .then(({userId:issuer}) => bot.fetchUser(issuer))
+                  .then(issuer => {warning.issuer = issuer.tag; return warning})
+                  .then(warning => callback(null, warning))
+                  .catch(callback);
+              });
+            }
+
+            async.series(stack, function(err, warnings) {
+              if (err) {
+                console.error(err.stack || err);
+                return message.reply("There was an unknown error while retrieving this user's warnings.")
+                  .then(m => m.delete(5000))
+                  .then(() => message.delete());
+              }
+
+              for (let warning of warnings) {
+                response.push(`**•** [${warning.date.toUTCString()}] From @${warning.issuer}: ${warning.reason}`);
+              }
+
+              message.author.send(response)
+                .then(() => message.reply("I have sent the requested log to your DMs."))
+                .then(() => message.channel.stopTyping());
+            });
+          });
       }
 
       if (command === "clearwarn") {
