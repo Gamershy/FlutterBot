@@ -6,6 +6,9 @@ function allForUser(userId, {
   sort = {}
 } = {}) {
   return new Promise((resolve, reject) => {
+    let warnFind;
+    let warnFindCount;
+
     function userFindOneCallback(err, user) {
       if (err) return reject(err);
 
@@ -17,16 +20,26 @@ function allForUser(userId, {
 
       if (!grabAll) find.active = active;
 
-      db.model("Warn")
+      warnFind = db.model("Warn")
         .find(find, "issuer reason date")
         .sort(sort)
         .limit(limit)
-        .lean(lean)
-        .exec(warnFindCallback);
+        .lean(lean);
+
+      db.model("Warn")
+        .countDocuments(find)
+        .exec(warnFindCountCallback);
+    }
+
+    function warnFindCountCallback(err, count) {
+      if (err) return reject(err);
+
+      warnFindCount = count;
+      warnFind.exec(warnFindCallback);
     }
 
     function warnFindCallback(err, warnings) {
-      if (err) return reject(err); else return resolve({count:warnings.length, warnings});
+      if (err) reject(err); else resolve({count, warnings});
     }
 
     db.model("User").findOne({userId}, "_id", userFindOneCallback);
