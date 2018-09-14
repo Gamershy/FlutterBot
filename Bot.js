@@ -1402,84 +1402,18 @@ bot.on('message', async message => {
         }
       }
 
-//        if(command === "warn"){
-//          let [, target, ...reason] = message.content.split(" ")
-//              reason = reason.join(" ")
-//          if (message.member.roles.has(config.adminID)){
-//            if (message.mentions.users.size){
-//              var targetuser = message.mentions.users.first().id
-//              if (reason){
-//                if (!(targetuser = await User.findOne({userId:targetuser}))) {
-//                  targetuser = await User.create({userId: targetuser});
-//                }
-//
-//                await User.findByIdAndUpdate(targetuser._id, {$push:{warnings:{issuer: message.author.id, reason, date:new Date()}}}).then(() => {
-//                  message.channel.send(`${target}, you've been warned for \`${reason}\`. You currently have \`${targetuser.warnings.length + 1}\` total warnings.`)
-//                  message.delete()
-//                })
-//              }
-//              else message.channel.send("ERROR: You need to provide a reason for warning this user.")
-//            }
-//            else message.channel.send("ERROR: You need to define someone.")
-//          }
-//          else message.channel.send("Does it look like you're an admin?")
-//        }
+      if (command === "warn") {
+
+      }
 
 
-//        if (command === "viewwarn"){
-//          if (message.member.roles.has(config.adminID)){
-//            if (message.mentions.users.size){
-//              var targetuser = message.mentions.users.first().id
-//              var user = message.mentions.users.first().tag
-//                if (targetuser = await User.findOne({userId:targetuser})){
-//                  if (targetuser.warnings.length){
-//                    var stack = []
-//                    for (let i = 0; i < targetuser.warnings.length; ++i){
-//                      stack.push(function (callback){
-//                        bot.fetchUser(targetuser.warnings[i].issuer).then(user => callback(null, user.tag), err => callback(err))
-//                      })
-//                    }
-//
-//                    async.series(stack, function(err, userIDs){
-//                      if (err){
-//                        message.channel.send("ERROR: Unknown")
-//                        return console.error(err.stack)
-//                      }
-//
-//                      var msg = []
-//                      targetuser.warnings.forEach((warning, index) => {
-//                        msg.push(`Issued by: ${userIDs[index]}\nReason: ${warning.reason}\nDate: ${warning.date},\n`)
-//                      })
-//                      message.author.send(`Warnings for ${user}`)
-//                      message.author.send(msg)
-//                      message.delete()
-//                    })
-//                  }
-//                  else message.channel.send("This user has no recorded warnings.")
-//                }
-//                else message.channel.send("ERROR: That user isn't in the database yet. Make sure they've sent at least one non-command message.")
-//            }
-//            else message.channel.send("ERROR: You need to define someone")
-//          }
-//          else message.channel.send("Does it look like you're an admin?")
-//        }
+      if (command === "viewwarn") {
 
-//        if (command === "clearwarn"){
-//          let [, user] = message.content.split(" ")
-//          if (message.member.roles.has(config.adminID)){
-//            if (message.mentions.users.size){
-//              var targetuser = message.mentions.users.first().id
-//              if (targetuser = await User.findOne({userId:targetuser})){
-//                targetuser.warnings = []
-//                targetuser.markModified("warnings")
-//                targetuser.save()
-//                message.channel.send(`Cleared the warnings for ${message.guild.member(targetuser.userId).user.tag}`)
-//                message.delete()
-//              }
-//            }
-//          }
-//          else (message.channel.send("Does it look like you're an admin?"))
-//        }
+      }
+
+      if (command === "clearwarn") {
+
+      }
 
       if (command === "lb" || command === "leaderboard" || command === "top10") {
         let [, sort] = message.content.split(" ");
