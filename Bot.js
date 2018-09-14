@@ -1212,7 +1212,7 @@ bot.on('message', async message => {
         if (!target_user) return message.channel.send("ERROR: You need to define someone...");
         if (value !== value || value <= 0) return message.channel.send("ERROR: You need to give a real number of gems, negatives aren't allowed.");
 
-        User.findOne({userId:message.author.id}, {userId:1, gem:1}, function handle(err, results) {
+        User.findOne({userId:message.author.id}, {userId:1, gem:1}, function handle(err, result) {
           const trade = Fawn.Task();
 
           if (err) {
@@ -1222,36 +1222,36 @@ bot.on('message', async message => {
               + "and then try again.");
           }
 
-          if (!results) {
-            return User.create({userId:message.author.id}, handle);
+          if (result) {
+            if (result.gem - value < 0) return message.reply("You do not have enough gems! "
+              + `(Current: ${result.gem}, required: ${value} or more.)`)
+              .then(m => m.delete(5000));
+
+            message.reply("Transferring :gem:" + value + " to " + target_user.tag)
+              .then(m => m.delete(5000));
+
+            function then() {
+              message.reply("Successfully transferred :gem:" + value + " to " + target_user.tag + "!")
+                .then(m => m.delete(5000))
+                .then(() => message.delete());
+            }
+
+            function error(err) {
+              console.log(err);
+              return message.reply("There was an unknown error when attempting to transfer gems. "
+                + "Please wait for confirmation that the problem has been solved, "
+                + "and then try again.")
+                .then(m => m.delete(5000))
+                .then(() => message.delete());
+            }
+
+            return trade.update(User, {userId:result.userId}, {$inc: {gem:-value}})
+              .update(User, {userId:target_user.id}, {$inc: {gem:value}})
+              .run({"useMongoose": true})
+              .then(then, error);
           }
 
-          if (results.gem - value < 0) return message.reply("You do not have enough gems! "
-            + `(Current: ${results.gem}, required: ${value} or more.)`)
-            .then(m => m.delete(5000));
-
-          message.reply("Transferring :gem:" + value + " to " + target_user.tag)
-            .then(m => m.delete(5000));
-
-          function then() {
-            message.reply("Successfully transferred :gem:" + value + " to " + target_user.tag + "!")
-              .then(m => m.delete(5000))
-              .then(() => message.delete());
-          }
-
-          function error(err) {
-            console.log(err);
-            return message.reply("There was an unknown error when attempting to transfer gems. "
-              + "Please wait for confirmation that the problem has been solved, "
-              + "and then try again.")
-              .then(m => m.delete(5000))
-              .then(() => message.delete());
-          }
-
-          trade.update(User, {userId:results.userId}, {$inc: {gem:-value}})
-            .update(User, {userId:target_user.id}, {$inc: {gem:value}})
-            .run({"useMongoose": true})
-            .then(then, error);
+          User.create({userId:message.author.id}, handle);
         });
       }
 
@@ -1433,19 +1433,35 @@ bot.on('message', async message => {
       }
 
       if (command === "dblookup"){
-        let [, target] = message.content.split(" ")
-        if (target){
-          if (target = await User.findOne({userId:target})){
-            message.channel.send({
-              embed: {
-                color: message.member.displayColor,
-                title: `Stats for ${target.userId}:`,
-                description: `Level: ${target.lvl} \nEXP/Next LVL: ${target.exp}/${target.nxtlvl} \nGems: ${target.gem} \nInventory: ${target.inv} \nCurrent Chain: ${target.rewardChain} \nLast Reward: ${target.lastReward.toUTCString()}`,
-                footer: {text: `Executed by: ${message.author.tag}`, iconURL: message.author.avatarURL}
-              }
-            })
-          }
-          else message.channel.send("ERROR: No user with that ID exists in the database.")
+        let [, target] = message.content.split(" ");
+
+        if (target) {
+          User.findOne({userId:target}, "lvl exp nxtlvl gem inv rewardChain lastReward", function handle(err, result) {
+            if (err) {
+              console.log(err);
+              return message.reply("There was an unknown error when attempting to retrieve the "
+                + "user. Please wait for confirmation that the problem has been "
+                + "solved, and then try again.");
+            }
+
+            if (result) {
+              return message.channel.send({
+                embed: {
+                  color: message.member.displayColor,
+                  title: `Stats for ${target}:`,
+                  description: `Level: ${result.lvl}\n`
+                    + `EXP/Next LVL: ${result.exp}/${result.nxtlvl}\n`
+                    + `Gems: ${result.gem}\n`
+                    + `Inventory: ${result.inv}\n`
+                    + `Current Chain: ${result.rewardChain}\n`
+                    + `Last Reward: ${result.lastReward.toUTCString()}`,
+                  footer: {text: `Executed by: ${message.author.tag}`, iconURL: message.author.avatarURL}
+                }
+              });
+            }
+
+            message.reply("This user ID was not found in the database.");
+          });
         }
         else message.channel.send("ERROR: You need to define an ID")
       }
