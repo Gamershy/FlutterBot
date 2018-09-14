@@ -1,4 +1,4 @@
-function allForUser(userId, {active = true, grabAll = false} = {}) {
+function allForUser(userId, {active = true, grabAll = false, limit = 0} = {}) {
   return new Promise((resolve, reject) => {
     function userFindOneCallback(err, user) {
       if (err) return reject(err);
@@ -8,10 +8,12 @@ function allForUser(userId, {active = true, grabAll = false} = {}) {
       }
 
       let find = {user:user._id};
+      let options = {};
 
       if (!grabAll) find.active = active;
+      if (limit) options.limit = limit;
 
-      db.model("Warn").find(find, warnFindCallback);
+      db.model("Warn").find(find, options, warnFindCallback);
     }
 
     function warnFindCallback(err, warnings) {
