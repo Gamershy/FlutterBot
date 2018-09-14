@@ -13,12 +13,14 @@ function allForUser(userId, {
       }
 
       let find = {user:user._id};
-      let options = {sort};
 
       if (!grabAll) find.active = active;
-      if (limit) options.limit = limit;
 
-      db.model("Warn").find(find, options, warnFindCallback);
+      db.model("Warn")
+        .find(find, "issuer reason date")
+        .sort(sort)
+        .limit(limit)
+        .exec(warnFindCallback);
     }
 
     function warnFindCallback(err, warnings) {
