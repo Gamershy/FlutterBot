@@ -1403,9 +1403,26 @@ bot.on('message', async message => {
       }
 
       if (command === "warn") {
+        let [, ...reason] = args;
 
+        reason = reason.join(" ").trim();
+        target = message.mentions.users.first();
+
+        if (!message.member.roles.has(config.adminID)) return message.reply("Does it look like you're an admin?");
+        if (!target) return message.reply("You need to define someone for me to warn.");
+        if (!reason) return message.reply("You cannot warn someone without providing a reason.");
+
+        User.findOne({userId:target.id}, "userId")
+          .then(result => {
+            result.warn(message.author.id, reason)
+          })
+          .then(() => message.guild.defaultChannel.send(`${target} has been warned by ${message.author} for ${reason}`))
+          .catch(err => {
+            console.error(err);
+            return message.guild.defaultChannel.send("An unknown error occurred while warning this user.")
+          })
+          .then(() => message.delete());
       }
-
 
       if (command === "viewwarn") {
 
