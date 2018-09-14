@@ -736,46 +736,65 @@ bot.on('message', async message => {
           + `Thanks to GeneralUltra758 for teaching me how to bot.`);
       }
 
-//      if (command === "spin") {
-//        if (__user.gem < 100) return message.channel.send("ERROR: You don't have enough gems to play slots..")
-//        __user.gem -= 100
-//        var slot1 = Math.ceil(Math.random() * 9),
-//          slot2 = Math.ceil(Math.random() * 9),
-//          slot3 = Math.ceil(Math.random() * 9),
-//          winningAmount = 0,
-//          losingAmount = 0,
-//          canWin = true,
-//          halfScore = false,
-//          jackpot = 10000,
-//          symbol = ["fuck", ":full_moon:", ":gem:", ":star:", ":dragon_face:", ":bat:", ":diamond_shape_with_a_dot_inside:", ":gun:", ":sunny:", ":no_entry_sign:"]
-//        // loss scenarios
-//        if ([slot1, slot2, slot3].includes(4)) canWin = false;
-//        if ([slot1, slot2, slot3].includes(5)) halfScore = true
-//        if (slot1 === slot2 && slot2 === slot3 && slot1 === 4) losingAmount = 1000;
-//
-//        // win scenarios
-//        if (slot1 === 2) winningAmount += 100
-//        if (slot2 === 2) winningAmount += 100
-//        if (slot3 === 2) winningAmount += 100
-//
-//        // minor jackpot scenarios
-//        if (slot1 === 6) winningAmount += 300;
-//        if (slot2 === 6) winningAmount += 300;
-//        if (slot3 === 6) winningAmount += 300;
-//
-//        // major jackpot scenario
-//        if (slot1 === slot2 && slot2 === slot3 && slot1 === 6) winningAmount = jackpot;
-//
-//        if (canWin) {
-//          if (halfScore === true) winningAmount /= 2
-//          message.channel.send(`${symbol[slot1]}${symbol[slot2]}${symbol[slot3]} \nYou've earned ${winningAmount} Gems!`)
-//          __user.gem += winningAmount
-//        }
-//        else {
-//          message.channel.send(`${symbol[slot1]}${symbol[slot2]}${symbol[slot3]} \n You lost ${losingAmount} Gems...`)
-//          __user.gem -= losingAmount
-//        }
-//      }
+      if (command === "spin") {
+        User.findOne({userId:message.author.id}, "gem", function handle(err, result) {
+          if (err) {
+            console.error(err);
+            return message.reply("There was an unknown error when retrieving your profile to play slots.");
+          }
+
+          if (result) {
+            let winnings = 0;
+            let outcomes = [":full_moon:", ":gem:", ":star:", ":dragon_face:", ":bat:",
+              ":diamond_shape_with_a_dot_inside:", ":gun:", ":sunny:", ":no_entry_sign:"];
+            let slots = [-1, -1, -1];
+            let jackpot = 10000;
+            let status = {win:true, half:false};
+
+            if (result.gem < 100) return message.reply("You don't have enough gems to play slots...");
+
+            for (let slot in slots) {
+              slots[slot] = Math.floor(Math.random() * 9);
+            }
+
+            let uniques = new Set(slots).size;
+
+            // win scenarios
+            if (slots[0] === 1) winnings += 100;
+            if (slots[1] === 1) winnings += 100;
+            if (slots[2] === 1) winnings += 100;
+
+            // minor jackpot scenarios
+            if (slots[0] === 5) winnings += 300;
+            if (slots[1] === 5) winnings += 300;
+            if (slots[2] === 5) winnings += 300;
+
+            // major jackpot scenario
+            if (slots[0] === 5 && uniques === 1) winnings = jackpot;
+
+            // modifier scenario
+            if (slots.includes(3)) winnings = -winnings;
+            if (slots.includes(4)) winnings /= 2;
+            if (!status.win && uniques === 1) winnings = -1000;
+
+            let response = `You've ${winnings >= 0?"won":"lost"} ${Math.abs(winnings)} gems.`;
+
+            User.findByIdAndUpdate(result._id, {$inc: {gem: winnings-100}}, function(err) {
+              if (err) {
+                console.error(err);
+                return message.reply("There was an unknown error when transferring your winnings to you. "
+                  + "The operation has been aborted and your gem count remains unchanged.");
+              }
+
+              message.reply(`${outcomes[slots[0]]}${outcomes[slots[1]]}${outcomes[slots[2]]}\n${response}.`);
+            });
+
+            return;
+          }
+
+          User.create({userId:message.author.id}, handle);
+        });
+      }
 
       if (command === "kill") {
         if (message.author.id == config.ownerID) {
@@ -1204,7 +1223,7 @@ bot.on('message', async message => {
           message.reply("I could not complete your request due to an unknown error. Please wait for confirmation that the problem"
             + " has been solved, and then try again.");
 
-          console.log(err);
+          console.error(err);
         }
 
         User.findOneAndUpdate({userId: target.id},
@@ -1230,7 +1249,7 @@ bot.on('message', async message => {
           message.reply("I could not complete your request due to an unknown error. Please wait for confirmation that the problem"
             + " has been solved, and then try again.");
 
-          console.log(err);
+          console.error(err);
         }
 
         User.findOneAndUpdate({userId: target.id},
@@ -1262,7 +1281,7 @@ bot.on('message', async message => {
           const trade = Fawn.Task();
 
           if (err) {
-            console.log(err);
+            console.error(err);
             return message.reply("There was an unknown error when attempting to transfer gems. "
               + "Please wait for confirmation that the problem has been solved, "
               + "and then try again.");
@@ -1283,7 +1302,7 @@ bot.on('message', async message => {
             }
 
             function error(err) {
-              console.log(err);
+              console.error(err);
               return message.reply("There was an unknown error when attempting to transfer gems. "
                 + "Please wait for confirmation that the problem has been solved, "
                 + "and then try again.")
@@ -1484,7 +1503,7 @@ bot.on('message', async message => {
         if (target) {
           User.findOne({userId:target}, "lvl exp nxtlvl gem inv rewardChain lastReward", function handle(err, result) {
             if (err) {
-              console.log(err);
+              console.error(err);
               return message.reply("There was an unknown error when attempting to retrieve the "
                 + "user. Please wait for confirmation that the problem has been "
                 + "solved, and then try again.");
