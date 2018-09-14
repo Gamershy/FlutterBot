@@ -39,7 +39,7 @@ function allForUser(userId, {
     }
 
     function warnFindCallback(err, warnings) {
-      if (err) reject(err); else resolve({count, warnings});
+      if (err) reject(err); else resolve({count:warnFindCount, warnings});
     }
 
     db.model("User").findOne({userId}, "_id", userFindOneCallback);
