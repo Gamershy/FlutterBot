@@ -34,6 +34,7 @@ const fs = require("fs");
 const bindUpdateCallback = require("./level-up");
 const roller = Fawn.Roller();
 
+/** @namespace ipc.config */
 ipc.config.id = "FB";
 ipc.config.socketRoot = path.join(__dirname, "sockets");
 ipc.config.socketRoot += "/";
@@ -263,6 +264,7 @@ function evalBooruCmd(input) { // what is this?
   for (let n in values) {
     if (parseInt(values[n])) {
       //integer found.
+      // noinspection JSUnresolvedFunction
       tags = values.splice(0, n);
       //values now has the integer tags has the tags
       integerFound = true //yep we found a integer
@@ -441,6 +443,7 @@ bot.on("ready", () => {
 
     guld.send(inputStr);
   });
+  /** @namespace ipc.server */
   ipc.server.start()
 });
 
@@ -1747,8 +1750,10 @@ bot.on('message', async message => {
 });
 
 if (config.devmode) { // is this even needed still? -Zuris
+  // noinspection JSUnresolvedFunction
   ipc.serveNet()
 } else {
+  // noinspection JSUnresolvedFunction
   ipc.serve()
 }
 
