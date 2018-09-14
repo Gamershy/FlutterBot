@@ -22,7 +22,7 @@ function warn(issuer, reason) {
       resolve(warning);
     }
 
-    db.model("User").findOne({userId: issuer.id}, "_id", userFindOneCallback);
+    db.model("User").findOne({userId: issuer.id || issuer}, "_id", userFindOneCallback);
   });
 }
 
