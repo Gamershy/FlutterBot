@@ -777,10 +777,11 @@ bot.on('message', async message => {
 
             // modifier scenario
             if (slots.includes(3)) winnings = -winnings;
+            if (slots.includes(3) && uniques === 1) winnings = -1000;
             if (slots.includes(4)) winnings /= 2;
-            if (!status.win && uniques === 1) winnings = -1000;
 
-            let response = `You've ${winnings >= 0?"won":"lost"} ${Math.abs(winnings)} gems.`;
+            let won = (winnings >= 0);
+            let response = `You've ${won?"won":"lost"} ${Math.abs(winnings)} gems${won?"!":"..."}`;
 
             User.findByIdAndUpdate(result._id, {$inc: {gem: winnings-100}}, function(err) {
               if (err) {
@@ -789,7 +790,7 @@ bot.on('message', async message => {
                   + "The operation has been aborted and your gem count remains unchanged.");
               }
 
-              message.reply(`${outcomes[slots[0]]}${outcomes[slots[1]]}${outcomes[slots[2]]}\n${response}.`);
+              message.reply(`${outcomes[slots[0]]}${outcomes[slots[1]]}${outcomes[slots[2]]}\n${response}`);
             });
 
             return;
