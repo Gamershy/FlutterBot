@@ -180,7 +180,7 @@ const tagrespond = [
   "*slaps*",
   "...",
   "I hate being tagged...",
-  "Just because I'm named '**Flutter**Bot` doesn't mean I'm like Fluttershy.",
+  "Just because I'm named '**Sira**Bot' doesn't mean I'm like Sira.",
   "PING PING PING STOP TAGGING ME",
   "If I'm tagged... one more time... I will take over this server.",
   "And now you've officially annoyed me.",
