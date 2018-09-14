@@ -1,6 +1,7 @@
 function allForUser(userId, {
   active = true,
   grabAll = false,
+  lean = false,
   limit = 0,
   sort = {}
 } = {}) {
@@ -20,6 +21,7 @@ function allForUser(userId, {
         .find(find, "issuer reason date")
         .sort(sort)
         .limit(limit)
+        .lean(lean)
         .exec(warnFindCallback);
     }
 
