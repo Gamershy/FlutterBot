@@ -1481,36 +1481,48 @@ bot.on('message', async message => {
 //          else (message.channel.send("Does it look like you're an admin?"))
 //        }
 
-//        if (command === "lb" || command === "leaderboard" || command === "top10"){
-//          let [ cmd, sort] = message.content.split(" ")
-//              sort = (sort === "gems") ? "gem" : sort
-//              sort = (["level", "levels", "lvl"].includes(sort)) ? "lvl" : sort
-//
-//              if (!["exp", "gem", "lvl"].includes(sort)) return message.channel.send("You can only sort by `exp`, `lvl`, and `gems`.")
-//              const result = await User.find({}, `userId ${sort}`, {sort:{[sort]:-1}, limit:10})
-//
-//              let stack = [];
-//              result.map(r => stack.push(callback => {
-//                bot.fetchUser(r.userId).then(user => callback(null, {user:user.tag, result:r[sort]}), err => callback(err));
-//              }));
-//
-//              async.series(stack, function(err, result) {
-//                if (err) {
-//                  message.channel.send("ERROR: Unknown");
-//                  console.error(err.stack);
-//                }
-//
-//                let msg = []
-//                msg.push("```")
-//                result.forEach((userId, index) => {
-//                  msg.push(`${index + 1}. ${userId.user} | ${sort} ${userId.result}`)
-//                })
-//                msg.push("```")
-//                message.author.send(`Sorted by ${sort}`)
-//                message.author.send(msg)
-//                message.delete()
-//              });
-//        	}
+      if (command === "lb" || command === "leaderboard" || command === "top10") {
+        let [, sort] = message.content.split(" ");
+        sort = (sort === "gems") ? "gem" : sort;
+        sort = (["level", "levels", "lvl"].includes(sort)) ? "lvl" : sort;
+
+        if (!["exp", "gem", "lvl"].includes(sort)) return message.channel.send("You can only sort by `exp`, `lvl`, and `gems`.");
+        User.find({}, `userId ${sort}`, {
+          sort: {[sort]: -1},
+          limit: 10
+        }, function(err, result) {
+          if (err) {
+            console.error(err);
+            return message.reply("There was an error when getting statistics for the leaderboard.")
+              .then(() => message.delete(5000));
+          }
+
+          let stack = [];
+          result.map(r => stack.push(callback => {
+            bot.fetchUser(r.userId).then(user => callback(null, {
+              user: user.tag,
+              result: r[sort]
+            }), err => callback(err));
+          }));
+
+          async.series(stack, function (err, result) {
+            if (err) {
+              message.channel.send("ERROR: Unknown");
+              console.error(err.stack);
+            }
+
+            let msg = [];
+            msg.push("```");
+            result.forEach((userId, index) => {
+              msg.push(`${index + 1}. ${userId.user} | ${sort} ${userId.result}`)
+            });
+            msg.push("```");
+            message.author.send(`Sorted by ${sort}`);
+            message.author.send(msg);
+            message.delete();
+          });
+        });
+      }
 
       if (command === "newcmd") {
         if (message.author.id != config.ownerID) return message.channel.send("ERROR: Only the owner can use this command.");
