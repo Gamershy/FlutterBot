@@ -1078,39 +1078,85 @@ bot.on('message', async message => {
         }
       }
 
-//      if (command === "stats") {
-//      let [, targetuser] = message.content.split(" ")
-//        if (message.mentions.users.size){
-//          var target = message.mentions.users.first().id
-//          if (target = await User.findOne({userId:target})) {
-//            message.channel.send({
-//              embed: {
-//                color: message.guild.member(target.userId).displayColor,
-//                title: `${message.guild.member(target.userId).user.tag}'s Stats:`,
-//                description: `Level: ${target.lvl} \nEXP/Next LVL: ${target.exp}/${target.nxtlvl} \nGems: ${target.gem} \nInventory: ${target.inv} \nCurrent Chain: ${target.rewardChain} \nLast Reward: ${target.lastReward.toUTCString()}`,
-//                thumbnail: {url: message.guild.member(target.userId).user.avatarURL},
-//                footer: {text: `Executed by: ${message.author.tag}`, iconURL: message.author.avatarURL}
-//              }
-//            })
-//          }
-//          else message.channel.send(`ERROR: That user isn't in the database yet. Make sure they've sent at least one non-command message.`)
-//        }
-//        else{
-//          if (!__user) {
-//            message.channel.send("You have no stats yet. Please send at least one message that's not a command.")
-//          }
-//          else {
-//            message.channel.send({
-//              embed: {
-//                color: message.member.displayColor,
-//                title: `${message.author.tag}'s Stats:`,
-//                description: `Level: ${__user.lvl} \nEXP/Next LVL: ${__user.exp}/${__user.nxtlvl} \nGems: ${__user.gem} \nInventory: ${__user.inv} \nCurrent Chain: ${__user.rewardChain} \nLast Reward: ${__user.lastReward.toUTCString()}`,
-//                thumbnail: {url: message.author.avatarURL}
-//              }
-//            });
-//          }
-//        }
-//      }
+      if (command === "stats") {
+        let stack = [];
+
+        if (!message.mentions.users.size) {
+          message.mentions.users.set(message.author.id, message.author);
+        }
+
+        if (message.mentions.users.size > 3) {
+          return message.reply("You may only select up to three people.");
+        }
+
+        /**
+         * @param {User} _user
+         * @return {Function}
+         */
+        function get_user(_user) {
+          let [userId, user] = _user;
+
+          return function(callback) {
+            User.findOne({userId}, "lvl exp nxtlvl gem inv rewardChain lastReward", function handle(err, result) {
+              if (err) {
+                callback({err, user:user.tag});
+              }
+
+              if (result) {
+                let embed;
+
+                try {
+                  embed = {
+                    embed: {
+                      color: message.guild.member(userId).displayColor,
+                      title: `${message.guild.member(userId).user.tag}'s Stats:`,
+                      description: `Level: ${result.lvl}\n`
+                      + `EXP/Next LVL: ${result.exp}/${result.nxtlvl}\n`
+                      + `Gems: ${result.gem}\n`
+                      + `Inventory: ${result.inv}\n`
+                      + `Current Chain: ${result.rewardChain}\n`
+                      + `Last Reward: ${result.lastReward.toUTCString()}`,
+                      thumbnail: {url: message.guild.member(userId).user.avatarURL},
+                      footer: {text: `Executed by: ${message.author.tag}`, iconURL: message.author.avatarURL}
+                    }
+                  }
+                } catch (err) {
+                  return callback({err, user:user.tag});
+                }
+
+                return callback(null, embed);
+              }
+
+              User.create({userId}, handle);
+            });
+          };
+        }
+
+        function send(embeds) {
+          let embed = embeds.pop();
+
+          if (!embed) return;
+
+          message.channel.send(embed).then(() => send(embeds));
+        }
+
+        for (let user of message.mentions.users) {
+          stack.push(get_user(user));
+        }
+
+        async.series(stack, function(err, results) {
+          if (err) {
+            console.error(err.err);
+            return message.reply("There was an unknown error when attempting to retrieve the "
+              + "user " + err.user + ". Please wait for confirmation that the problem has been "
+              + "solved, and then try again.");
+          }
+
+          message.reply("Here are your requested users:").then(() => {
+            send(results.reverse());
+          });
+        });
+      }
 
 //      if (command === "reward") {
 //        let currentDate = new Date();
