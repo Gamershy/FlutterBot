@@ -1436,7 +1436,8 @@ bot.on('message', async message => {
             lean: true
           })
           .then(({count, warnings}) => {
-            if (!count) return message.author.send(`The user ${target.tag} has no warnings.`);
+            if (!count) return message.author.send(`The user @${target.tag} has no warnings.`)
+              .then(() => message.channel.stopTyping());
 
             let response = [`The user ${target.tag} has ${count} warnings. Displaying the `
               + `final ${Math.min(count, limit)} warnings:`];
