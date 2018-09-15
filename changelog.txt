@@ -1,8 +1,8 @@
-Version 3.5.9
-Minor update with major background features
-  + Leave messages are now randomized, Flutterbot isn't a complete bitch to everyone anymore.
-  + Background music functionality is in the works. Streaming works, so all we need is the queue system.
-  + Very, very unstable /request code has been added, however, due to how volatile it is, the command is currently disabled
-  + /play and /stop are in experimental modes, and are currently disabled. Zuris and I may use the commands for testing, but you guys won't be able to use it yet.
-  + A few bugfixes here and there.
-  + Alot of old, unused code lines have been removed.
+Version 4.0.0
+Massive update to the bot:
+• All database-using commands have been updated to perform asynchronously instead of synchronously, meaning there should no longer be issues where Sirabot will hang if she disconnects from the database.
+• Booru has been updated to version 1.2.0, and Mongoose has been updated to version 5.2.13.
+• Some commands have had their output beautified or normalised.
+• Warnings have been moved to their own collection in the database, making them much easier for the bot to access.
+• All code has been reformatted and tidied up.
+• *Finally that damn "[object Object]" error she keeps crashing with has been made more readable, meaning a quick fix should be on its way soon: look out for that.*
