@@ -1,4 +1,4 @@
-const Discord = require('discord.js')
+const Discord = require('discord.js');
 if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")) {
   Object.defineProperty(Discord.Guild.prototype, "defaultChannel", {
     get: function () {
@@ -8,29 +8,36 @@ if (!Discord.Guild.prototype.hasOwnProperty("defaultChannel")) {
   });
 }
 
-
-var addons = {}
-var disabledCommands = ["play", "stop"]
+var addons = {};
+var disabledCommands = ["play", "stop"];
 //var queue = []
-const ipc = require("node-ipc")
-const async = require("async")
-const path = require("path")
-const mongoose = require("./Mongoose/index.js")
-const config = require('./config.js')
-const permban = require(`./permban.js`)
-const bot = new Discord.Client({fetchAllMembers: true, disabledEvents: ["TYPING_START"]})
-const readline = require("readline")
-const booru = require("booru")
-const child_process = require("child_process")
+
+require("./Mongoose/index.js");
+const ipc = require("node-ipc");
+const async = require("async");
+const path = require("path");
+const config = require('./config.js');
+// noinspection JSCheckFunctionSignatures
+const bot = new Discord.Client({
+  fetchAllMembers: true,
+  disabledEvents: ["TYPING_START"]
+});
+const readline = require("readline");
+const booru = require("booru");
+const child_process = require("child_process");
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
-})
-const fs = require("fs")
+});
+const fs = require("fs");
 
-ipc.config.id = "FB"
-ipc.config.socketRoot = path.join(__dirname, "sockets")
-ipc.config.socketRoot += "/"
+const bindUpdateCallback = require("./level-up");
+const roller = Fawn.Roller();
+
+/** @namespace ipc.config */
+ipc.config.id = "FB";
+ipc.config.socketRoot = path.join(__dirname, "sockets");
+ipc.config.socketRoot += "/";
 
 //Schema Variables
 var User = db.model("User");
@@ -68,7 +75,7 @@ const porntrigger = [
   "Porn?",
   "Yep, that's what this server is for.",
   "Anal is the best way to avoid teen pregnancy."
-]
+];
 const size = [
   "8================D",
   "8=====D",
@@ -77,7 +84,7 @@ const size = [
   ".",
   "8=============D",
   "8==============================D"
-]
+];
 const playingmsg = [
   "with tools in slot 'A'",
   "Banned from Equestria",
@@ -110,7 +117,7 @@ const playingmsg = [
   "with Shy's food",
   "Wondering how the fuck a pony can turn into a dragon",
   "Anime is for plebs."
-]
+];
 
 const pingmsg = [
   "Porn, I mean, Pong!",
@@ -131,7 +138,7 @@ const pingmsg = [
   "pong, ping, pong, ping, pong",
   "<insert spammy response here>",
 
-]
+];
 
 const BoopImg = [
   "https://cdn.discordapp.com/attachments/270372438825500672/283016843030036481/271618__UNOPT__safe_animated_scrunchy-face_boop_marker-pony_extreme-speed-animation.gif",
@@ -147,7 +154,7 @@ const BoopImg = [
   "https://cdn.discordapp.com/attachments/313132381488021524/333866852197466112/386aeecf-8e2b-499d-802f-0bf099d557fc.gif",
   "https://cdn.discordapp.com/attachments/313132381488021524/333867183828500480/24ed5466-02ad-405d-8155-9e4c59807ddd.gif",
   "https://cdn.discordapp.com/attachments/334886087925301250/334886120431288341/image.gif",
-]
+];
 const tagrespond = [
   "What the fuck do you want?",
   "Don't you know it's rude to tag a girl while she's hoof deep in her pussy?",
@@ -174,7 +181,7 @@ const tagrespond = [
   "*slaps*",
   "...",
   "I hate being tagged...",
-  "Just because I'm named '**Flutter**Bot` doesn't mean I'm like Fluttershy.",
+  "Just because I'm named '**Sira**Bot' doesn't mean I'm like Sira.",
   "PING PING PING STOP TAGGING ME",
   "If I'm tagged... one more time... I will take over this server.",
   "And now you've officially annoyed me.",
@@ -187,7 +194,7 @@ const tagrespond = [
   "Hm hm hm... Stop.",
   "What do you want.?",
   "If you're tagging me for commands, just type `/commands`, it's that simple."
-]
+];
 const leavemsg = [
   "cya |, you probably won't be missed~",
   "| has decided the porn was too much",
@@ -195,7 +202,7 @@ const leavemsg = [
   "| has left us. Press F to pay your respex",
   "Error 404, | can no longer be found",
   "RIP |, you might be missed"
-]
+];
 var commands = [
   {"name": "/ping", "result": "See how fast she responds."},
   {"name": "/HDButt", "result": "Butts in HD ;3"},
@@ -211,10 +218,7 @@ var commands = [
   {"name": "/cat", "result": "Meow~"},
   {"name": "/kawaiipuss", "result": "See some sexy pussy"},
   {"name": "/yt <query>", "result": "Search youtube for a video"},
-  {
-    "name": "/r34 <Tags> [Number]",
-    "result": "Search R34 for some porn. Leaving the tags blank will yield random results"
-  },
+  {"name": "/r34 <Tags> [Number]", "result": "Search R34 for some porn. Leaving the tags blank will yield random results"},
   {"name": "/r34top <Tags> [Number]", "result": "Search R34 for the top scored porn."},
   {"name": "/gudbat", "result": "Good bat~"},
   {"name": "/loodbat", "result": "Lewd Bat."},
@@ -231,68 +235,64 @@ var commands = [
   {"name": "/color", "result": "Get a new color (requires Daily Fapper role)"},
   {"name": "/imtaken", "result": "Mark yourself as being in a relationship"},
   {"name": "/request", "result": "Make a suggestion for improvements to the server. I will give further details when the command is used. Suggestions are logged to <#469557897513271316>."}
-]
+];
 var admincmds = [
   {"name": "/mute @user", "result": "Mutes a user as punishment"},
   {"name": "/unmute @user", "result": "Unmutes a user"},
   {"name": "/kick @user", "result": "Kicks a user from the server"},
   {"name": "/ban <@user> [reason]", "result": "Bans a user from the server. Talk to Shy about unbanning."},
   {"name": "/info @user", "result": "Displays information about a user. Useful for seeing when accounts were made."},
-  {"name": "/announce <r/y/l/b> <title> <content>",
-    "result": "Send an announcement to #announcements, ALL ARGUMENTS REQUIRED. r = red, y = yellow, l = lightblue, b = blue. Blue doesn't tag @everyone."},
+  {"name": "/announce <r/y/l/b> <title> <content>", "result": "Send an announcement to #announcements, ALL ARGUMENTS REQUIRED. r = red, y = yellow, l = lightblue, b = blue. Blue doesn't tag @everyone."},
   {"name": "/warn <user> <reason>", "result": "Warn a user for breaking rules. REASON IS REQUIRED"},
   {"name": "/clearwarn <user>", "result": "Clear all warnings from a specified user. DO NOT ABUSE THIS COMMAND"},
   {"name": "/viewwarn <user>", "result": "View the warnings given to a specified user. DM response"}
-]
+];
 
-var dev = config.devmode
-var YouTube = require('youtube-node')
-var youTube = new YouTube()
+var dev = config.devmode;
+var YouTube = require('youtube-node');
+var youTube = new YouTube();
+
 function evalBooruCmd(input) { // what is this?
   //cleanup
-  input = input.replace(/,/g, " ") // replace commas with space (incase someone does tag,tag)
-  input = input.replace(/\s+/g, ' ')//replace excess whitespace ("tag  tag" -> "tag tag")
-  input = input.trim() //remove trailing whitespace ("tag tag " -> "tag tag")
+  input = input.replace(/,/g, " "); // replace commas with space (incase someone does tag,tag)
+  input = input.replace(/\s+/g, ' ');//replace excess whitespace ("tag  tag" -> "tag tag")
+  input = input.trim(); //remove trailing whitespace ("tag tag " -> "tag tag")
 
-  var values = input.split(" ")
-  var tags
-  var integerFound = false
-  for (n in values) {
+  var values = input.split(" ");
+  var tags;
+  var integerFound = false;
+  for (let n in values) {
     if (parseInt(values[n])) {
       //integer found.
-      tags = values.splice(0, n)
+      // noinspection JSUnresolvedFunction
+      tags = values.splice(0, n);
       //values now has the integer tags has the tags
       integerFound = true //yep we found a integer
     }
   }
 
-  var number
+  var number;
   if (integerFound) {
     number = parseInt(values[0])
   } else {
-    number = 1
+    number = 1;
     tags = values //didnt find a integer so "values" only contains tags
   }
   return {"tags": tags, "number": number}
 }
 
-// TODO: replace with Math.min and Math.max calls (Gen, what the fuck were
-// you thinking when you told Shy to do it like this?)
+// TODO: replace with Math.min and Math.max calls (Gen, what the fuck were you thinking when you told Shy to do it like this?)
 function constrain(minimum, maximum, value) {
-  if (value > maximum) value = maximum
-  if (value < minimum) value = minimum
+  if (value > maximum) value = maximum;
+  if (value < minimum) value = minimum;
   return value
 }
 
 //sorting stuff
 function predicatBy(prop) {
   return function (a, b) {
-    if (a[prop] > b[prop]) {
-      return 1;
-    } else if (a[prop] < b[prop]) {
-      return -1;
-    }
-    return 0;
+    // Much better way of doing things. Just don't pass strings XD
+    return a[prop] - b[prop];
   }
 }
 
@@ -302,16 +302,19 @@ function predicatBy(prop) {
  * @param {number} num number of results to get
  */
 function sortBooru(data, num) {
-  var common = []
-  for (image of data) {
+  var common = [];
+
+  for (let image of data) {
     common.push(image.common)
   }
+
   //for (image of data) { console.log(image.common) }
-  common.sort(predicatBy("score")).reverse()
+  common.sort(predicatBy("score")).reverse();
+
   //console.log("commonyfied data: ")
   //for (image of common){console.log(image.score)}
   if (common.length > num) {
-    var ret = []
+    var ret = [];
     for (var n = 0; n < num; n++) {
       ret.push(common[n])
     }
@@ -329,10 +332,10 @@ function ErrorHandler(err) {
   let dateFormatted = `${("0" + date.getDate()).slice(-2)}-${("0" + date.getMonth()).slice(-2)}-${date.getFullYear()} ${("0" + date.getHours()).slice(-2)}h${("0" + date.getMinutes()).slice(-2)}m${("0" + date.getSeconds()).slice(-2)}s.${("0000" + date.getMilliseconds()).slice(-4)}ms`;
   let errHeader;
   let errBody;
-  
+
   if (err.name) errHeader = `${err.name} - ${dateFormatted}`; else errHeader = `Error occurred - ${dateFormatted}`;
-  if (err.stack) errBody = err.stack; else errBody = err;
-  
+  if (err.stack || err) errBody = err.stack; else errBody = JSON.stringify(err);
+
   let shy = bot.fetchUser("104674953382612992");
   let wolf = bot.fetchUser("204316640735789056");
 
@@ -340,9 +343,14 @@ function ErrorHandler(err) {
   Promise.all([shy, wolf]).then(users => {
     new Promise((resolve, reject) => {
       let _userId = 0;
-      let send = function(user) {
+      let send = function (user) {
         try {
-          user.send({embed: {title: errHeader, description: `\`\`\`xl\n${errBody}\n\`\`\``}}).then(() => {
+          user.send({
+            embed: {
+              title: errHeader,
+              description: `\`\`\`xl\n${errBody}\n\`\`\``
+            }
+          }).then(() => {
             _userId++;
 
             if (_userId === users.length) {
@@ -354,7 +362,7 @@ function ErrorHandler(err) {
         } catch (e) {
           reject(e);
         }
-      }
+      };
 
       send(users[_userId]);
     }).then(() => bot.destroy())
@@ -362,14 +370,12 @@ function ErrorHandler(err) {
   }).catch(e => {
     console.log("Failed with", e.stack);
   });
-};
-
+}
 process.on("unhandledRejection", ErrorHandler);
 bot.on("error", ErrorHandler); // perform same actions as unhandledRejection.
 
 process.on("exit", () => {
   let addonList = Object.entries(addons);
-  let stack = [];
 
   for (let addon of addonList) {
     if (!addon[1]) continue;
@@ -383,16 +389,16 @@ process.on("exit", () => {
 // The ready event is fired when the bot begins receiving information from Discord.
 // Note to self: when pasting in a comment, don't accidentally delete the handler.
 bot.on("ready", () => {
-  console.log("Online~")
+  console.log("Online~");
   suggestionsChannel = bot.channels.get("469557897513271316");
   reactions.upvote = bot.guilds.first().emojis.get("469576069314510858");
   reactions.downvote = bot.guilds.first().emojis.get("469576210368954378");
-  var timer = setInterval(() => {
+  setInterval(() => {
     bot.user.setActivity(playingmsg[Math.floor(Math.random() * playingmsg.length)], {type: "PLAYING"})
-  }, 1000 * 60 * 60)
-  var guld = bot.guilds.first().defaultChannel
+  }, 1000 * 60 * 60);
+  var guld = bot.guilds.first().defaultChannel;
 
-  youTube.setKey(config.ytKey)
+  youTube.setKey(config.ytKey);
   if (dev == true) {
     guld.send(`Dev Build ${config.devver}`)
   }
@@ -436,58 +442,59 @@ bot.on("ready", () => {
     });
 
     guld.send(inputStr);
-  })
+  });
+  /** @namespace ipc.server */
   ipc.server.start()
 });
 
 bot.on("guildMemberAdd", member => {
-  member.guild.defaultChannel.send(`Whalecum ${member} to the server! Be sure to read <#249401654003105792> before you post.`)
+  member.guild.defaultChannel.send(`Whalecum ${member} to the server! Be sure to read <#249401654003105792> before you post.`);
   member.guild.channels.get("424870218414948367").send("User: " + member.user.username + "\nID: " + member.id + "\nStatus: " + member.presence.status + "\nAccount Created: " + member.user.createdAt + "\nJoined Server: " + member.joinedAt + "\nAvatar URL: " + "<" + member.user.avatarURL + ">" + "\nBot?: " + member.user.bot)
-})
+});
 
 bot.on("guildMemberRemove", member => {
-  var selmsg = leavemsg[Math.floor(Math.random() * leavemsg.length)]
-  var parseleave = selmsg.split("|")
-  member.guild.defaultChannel.send(`${parseleave[0]} ${member.displayName} ${parseleave[1]}`)
-  member.guild.channels.get("424870218414948367").send("User: " + member.user.username + " Left server at: " + new Date().toUTCString() )
-})
+  var selmsg = leavemsg[Math.floor(Math.random() * leavemsg.length)];
+  var parseleave = selmsg.split("|");
+  member.guild.defaultChannel.send(`${parseleave[0]} ${member.displayName} ${parseleave[1]}`);
+  member.guild.channels.get("424870218414948367").send("User: " + member.user.username + " Left server at: " + new Date().toUTCString())
+});
 
 bot.on("roleDelete", delrole => {
   if (delrole.guild) {
     delrole.guild.defaultChannel.send(`The role "` + delrole.name + `" has been deleted.`)
   }
-})
+});
 
 bot.on("channelCreate", createchnl => {
   if (createchnl.guild) {
     createchnl.guild.defaultChannel.send("Created new channel: " + createchnl)
   }
-})
+});
 bot.on("channelDelete", delchnl => {
   if (delchnl.guild) {
     delchnl.guild.defaultChannel.send("Deleted Channel: " + delchnl.name)
   }
-})
+});
 
 bot.on("messageDelete", message => {
-	var logchan = message.guild.channels.get("364658410605772802")
-		logchan.send({
-  	  	embed: {
-    			author: {
-      		  	name: `${message.member.displayName} | ${message.author.tag} (${message.author.id})`,
-      			  icon_url: message.author.displayAvatarURL
-    			},
-    			color: message.member.displayColor,
-    			title: `Message posted ${message.createdAt.toUTCString()} ${message.id}`,
-    			description: message.cleanContent,
-    			footer: {
-      		  	text: `Deleted from #${message.channel.name} at ${new Date().toUTCString()}`
-    			}
- 			}
-		}
- )
-})
- 
+  var logchan = message.guild.channels.get("364658410605772802");
+  logchan.send({
+      embed: {
+        author: {
+          name: `${message.member.displayName} | ${message.author.tag} (${message.author.id})`,
+          icon_url: message.author.displayAvatarURL
+        },
+        color: message.member.displayColor,
+        title: `Message posted ${message.createdAt.toUTCString()} ${message.id}`,
+        description: message.cleanContent,
+        footer: {
+          text: `Deleted from #${message.channel.name} at ${new Date().toUTCString()}`
+        }
+      }
+    }
+  )
+});
+
 // create an event listener for messages
 bot.on('message', async message => {
   if (message.channel.type === "dm") {
@@ -497,19 +504,13 @@ bot.on('message', async message => {
     return;
   }
 
-  let __user = await User.findOne({userId: message.author.id});
-
-  // create a new user if one doesn't exist already
-  if (!__user) __user = new User({
-    userId: message.author.id
-  });
-
-  if (/^(\/|>|!|\?|%|\$|&|#|\=|\+)/.test(message.content)) {
+  if (/^([\/>!?%$&#=+])/.test(message.content)) {
     const [command, ...args] = message.content.slice(-(message.content.length - "/".length)).split(" ");
-    var logchan = message.guild.channels.get("364658410605772802")
-    var announcechan = message.guild.channels.get("250781565817192458")
-    logchan.send(`{${message.channel.name}}[${message.author.tag}]: ${message.cleanContent}`)
-    if (disabledCommands.includes(command) && ![config.ownerID, "204316640735789056"].includes(message.author.id)) return maintenancemsg(message)
+    console.log(`{${message.channel.name}}[${message.author.tag}]: ${message.cleanContent}`);
+    var logchan = message.guild.channels.get("364658410605772802");
+    var announcechan = message.guild.channels.get("250781565817192458");
+    logchan.send(`{${message.channel.name}}[${message.author.tag}]: ${message.cleanContent}`);
+    if (disabledCommands.includes(command) && ![config.ownerID, "204316640735789056"].includes(message.author.id)) return maintenancemsg(message);
     if (message.guild) {
       //Everything below here requires "/"
       if (command === "ping") {
@@ -521,7 +522,7 @@ bot.on('message', async message => {
 
       if (command === "randgame") {
         if (message.author.id == config.ownerID) {
-          bot.user.setActivity(Math.floor(Math.random() * playingmsg.length), {type: "PLAYING"})
+          bot.user.setActivity(playingmsg[Math.floor(Math.random() * playingmsg.length)], {type: "PLAYING"});
           message.delete()
         }
         else message.channel.send("Only Shy can play with me...")
@@ -533,7 +534,7 @@ bot.on('message', async message => {
       }
 
       if (command.split(' ').indexOf("ava") == 0) {
-        var targetuser = message.mentions.users.first()
+        var targetuser = message.mentions.users.first();
         if (targetuser) {
           message.channel.send(targetuser.displayAvatarURL)
         }
@@ -542,7 +543,7 @@ bot.on('message', async message => {
 
       if (command.split(' ').indexOf("setgame") == 0) {
         if (message.author.id == config.ownerID) {
-          bot.user.setActivity(args.join(" "), {type: "PLAYING"})
+          bot.user.setActivity(args.join(" "), {type: "PLAYING"});
           message.delete()
         }
         else {
@@ -552,25 +553,25 @@ bot.on('message', async message => {
       }
 
       if (["commands", "help"].includes(command)) {
-	let [cmd, num] = message.content.split(" ")
-	let pagenum = parseInt(num|| 1, 10)
-        var data = new Discord.RichEmbed()
-        data.setColor("#191970")
-        data.setTitle("COMMANDS")
- console.log(pagenum === 1 ? 0 : pagenum * 25)
-    console.log(pagenum === 1 ? 24 : ((pagenum + 1) * 25) - 1)
-	let commandsLocal = commands.slice(pagenum === 1 ? 0 : (pagenum - 1) * 25, pagenum === 1 ? 24 : (pagenum * 25) - 1)
-        for (cmds of commandsLocal) {
-          data.addField(cmds.name, cmds.result)
+        let [, num] = message.content.split(" ");
+        let pagenum = parseInt(num || 1, 10);
+        var data = new Discord.RichEmbed();
+        data.setColor("#191970");
+        data.setTitle("COMMANDS");
+        console.log(pagenum === 1 ? 0 : pagenum * 25);
+        console.log(pagenum === 1 ? 24 : ((pagenum + 1) * 25) - 1);
+        let commandsLocal = commands.slice(pagenum === 1 ? 0 : (pagenum - 1) * 25, pagenum === 1 ? 24 : (pagenum * 25) - 1);
+        for (let cmd of commandsLocal) {
+          data.addField(cmd.name, cmd.result)
         }
-        message.author.send(`Page ${pagenum} of 2`, {embed: data})
-        message.delete()
+        message.author.send(`Page ${pagenum} of 2`, {embed: data});
+        message.delete();
         if (message.member.roles.has(config.adminID)) {
-          var data = new Discord.RichEmbed()
-          data.setColor("#FF0000")
-          data.setTitle("ADMIN COMMANDS")
-          for (cmds of admincmds) {
-            data.addField(cmds.name, cmds.result)
+          var data = new Discord.RichEmbed();
+          data.setColor("#FF0000");
+          data.setTitle("ADMIN COMMANDS");
+          for (let cmd of admincmds) {
+            data.addField(cmd.name, cmd.result)
           }
           message.author.send("", {embed: data})
         }
@@ -583,11 +584,11 @@ bot.on('message', async message => {
       }
 
       else if (command.split(' ').indexOf("mute") == 0) {
-        if (message.author.id == config.ownerID | message.member.roles.has(config.adminID)) {
-          var target = args.join(" ")
-          var targetuser = message.mentions.users.first()
+        if (message.author.id == config.ownerID || message.member.roles.has(config.adminID)) {
+          var target = args.join(" ");
+          var targetuser = message.mentions.users.first();
           if (targetuser) {
-            await message.guild.member(targetuser).addRole("249616536573050900")
+            await message.guild.member(targetuser).addRole("249616536573050900");
             message.channel.send(target + " has been muted...")
           }
           else {
@@ -600,12 +601,12 @@ bot.on('message', async message => {
       }
 
       else if (command.split(' ').indexOf("unmute") == 0) {
-        if (message.author.id == config.ownerID | message.member.roles.has(config.adminID)) {
-          var target = args.join(" ")
-          var targetuser = message.mentions.users.first()
+        if (message.author.id == config.ownerID || message.member.roles.has(config.adminID)) {
+          var target = args.join(" ");
+          var targetuser = message.mentions.users.first();
           if (targetuser) {
-            await message.guild.member(targetuser).removeRole("249616536573050900")
-            message.channel.send(target + " is no longer being gagged!")
+            await message.guild.member(targetuser).removeRole("249616536573050900");
+            message.channel.send(target + " is no longer being gagged!");
             message.delete()
           } else {
             message.channel.send("ERROR: You need to define someone...")
@@ -622,11 +623,10 @@ bot.on('message', async message => {
 
       else if (command.split(" ").indexOf("kick") == 0) {
         if (message.member.roles.has(config.adminID)) {
-          var target = args.join(" ")
-          var targetuser = message.mentions.users.first()
+          var targetuser = message.mentions.users.first();
           if (targetuser) {
-            message.guild.member(targetuser).kick()
-            message.channel.send(targetuser.username + " has been kicked in the ass..")
+            message.guild.member(targetuser).kick();
+            message.channel.send(targetuser.username + " has been kicked in the ass..");
             message.delete()
           }
           else message.channel.send("ERROR: You need to define someone...")
@@ -636,15 +636,15 @@ bot.on('message', async message => {
 
       else if (command.split(" ").indexOf("ban") == 0) {
         if (message.member.roles.has(config.adminID)) {
-          let [cmd, user, ...reason] = message.content.split(" ");
-          un = message.mentions.users.first().tag
-          reason = reason || []
-          reason = reason.join(" ")
+          let [, user, ...reason] = message.content.split(" ");
+          let un = message.mentions.users.first();
+          reason = reason || [];
+          reason = reason.join(" ");
           let guildMember = (message.mentions.members.size) ?
-            message.mentions.members.first() : message.guild.member(user)
+            message.mentions.members.first() : message.guild.member(user);
           if (guildMember) {
-            
-            message.channel.send(`${un} has been banned by ${message.author} for ${reason};`).then(guildMember.ban(`${message.author.tag}: ${reason}`))
+
+            message.channel.send(`${un.tag} has been banned by ${message.author} for ${reason};`).then(guildMember.ban(`${message.author.tag}: ${reason}`));
             message.delete()
           }
           else {
@@ -656,7 +656,7 @@ bot.on('message', async message => {
         }
       }
       if (command === "roledata") {
-        console.log(message.guild.roles.entries())
+        console.log(message.guild.roles.entries());
         message.channel.send("Logging Role Data...")
       }
       if (command === "loli") {
@@ -665,7 +665,7 @@ bot.on('message', async message => {
       }
       else if (command.split(" ").indexOf("say") == 0) {
         if (message.author.id == config.ownerID) {
-          message.channel.send(args.join(" "))
+          message.channel.send(args.join(" "));
           message.delete()
         }
         else (message.channel.send("Only Shy can tell me what to do.."))
@@ -679,11 +679,11 @@ bot.on('message', async message => {
 
       }
       if (command === "myroles") {
-        message.channel.send(message.author + "'s Roles:")
+        message.channel.send(message.author + "'s Roles:");
         message.channel.send(message.guild.member(message.author).roles.array().map(role => role.name.replace("@everyone", "")))
       }
       if (command === "loop") {
-        if (message.author.id == config.ownerID | message.author.id == config.botID) {
+        if (message.author.id == config.ownerID || message.author.id == config.botID) {
           message.channel.send("/loop")
         }
         else (message.channel.send("Nice try."))
@@ -697,19 +697,19 @@ bot.on('message', async message => {
       }
       else if (command.split(" ").indexOf("createrole") == 0) {
         if (message.member.roles.has(config.adminID)) {
-          message.guild.createRole({name:args.join(" ")})
-          message.channel.send(`A new role "` + args.join(" ") + `" has been created.`)
+          message.guild.createRole({name: args.join(" ")});
+          message.channel.send(`A new role "` + args.join(" ") + `" has been created.`);
           message.delete()
         }
         else (message.channel.send("Does it look like you're an admin?"))
       }
       else if (command.split(' ').indexOf("adminify") == 0) {
         if (message.author.id == config.ownerID) {
-          var target = args.join(" ")
-          var targetuser = message.mentions.users.first()
+          var target = args.join(" ");
+          var targetuser = message.mentions.users.first();
           if (targetuser) {
-            message.guild.member(targetuser).addRole(config.adminID)
-            message.channel.send(target + " has become an admin!")
+            message.guild.member(targetuser).addRole(config.adminID);
+            message.channel.send(target + " has become an admin!");
             message.delete()
           } else {
             message.channel.send("ERROR: You need to define someone...")
@@ -721,57 +721,84 @@ bot.on('message', async message => {
       }
       else if (command.split(" ").indexOf("info") == 0) {
         if (message.member.roles.has(config.adminID)) {
-          var target = args.join(" ")
-          var targetuser = message.mentions.users.first()
+          var targetuser = message.mentions.users.first();
           if (targetuser) {
             message.channel.send("User: " + targetuser.username + "\nID: " + targetuser.id + "\nStatus: " + targetuser.presence.status + "\nAccount Created: " + targetuser.createdAt + "\nJoined Server: " + message.guild.member(targetuser).joinedAt + "\nAvatar URL: " + "<" + targetuser.avatarURL + ">" + "\nBot?: " + targetuser.bot)
           }
         } else message.channel.send("Do you look like an Admin?")
       }
       if (command === "serverinfo") {
-        message.channel.send(`Name:  ${message.guild.name} \nOwner:  ${message.guild.owner} \nID: ${message.guild.id}  \nMembers:  ${message.guild.memberCount} \nIcon URL: <${message.guild.iconURL}>\nCreated: ${message.guild.createdAt} \nFeatures: ${message.guild.features} \nRegion: ${message.guild.region} \nThanks to GeneralUltra758 for teaching me how to bot."`)
+        message.channel.send(`Name: ${message.guild.name}\n`
+          + `Owner: ${message.guild.owner}\n`
+          + `ID: ${message.guild.id}\n`
+          + `Members: ${message.guild.memberCount}\n`
+          + `Icon URL: <${message.guild.iconURL}>\n`
+          + `Created: ${message.guild.createdAt}\n`
+          + `Features: ${message.guild.features}\n`
+          + `Region: ${message.guild.region}\n`
+          + `Thanks to GeneralUltra758 for teaching me how to bot.`);
       }
 
       if (command === "spin") {
-        if (__user.gem < 100) return message.channel.send("ERROR: You don't have enough gems to play slots..")
-        __user.gem -= 100
-        var slot1 = Math.ceil(Math.random() * 9),
-          slot2 = Math.ceil(Math.random() * 9),
-          slot3 = Math.ceil(Math.random() * 9),
-          winningAmount = 0,
-          losingAmount = 0,
-          canWin = true,
-          halfScore = false,
-          jackpot = 10000,
-          symbol = ["fuck", ":full_moon:", ":gem:", ":star:", ":dragon_face:", ":bat:", ":diamond_shape_with_a_dot_inside:", ":gun:", ":sunny:", ":no_entry_sign:"]
-        // loss scenarios
-        if ([slot1, slot2, slot3].includes(4)) canWin = false;
-        if ([slot1, slot2, slot3].includes(5)) halfScore = true
-        if (slot1 === slot2 && slot2 === slot3 && slot1 === 4) losingAmount = 1000;
+        User.findOne({userId:message.author.id}, "gem", function handle(err, result) {
+          if (err) {
+            console.error(err.stack || err);
+            return message.reply("There was an unknown error when retrieving your profile to play slots.");
+          }
 
-        // win scenarios
-        if (slot1 === 2) winningAmount += 100
-        if (slot2 === 2) winningAmount += 100
-        if (slot3 === 2) winningAmount += 100
+          if (result) {
+            let winnings = 0;
+            let outcomes = [":full_moon:", ":gem:", ":star:", ":dragon_face:", ":bat:",
+              ":diamond_shape_with_a_dot_inside:", ":gun:", ":sunny:", ":no_entry_sign:"];
+            let slots = [-1, -1, -1];
+            let jackpot = 10000;
 
-        // minor jackpot scenarios
-        if (slot1 === 6) winningAmount += 300;
-        if (slot2 === 6) winningAmount += 300;
-        if (slot3 === 6) winningAmount += 300;
+            if (result.gem < 100) return message.reply("You don't have enough gems to play slots...");
 
-        // major jackpot scenario
-        if (slot1 === slot2 && slot2 === slot3 && slot1 === 6) winningAmount = jackpot;
+            for (let slot in slots) {
+              slots[slot] = Math.floor(Math.random() * 9);
+            }
 
-        if (canWin) {
-          if (halfScore === true) winningAmount /= 2
-          message.channel.send(`${symbol[slot1]}${symbol[slot2]}${symbol[slot3]} \nYou've earned ${winningAmount} Gems!`)
-          __user.gem += winningAmount
-        }
-        else {
-          message.channel.send(`${symbol[slot1]}${symbol[slot2]}${symbol[slot3]} \n You lost ${losingAmount} Gems...`)
-          __user.gem -= losingAmount
-        }
+            let uniques = new Set(slots).size;
+
+            // win scenarios
+            if (slots[0] === 1) winnings += 100;
+            if (slots[1] === 1) winnings += 100;
+            if (slots[2] === 1) winnings += 100;
+
+            // minor jackpot scenarios
+            if (slots[0] === 5) winnings += 300;
+            if (slots[1] === 5) winnings += 300;
+            if (slots[2] === 5) winnings += 300;
+
+            // major jackpot scenario
+            if (slots[0] === 5 && uniques === 1) winnings = jackpot;
+
+            // modifier scenario
+            if (slots.includes(3)) winnings = -winnings;
+            if (slots.includes(3) && uniques === 1) winnings = -1000;
+            if (slots.includes(4)) winnings /= 2;
+
+            let won = (winnings >= 0);
+            let response = `You've ${won?"won":"lost"} ${Math.abs(winnings)} gems${won?"!":"..."}`;
+
+            User.findByIdAndUpdate(result._id, {$inc: {gem: winnings-100}}, function(err) {
+              if (err) {
+                console.error(err.stack || err);
+                return message.reply("There was an unknown error when transferring your winnings to you. "
+                  + "The operation has been aborted and your gem count remains unchanged.");
+              }
+
+              message.reply(`${outcomes[slots[0]]}${outcomes[slots[1]]}${outcomes[slots[2]]}\n${response}`);
+            });
+
+            return;
+          }
+
+          User.create({userId:message.author.id}, handle);
+        });
       }
+
       if (command === "kill") {
         if (message.author.id == config.ownerID) {
           message.channel.send("Shutting down addons...")
@@ -782,17 +809,19 @@ bot.on('message', async message => {
         }
         else message.channel.send("Only Shy has permission to kill me...")
       }
+
       if (command == "cat") {
         message.channel.send("http://thecatapi.com/api/images/get?format=src&type=gif&timestamp=" + Math.floor(Math.random() * 9999999999999))
       }
+
       else if (command.split(' ').indexOf("deadminify") == 0) {
         if (message.author.id == config.ownerID) {
-          var target = args.join(" ")
-          var targetuser = message.mentions.users.first()
+          var target = args.join(" ");
+          var targetuser = message.mentions.users.first();
           if (targetuser) {
             //console.log(message.guild.roles.entries())
-            message.guild.member(targetuser).removeRole(config.adminID)
-            message.channel.send(target + " is no longer admin...")
+            message.guild.member(targetuser).removeRole(config.adminID);
+            message.channel.send(target + " is no longer admin...");
             message.delete()
           } else {
             message.channel.send("ERROR: You need to define someone...")
@@ -802,6 +831,7 @@ bot.on('message', async message => {
           message.channel.send("Now why the fuck would you be able to give someone admin?")
         }
       }
+
       if (command === "kawaiipuss") {
         message.channel.startTyping();
         message.channel.send("", {files: ["https://cdn.discordapp.com/attachments/280250275342712833/286613607603765250/phil-jones-censored-pussy.jpg"]}).then(m => m.channel.stopTyping())
@@ -809,7 +839,7 @@ bot.on('message', async message => {
       if (command.split(" ").indexOf("yt") == 0) {
         youTube.search(args.join(" "), 10, function (error, result) {
           if (result) {
-            var video = result
+            var video = result;
             if (video.items[0]) {
               message.channel.send("https://www.youtube.com/watch?v=" + video.items[0].id.videoId)
             }
@@ -821,74 +851,81 @@ bot.on('message', async message => {
 
         })
       }
+
       if (command.split(" ").indexOf("r34top") == 0) {
-        var cmd = args.join(" ")
-        var eval = evalBooruCmd(cmd)
+        var cmd = args.join(" ");
+        var eval = evalBooruCmd(cmd);
         booru.search("r34", eval.tags, {limit: 5, random: true})
-          .then(booru.commonfy)
           .then(images => {
-            var sorted = sortBooru(images, constrain(1, 5, eval.number))
+            var sorted = sortBooru(images, constrain(1, 5, eval.number));
             for (let image of sorted) {
-              message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \nhttps:${image.file_url}`)
+              message.channel.send(`\`Rating: ${image.common.rating}\` \n\`Score: ${image.common.score}\` \nhttps:${image.common.file_url}`)
             }
           })
       }
+
       if (command.split(" ").indexOf("r34") == 0) {
-        var cmd = args.join(" ")
-        var eval = evalBooruCmd(cmd)
-        message.channel.startTyping()
-        booru.search("r34", eval.tags, {limit: constrain(1, 5, eval.number), random: true})
-          .then(booru.commonfy)
-          .then(images => {
-            for (let image of images) {
-              message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \n${image.file_url}`)
-            }
-            message.channel.stopTyping()
-          }).catch(() => {
+        var cmd = args.join(" ");
+        var eval = evalBooruCmd(cmd);
+        message.channel.startTyping();
+        booru.search("r34", eval.tags, {
+          limit: constrain(1, 5, eval.number),
+          random: true
+        })
+        .then(images => {
+          for (let image of images) {
+            message.channel.send(`\`Rating: ${image.common.rating}\` \n\`Score: ${image.common.score}\` \n${image.common.file_url}`)
+          }
+          message.channel.stopTyping()
+        }).catch(() => {
           message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
         });
       }
+
       if (command.split(" ").indexOf("roles") == 0) {
-        var target = args.join(" ")
-        var targetuser = message.mentions.users.first()
+        var targetuser = message.mentions.users.first();
         if (targetuser) {
-          message.channel.send(targetuser.username + "'s Roles:")
+          message.channel.send(targetuser.username + "'s Roles:");
           message.channel.send(message.guild.member(targetuser).roles.array().map(role => role.name.replace("@everyone", "")))
         }
         else message.channel.send("ERROR: You need to define someone...")
       }
+
       if (command.split(" ").indexOf("e6") == 0) {
-        var cmd = args.join(" ")
-        var eval = evalBooruCmd(cmd)
-        message.channel.startTyping()
-        booru.search("e6", eval.tags, {limit: constrain(1, 5, eval.number), random: true})
-          .then(booru.commonfy)
-          .then(images => {
-            for (let image of images) {
-              message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \n${image.file_url}`)
-            }
-            message.channel.stopTyping()
-          }).catch(() => {
+        var cmd = args.join(" ");
+        var eval = evalBooruCmd(cmd);
+        message.channel.startTyping();
+        booru.search("e6", eval.tags, {
+          limit: constrain(1, 5, eval.number),
+          random: true
+        }).then(images => {
+          for (let image of images) {
+            message.channel.send(`\`Rating: ${image.common.rating}\` \n\`Score: ${image.common.score}\` \n${image.common.file_url}`)
+          }
+          message.channel.stopTyping()
+        }).catch(() => {
           message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
         });
       }
-      
+
       if (command.split(" ").indexOf("db") == 0) {
-        var cmd = args.join(" ")
-        var eval = evalBooruCmd(cmd)
-        message.channel.startTyping()
-        booru.search("dp", eval.tags, {limit: constrain(1, 5, eval.number), random: true})
-          .then(booru.commonfy)
-          .then(images => {
-            for (let image of images) {
-              message.channel.send(`\`Rating: ${image.rating}\` \n\`Score: ${image.score}\` \n${image.file_url}`)
-            }
-            message.channel.stopTyping()
-          }).catch(() => {
+        var cmd = args.join(" ");
+        var eval = evalBooruCmd(cmd);
+        message.channel.startTyping();
+        booru.search("dp", eval.tags, {
+          limit: constrain(1, 5, eval.number),
+          random: true
+        })
+        .then(images => {
+          for (let image of images) {
+            message.channel.send(`\`Rating: ${image.common.rating}\` \n\`Score: ${image.common.score}\` \n${image.common.file_url}`)
+          }
+          message.channel.stopTyping()
+        }).catch(() => {
           message.channel.send(`No images found.`).then(() => message.channel.stopTyping())
         });
       }
-      
+
       if (command === "sendnoods") {
         message.channel.startTyping();
         message.channel.send("", {files: ["https://cdn.discordapp.com/attachments/270372438825500672/292342878737399809/26bf6ac5b31209915df332272bee1cb890f12c7617850b5b3acd45d68dba7ee9_1.jpg"]}).then(m => m.channel.stopTyping())
@@ -909,14 +946,14 @@ bot.on('message', async message => {
           message.channel.send("Unable to set nickname, it exceeds 32 characters")
         }
         else {
-          message.guild.member(message.author).setNickname(args.join(" "))
+          message.guild.member(message.author).setNickname(args.join(" "));
           message.channel.send(message.author.username + ", your name has been set")
         }
       }
 
       if (command.split(" ").indexOf("purge") == 0) {
         if (message.member.roles.has(config.adminID)) {
-          message.delete()
+          message.delete();
           message.channel.bulkDelete(args.join(" "))
         }
         else message.channel.send("Does it look like you're an admin?")
@@ -929,33 +966,33 @@ bot.on('message', async message => {
 
       if (command === "announce") {
         if (message.member.roles.has(config.adminID)) {
-          var announcechan = message.guild.channels.get("250781565817192458")
-          let [cmd, color, title, ...text] = message.cleanContent.split(" ")
+          var announcechan = message.guild.channels.get("250781565817192458");
+          let [, color, title, ...text] = message.cleanContent.split(" ");
           if (color === "r") {
-            var hex = "ff0000"
-            var tagall = true
+            var hex = "ff0000";
+            var tagall = true;
             var bool = "Color - Red"
           }
           if (color === "y") {
-            var hex = "ffff00"
-            var tagall = true
+            var hex = "ffff00";
+            var tagall = true;
             var bool = "Color = Yellow"
           }
           if (color === "b") {
-            var hex = "0000ff"
-            var tagall = false
+            var hex = "0000ff";
+            var tagall = false;
             var bool = "Color - Blue"
           }
           if (color === "l") {
-            var hex = "a7a7ff"
-            var tagall = true
+            var hex = "a7a7ff";
+            var tagall = true;
             var bool = "Color - Light Blue"
           }
           if (tagall === true) {
             announcechan.send("@everyone")
           }
-          announcechan.send({embed: new Discord.RichEmbed().setAuthor(`Author: ${message.member.displayName} | ${message.author.tag}`).setColor(hex).setTitle(`Title: ${title}`).setDescription(text.join(" ")).setTimestamp(new Date())})
-          announcechan.send(`\`\`\`${title} | ${bool} | ${message.member.displayName} / ${message.author.tag} \n ${text.join(" ")}\`\`\``).then(m => message.delete())
+          announcechan.send({embed: new Discord.RichEmbed().setAuthor(`Author: ${message.member.displayName} | ${message.author.tag}`).setColor(hex).setTitle(`Title: ${title}`).setDescription(text.join(" ")).setTimestamp(new Date())});
+          announcechan.send(`\`\`\`${title} | ${bool} | ${message.member.displayName} / ${message.author.tag} \n ${text.join(" ")}\`\`\``).then(() => message.delete())
         }
         else {
           message.channel.send("Does it look like you're an admin?")
@@ -963,15 +1000,15 @@ bot.on('message', async message => {
       }
 
       if (command === "flip") {
-        var coinside = Math.floor(Math.random() * 2)
+        var coinside = Math.floor(Math.random() * 2);
         if (coinside === 0) {
           //heads
-          var sidename = "heads"
+          var sidename = "heads";
           var sideimg = "https://cdn.discordapp.com/attachments/249311166776606721/382040020409909248/coin_heads.png"
         }
         else {
           //tails
-          var sidename = "tails"
+          var sidename = "tails";
           var sideimg = "https://cdn.discordapp.com/attachments/249311166776606721/382040887649239063/coin_tails.png"
         }
         message.channel.send({embed: new Discord.RichEmbed().setColor("0000ff").setTitle("Coin Flip!").setDescription(`${message.author.tag} flipped ${sidename}!`).setImage(sideimg)})
@@ -989,7 +1026,7 @@ bot.on('message', async message => {
 
       if (command === "img") {
         if (message.author.id === config.ownerID) {
-          let [path, ...filename] = args.split("/")
+          let [path, ...filename] = args.split("/");
           message.channel.send("", {files: [path.join(__dirname, path, filename)]})
         }
       }
@@ -1006,7 +1043,7 @@ bot.on('message', async message => {
             if (content.constructor === Buffer) content = content.toString();
 
             let [version, ...changes] = content.split("\n");
-            message.guild.channels.get("382608948378730496").send("<@&380371674647756800>")
+            message.guild.channels.get("382608948378730496").send("<@&380371674647756800>");
             message.guild.channels.get("382608948378730496").send({
               embed: {
                 title: version,
@@ -1053,7 +1090,7 @@ bot.on('message', async message => {
           message.guild.member(message.author).removeRole("411777943711252480").then(() => message.channel.send(`${message.author}, you are no longer registered as an artist.`))
         }
       }
-      
+
       if (command === "imtaken") {
         if (!message.guild.member(message.author).roles.has("431145333867675659")) {
           message.guild.member(message.author).addRole("431145333867675659").then(() => message.channel.send(`No touchy, ${message.author} is in a relationship~`))
@@ -1064,101 +1101,199 @@ bot.on('message', async message => {
       }
 
       if (command === "stats") {
-      let [cmd, targetuser] = message.content.split(" ")
-        if (message.mentions.users.size){
-          var target = message.mentions.users.first().id
-          if (target = await User.findOne({userId:target})) {
-            message.channel.send({
-              embed: {
-                color: message.guild.member(target.userId).displayColor,
-                title: `${message.guild.member(target.userId).user.tag}'s Stats:`,
-                description: `Level: ${target.lvl} \nEXP/Next LVL: ${target.exp}/${target.nxtlvl} \nGems: ${target.gem} \nInventory: ${target.inv} \nCurrent Chain: ${target.rewardChain} \nLast Reward: ${target.lastReward.toUTCString()}`,
-                thumbnail: {url: message.guild.member(target.userId).user.avatarURL},
-                footer: {text: `Executed by: ${message.author.tag}`, iconURL: message.author.avatarURL}
-              }
-            })
-          }
-          else message.channel.send(`ERROR: That user isn't in the database yet. Make sure they've sent at least one non-command message.`)
+        let stack = [];
+
+        if (!message.mentions.users.size) {
+          message.mentions.users.set(message.author.id, message.author);
         }
-        else{
-          if (!__user) {
-            message.channel.send("You have no stats yet. Please send at least one message that's not a command.")
-          }
-          else {
-            message.channel.send({
-              embed: {
-                color: message.member.displayColor,
-                title: `${message.author.tag}'s Stats:`,
-                description: `Level: ${__user.lvl} \nEXP/Next LVL: ${__user.exp}/${__user.nxtlvl} \nGems: ${__user.gem} \nInventory: ${__user.inv} \nCurrent Chain: ${__user.rewardChain} \nLast Reward: ${__user.lastReward.toUTCString()}`,
-                thumbnail: {url: message.author.avatarURL}
+
+        if (message.mentions.users.size > 3) {
+          return message.reply("You may only select up to three people.");
+        }
+
+        /**
+         * @param {User} _user
+         * @return {Function}
+         */
+        function get_user(_user) {
+          let [userId, user] = _user;
+
+          return function(callback) {
+            User.findOne({userId}, "lvl exp nxtlvl gem inv rewardChain lastReward", function handle(err, result) {
+              if (err) {
+                return callback({err, user:user.tag});
               }
+
+              if (result) {
+                let embed;
+
+                try {
+                  embed = {
+                    embed: {
+                      color: message.guild.member(userId).displayColor,
+                      title: `${message.guild.member(userId).user.tag}'s Stats:`,
+                      description: `Level: ${result.lvl}\n`
+                      + `EXP/Next LVL: ${result.exp}/${result.nxtlvl}\n`
+                      + `Gems: ${result.gem}\n`
+                      + `Inventory: ${result.inv}\n`
+                      + `Current Chain: ${result.rewardChain}\n`
+                      + `Last Reward: ${result.lastReward.toUTCString()}`,
+                      thumbnail: {url: message.guild.member(userId).user.avatarURL},
+                      footer: {text: `Executed by: ${message.author.tag}`, iconURL: message.author.avatarURL}
+                    }
+                  }
+                } catch (err) {
+                  return callback({err, user:user.tag});
+                }
+
+                return callback(null, embed);
+              }
+
+              User.create({userId}, handle);
             });
-          }
+          };
         }
+
+        function send(embeds) {
+          let embed = embeds.pop();
+
+          if (!embed) return;
+
+          message.channel.send(embed).then(() => send(embeds));
+        }
+
+        for (let user of message.mentions.users) {
+          stack.push(get_user(user));
+        }
+
+        async.series(stack, function(err, results) {
+          if (err) {
+            console.error(err.err.stack || err);
+            return message.reply("There was an unknown error when attempting to retrieve the "
+              + "user " + err.user + ". Please wait for confirmation that the problem has been "
+              + "solved, and then try again.");
+          }
+
+          message.reply("Here are your requested users:").then(() => {
+            send(results.reverse());
+          });
+        });
       }
 
       if (command === "reward") {
-        let currentDate = new Date();
-        let lastActivationDate = __user.lastReward.getTime();
-        let day = (24 * 60 * 60 * 1000);
-        let timeRemaining = new Date((__user.lastReward.getTime()+day) - Date.now());
-console.log(timeRemaining)
-        let hours = timeRemaining.getUTCHours();
-        let minutes = timeRemaining.getUTCMinutes();
-        let seconds = timeRemaining.getUTCSeconds();
+        User.findOne({userId:message.author.id}, "userId lastReward rewardChain", function handle(err, result) {
+          if (err) {
+            console.error(err.stack || err);
+            return message.reply("There was an unknown error when retrieving your profile to calculate your reward.");
+          }
 
-        let daysSinceLastReward = (currentDate - lastActivationDate) / day;
+          if (result) {
+            let currentDate = new Date();
+            let lastActivationDate = result.lastReward.getTime();
+            let day = (24 * 60 * 60 * 1000);
+            let timeRemaining = new Date((result.lastReward.getTime() + day) - Date.now());
+            let hours = timeRemaining.getUTCHours();
+            let minutes = timeRemaining.getUTCMinutes();
+            let seconds = timeRemaining.getUTCSeconds();
 
-        if (daysSinceLastReward >= 1) {
-          if (daysSinceLastReward >= 2) __user.rewardChain = 0;
+            let rewardChainOffset = 1;
+            let daysSinceLastReward = (currentDate - lastActivationDate) / day;
 
-          ++__user.rewardChain;
-          var gemsEarned = (255*__user.rewardChain)
-          var expEarned = Math.ceil(Math.random() * 50)
-          __user.exp += expEarned;
-          __user.gem += gemsEarned;
-          __user.lastReward = new Date();
-          __user.markModified("lastReward");
-          message.channel.send(`You've earned your daily reward!\n EXP + ${expEarned}, Gems + ${gemsEarned}`);
-        } else {
-          message.channel.send(`You need to wait ${hours} hour${hours!==1? "s" : ""}, ${minutes} minute${minutes!==1? "s" : ""}, and ${seconds} second${seconds!==1? "s" : ""} to use this command again.`);
-        }
+            if (daysSinceLastReward >= 1) {
+              if (daysSinceLastReward >= 2) rewardChainOffset -= result.rewardChain;
+
+              let gemsEarned = (255 * (result.rewardChain + rewardChainOffset));
+              let expEarned = Math.ceil(Math.random() * 50);
+
+              let updateBy = {
+                $inc: {gem: gemsEarned, exp: expEarned, rewardChain: rewardChainOffset},
+                $currentDate: {lastReward: 1}
+              };
+
+              User.findByIdAndUpdate(result._id, updateBy, function(err) {
+                if (err) {
+                  console.error(err.stack || err);
+                  return message.reply("There was an unknown error when granting your calculated reward to you.\n"
+                    + "Please ask either <@104674953382612992> or <@204316640735789056> to grant you the following:\n"
+                    + `**•** :gem:${gemsEarned}.\n`
+                    + `**•** ${expEarned} EXP.\n\n`
+                    + `In addition, <@204316640735789056> needs to increment your \`rewardChain\` by ${rewardChainOffset} and set your `
+                    + `\`lastReward\` to the current date.\n\n`
+                    + `(Or you could just try again and hope it works this time; it's up to you. —Zuris)`);
+                }
+
+                message.reply(`You've earned your daily reward!\nEXP + ${expEarned}, Gems + ${gemsEarned}`);
+              });
+            } else {
+              message.reply(`You need to wait ${hours} hour${hours !== 1 ? "s" : ""}, ${minutes} minute${minutes !== 1 ? "s" : ""}, and ${seconds} second${seconds !== 1 ? "s" : ""} to use this command again.`);
+            }
+
+            return;
+          }
+
+          User.create({userId:message.author.id}, handle);
+        });
       }
 
       if (command === "givexp") {
-        if (message.member.roles.has(config.adminID)) {
-          let [cmd, , val] = message.content.split(" ")
-          var target = message.mentions.users.first().id
-
-          if (!target) return message.channel.send("You need to specify who you would like to give EXP to.");
-
-          if (target = await User.findOne({userId:target})) {
-            target.exp += parseInt(val, 10);
-            target.save();
-          } else return message.channel.send("I could not find that user inside my database. Have they spoken yet?");
+        if (!message.member.roles.has(config.adminID)) {
+          return;
         }
+
+        let [, , val] = message.content.split(" ");
+        var target = message.mentions.users.first();
+
+        if (!target) return message.channel.send("You need to specify who you would like to give gems to.");
+
+        function then() {
+          message.reply(`I have given ${val} EXP to ${target}.`).then(m => m.delete(5000));
+        }
+
+        function error(err) {
+          message.reply("I could not complete your request due to an unknown error. "
+            + "Please wait for confirmation that the problem "
+            + "has been solved, and then try again.");
+
+          console.error(err.stack || err);
+        }
+
+        User.findOneAndUpdate({userId: target.id},
+          {$inc: {exp: parseInt(val, 10)}},
+          {"upsert": true, "setDefaultsOnInsert": true}).then(then, error);
       }
 
       if (command === "givegems") {
-        if (message.member.roles.has(config.adminID)) {
-          let [cmd, , val] = message.content.split(" ")
-          var target = message.mentions.users.first().id
-
-          if (!target) return message.channel.send("You need to specify who you would like to give gems to.");
-
-          if (target = await User.findOne({userId:target})) {
-            target.gem += parseInt(val, 10);
-            target.save();
-          } else return message.channel.send("I could not find that user inside my database. Have they spoken yet?");
+        if (!message.member.roles.has(config.adminID)) {
+          return;
         }
+
+        let [, , val] = message.content.split(" ");
+        var target = message.mentions.users.first();
+
+        if (!target) return message.channel.send("You need to specify who you would like to give gems to.");
+
+        function then() {
+          message.reply(`I have given :gem:${val} to ${target}.`).then(m => m.delete(5000));
+        }
+
+        function error(err) {
+          message.reply("I could not complete your request due to an unknown error. Please wait for confirmation that the problem"
+            + " has been solved, and then try again.");
+
+          console.error(err.stack || err);
+        }
+
+        User.findOneAndUpdate({userId: target.id},
+          {$inc: {gem: parseInt(val, 10)}},
+          {"upsert": true, "setDefaultsOnInsert": true}).then(then, error);
       }
 
-      if (command === "dmuser"){
-        if (message.member.roles.has(config.adminID)){
-          let [cmd, target, ...msg] = message.content.split(" ")
-          var targetuser = message.mentions.users.first()
-              if (!targetuser) return message.channel.send("ERROR: You need to define someone...")
-              targetuser.send(`${msg.join(" ")} - sent by ${message.author.tag}`)
+      if (command === "dmuser") {
+        if (message.member.roles.has(config.adminID)) {
+          let [, , ...msg] = message.content.split(" ");
+          var targetuser = message.mentions.users.first();
+          if (!targetuser) return message.channel.send("ERROR: You need to define someone...");
+          targetuser.send(`${msg.join(" ")} - sent by ${message.author.tag}`);
           message.delete()
         }
         else {
@@ -1166,369 +1301,444 @@ console.log(timeRemaining)
         }
       }
 
-      if (command === "tradegems"){
-        let [cmd, value, target] = message.content.split(" ")
-        var targetuser = message.mentions.users.first().id
-            val = parseInt(value, 10)
-            if (!targetuser) return message.channel.send("ERROR: You need to define someone...")
-            if (val !== val || val <=0) return message.channel.send("ERROR: You need to give a real number of gems, negatives aren't allowed.")
-              if (val <= __user.gem){
-                if (targetuser = await User.findOne({userId:targetuser})){
-                  targetuser.gem += val
-                  targetuser.save()
-                  __user.gem -= val
-		  message.channel.send(`Successfully sent ${val} Gems to ${message.guild.member(targetuser.userId).user.tag}`)
-                }
-		else{
-		  message.channel.send("ERROR: The user isn't in the database yet... make sure they've sent at least one non-command message")
-                }
-              }
-              else{
-                message.channel.send("You don't have enough gems...")
-              }
-       }
-        if (command === "color" || command === "colour"){
-          let [cmd, ...color] = message.content.split(" ")
-          var rolename = `color - ${args.join(" ")}`,
-              role
-          var currentRole;
+      if (command === "tradegems") {
+        let [, value] = message.content.split(" ");
+        var target_user = message.mentions.users.first();
+        value = parseInt(value, 10);
+        if (!target_user) return message.channel.send("ERROR: You need to define someone...");
+        if (value !== value || value <= 0) return message.channel.send("ERROR: You need to give a real number of gems, negatives aren't allowed.");
 
-          if (message.member.roles.has("403126021500567552")){
- 
-              if (role = message.guild.roles.findKey("name", rolename)){
-                while (currentRole = message.member.roles.find(role => role.name.startsWith("color - "))) {
-                  await message.member.removeRole(currentRole)
-                }
-                  message.guild.member(message.author.id).addRole(role).then(_ => {
-                  message.channel.send(`Gave you the color ${color.join(" ")}`)
-                })
-              }
-           
-              else{
-                  message.channel.send("That color doesn't exist, makes sure you spelled it correctly, or ask Shy or an admin to create it")
-              }
-		  }
-          else{
-              message.channel.send('You need the "Daily Fapper" role to use this command')
+        User.findOne({userId:message.author.id}, {userId:1, gem:1}, function handle(err, result) {
+          const trade = Fawn.Task();
+
+          if (err) {
+            console.error(err.stack || err);
+            return message.reply("There was an unknown error when attempting to transfer gems. "
+              + "Please wait for confirmation that the problem has been solved, "
+              + "and then try again.");
           }
-		}
-        
 
-        if (command === "removecolor"){
-          let [cmd, ...color] = message.content.split(" ")
-          var rolename = `color - ${args.join(" ").toLowerCase()}`,
-              role
-          if (message.member.roles.has("403126021500567552")){
-              if (role = message.guild.roles.findKey("name", rolename)){
-                  if (message.member.roles.has(role)){
-                    message.guild.member(message.author.id).removeRole(role).then(_ => {
-                    message.channel.send(`Removed the color ${color.join(" ")}`)
-                  })
-                  }
-                  else{
-                    message.channel.send("You don't have that color")
-                  }
-              }
-              else{
-                  message.channel.send("That color doesn't exist, makes sure you spelled it correctly, or ask Shy or an admin to create it")
-              }
-          }
-          else{
-              message.channel.send('You need the "Daily Fapper" role to use this command')
-          }
-        }
+          if (result) {
+            if (result.gem - value < 0) return message.reply("You do not have enough gems! "
+              + `(Current: ${result.gem}, required: ${value} or more.)`)
+              .then(m => m.delete(5000));
 
-        if(command === "warn"){
-          let [cmd, target, ...reason] = message.content.split(" ")
-              reason = reason.join(" ")
-          if (message.member.roles.has(config.adminID)){
-            if (message.mentions.users.size){
-              var targetuser = message.mentions.users.first().id
-              if (reason){
-                if (!(targetuser = await User.findOne({userId:targetuser}))) {
-                  targetuser = await User.create({userId: targetuser});
-                }
+            message.reply("Transferring :gem:" + value + " to " + target_user.tag)
+              .then(m => m.delete(5000));
 
-                await User.findByIdAndUpdate(targetuser._id, {$push:{warnings:{issuer: message.author.id, reason, date:new Date()}}}).then(() => {
-                  message.channel.send(`${target}, you've been warned for \`${reason}\`. You currently have \`${targetuser.warnings.length + 1}\` total warnings.`)
-                  message.delete()
-                })
-              }
-              else message.channel.send("ERROR: You need to provide a reason for warning this user.")
-            }
-            else message.channel.send("ERROR: You need to define someone.")
-          }
-          else message.channel.send("Does it look like you're an admin?")
-        }
-
-
-        if (command === "viewwarn"){
-          if (message.member.roles.has(config.adminID)){
-            if (message.mentions.users.size){
-              var targetuser = message.mentions.users.first().id
-              var user = message.mentions.users.first().tag
-                if (targetuser = await User.findOne({userId:targetuser})){
-                  if (targetuser.warnings.length){
-                    var stack = []
-                    for (let i = 0; i < targetuser.warnings.length; ++i){
-                      stack.push(function (callback){
-                        bot.fetchUser(targetuser.warnings[i].issuer).then(user => callback(null, user.tag), err => callback(err))
-                      })
-                    }
-
-                    async.series(stack, function(err, userIDs){
-                      if (err){
-                        message.channel.send("ERROR: Unknown")
-                        return console.error(err.stack)
-                      }
-
-                      var msg = []
-                      targetuser.warnings.forEach((warning, index) => {
-                        msg.push(`Issued by: ${userIDs[index]}\nReason: ${warning.reason}\nDate: ${warning.date},\n`)
-                      })
-                      message.author.send(`Warnings for ${user}`)
-                      message.author.send(msg)
-                      message.delete()
-                    })
-                  }
-                  else message.channel.send("This user has no recorded warnings.")
-                }
-                else message.channel.send("ERROR: That user isn't in the database yet. Make sure they've sent at least one non-command message.")
-            }
-            else message.channel.send("ERROR: You need to define someone")
-          }
-          else message.channel.send("Does it look like you're an admin?")
-        }
-
-        if (command === "clearwarn"){
-          let [cmd, user] = message.content.split(" ")
-          if (message.member.roles.has(config.adminID)){
-            if (message.mentions.users.size){
-              var targetuser = message.mentions.users.first().id
-              if (targetuser = await User.findOne({userId:targetuser})){
-                targetuser.warnings = []
-                targetuser.markModified("warnings")
-                targetuser.save()
-                message.channel.send(`Cleared the warnings for ${message.guild.member(targetuser.userId).user.tag}`)
-                message.delete()
-              }
-            }
-          }
-          else (message.channel.send("Does it look like you're an admin?"))
-        }
-
-        if (command === "lb" || command === "leaderboard" || command === "top10"){
-          let [ cmd, sort] = message.content.split(" ")
-              sort = (sort === "gems") ? "gem" : sort
-              sort = (["level", "levels", "lvl"].includes(sort)) ? "lvl" : sort
-
-              if (!["exp", "gem", "lvl"].includes(sort)) return message.channel.send("You can only sort by `exp`, `lvl`, and `gems`.")
-              const result = await User.find({}, `userId ${sort}`, {sort:{[sort]:-1}, limit:10})
-
-              let stack = [];
-              result.map(r => stack.push(callback => {
-                bot.fetchUser(r.userId).then(user => callback(null, {user:user.tag, result:r[sort]}), err => callback(err));
-              }));
-
-              async.series(stack, function(err, result) {
-                if (err) {
-                  message.channel.send("ERROR: Unknown");
-                  console.error(err.stack);
-                }
-
-                let msg = []
-                msg.push("```")
-                result.forEach((userId, index) => {
-                  msg.push(`${index + 1}. ${userId.user} | ${sort} ${userId.result}`)
-                })
-                msg.push("```")
-                message.author.send(`Sorted by ${sort}`)
-                message.author.send(msg)
-                message.delete()
-              });
-        	}
-        
-        if (command === "newcmd"){
-        if (message.author.id != config.ownerID) return message.channel.send("ERROR: Only the owner can use this command.")
-        	let [cmd, syn, ...desc] = args.join(" ").split(",")
-        	announcechan.send("@everyone NEW COMMAND")
-			announcechan.send({
-				embed: {
-					title: `New Command: /${cmd}`,
-					description: desc.join(","),
-					footer: {
-						text: `Syntax: ${syn}`
-					}
-				}
-			})
-			message.delete()
-        }
-        
-        if (command === "dblookup"){
-        	let [cmd, target] = message.content.split(" ")
-        		if (target){
-        			if (target = await User.findOne({userId:target})){
-						message.channel.send({
-              		  	embed: {
-                				color: message.member.displayColor,
-             				   title: `Stats for ${target.userId}:`,
-            				    description: `Level: ${target.lvl} \nEXP/Next LVL: ${target.exp}/${target.nxtlvl} \nGems: ${target.gem} \nInventory: ${target.inv} \nCurrent Chain: ${target.rewardChain} \nLast Reward: ${target.lastReward.toUTCString()}`,
-     			  	         footer: {text: `Executed by: ${message.author.tag}`, iconURL: message.author.avatarURL}
-          			   	 }
-         			    })
-        			}
-        			else message.channel.send("ERROR: No user with that ID exists in the database.")
-				}
-				else message.channel.send("ERROR: You need to define an ID")
-		}
-		
-		if (command === "msay"){
-			let [cmd, ...msg] = message.content.split(" ")
-				ipc.server.broadcast("music.say", msg.join(" "))
-		}
-		
-		if (command === "play"){
-			let [cmd, ...query] = message.content.split(" ")
-				ipc.server.broadcast("music.play", {q:query.join(" "), channel_id:message.channel.id})
-		}
-		
-		if (command === "stop"){
-			ipc.server.broadcast("music.stop", "dummy")
-		}
-		
-    if (command === "request") {
-      let requestCollector; // create a reference we can use later on
-		
-      const RequestCommand = {
-        // data
-        confirmCollector: null,
-        collection: null,
-
-        // functions
-        messageFilter: function messageFilter(capturedMessage) {
-          if (message.author.id !== capturedMessage.author.id) return false;
-          if (!capturedMessage.content.startsWith("--")) return false;
-          return true;
-        },
-    
-        collectorCallback: function collectorCallback(collection, endCode) {
-          console.log("Collection ended with reason:", endCode);
-
-          switch (endCode) {
-            case "SUGGESTION_END":
-              RequestCommand.confirmSuggestionIsComplete(collection);
-              break;
-            default:
-              message.channel.send("An unknown error occurred. Please re-use `/request` and try again.")
-          }
-        },
-        
-        collectedMessage: function collectedMessage(capturedMessage) {
-          console.log(`Collected message with content "${capturedMessage.cleanContent}".`);
-          if ((/end\.?$/i).test(capturedMessage.content)) RequestCommand.endCollector("SUGGESTION_END");
-        },
-        
-        endCollector: function endCollector(reason) {
-          requestCollector.stop(reason);
-        },
-
-        confirmSuggestionIsComplete: function confirmSuggestionIsComplete(collection) {
-          RequestCommand.collection = collection;
-
-          message.author.send("Here is the content of your request:").then(({channel}) => {
-            let series = [];
-            let index = 0;
-            
-            for (let currentMessage of collection.values()) { 
-              if (/^-- *end\.?$/i.test(currentMessage.content)) continue
-
-              index = index + 1;
-              let cIndex = index;
-              
-              series.push(function sendMessage(callback) {
-                channel.send({embed:{
-                  author: {name: message.author.tag, icon_url: message.author.displayAvatarURL},
-                  description: currentMessage.cleanContent.replace(/^-- */, ""),
-                  timestamp: currentMessage.createdAt
-                }}).then(embed => callback(null, embed), err => callback(err));
-              });
+            function then() {
+              message.reply("Successfully transferred :gem:" + value + " to " + target_user.tag + "!")
+                .then(m => m.delete(5000))
+                .then(() => message.delete());
             }
 
-            return new Promise((resolve, reject) => {
-              async.series(series, function callback(err, messages) {
-                if (err) reject(err);
+            function error(err) {
+              console.error(err.stack || err);
+              return message.reply("There was an unknown error when attempting to transfer gems. "
+                + "Please wait for confirmation that the problem has been solved, "
+                + "and then try again.")
+                .then(m => m.delete(5000))
+                .then(() => message.delete());
+            }
 
-                resolve(channel, messages);
-              });
-            });
-          }).then(channel => {
-            return channel.send(["Is this suggestion correct and final? (`yes` or `no`)", "You have thirty seconds to respond, or `yes` will be assumed."]);
-          }).then(({channel}) => {
-            return RequestCommand.confirmCollector = channel.createMessageCollector(RequestCommand.confirmFilter, {time:30000});
-          }).then(collector => {
-            collector.on("collect", RequestCommand.gotConfirmationMessage);
-          }).catch(function postError(err) {
-            console.error(err);
-            message.reply("I was unable to send (or continue to send) confirmation to your DMs for an unknown reason. You blocked me, didn't you?");
-          });
-        },
-
-        confirmFilter: function confirmFilter(message) {
-          return ["yes", "no"].includes(message.content.trim().toLowerCase());
-        },
-
-        gotConfirmationMessage: function gotConfirmationMessage(capturedMessage) {
-          let content = capturedMessage.content.trim().toLowerCase();
-          RequestCommand.confirmCollector.stop(content);
-
-          switch (content) {
-            case "no":
-              capturedMessage.reply("Very well. Please edit your suggestion as you wish, then re-use /request in the server to re-submit it.");
-              break;
-            case "yes":
-            default: // in case something slipped through;
-              RequestCommand.postRequest();
-          }
-        },
-
-        postRequest: function postRequest() {
-          let series = [];
-          let index = 0;
-          
-          for (let currentMessage of RequestCommand.collection.values()) {
-            if (/^-- *end\.?$/i.test(currentMessage.content)) continue
-
-            index = index + 1;
-            let cIndex = index;
-            
-            series.push(function sendMessage(callback) {
-              suggestionsChannel.send({embed:{
-                author: {name: message.author.tag, icon_url: message.author.displayAvatarURL},
-                description: currentMessage.cleanContent.replace(/^-- */, ""),
-                timestamp: currentMessage.createdAt
-              }}).then(embed => callback(null, embed), err => callback(err));
-            });
+            return trade.update(User, {userId:result.userId}, {$inc: {gem:-value}})
+              .update(User, {userId:target_user.id}, {$inc: {gem:value}})
+              .run({"useMongoose": true})
+              .then(then, error);
           }
 
-          new Promise((resolve, reject) => {
-            async.series(series, function callback(err, messages) {
-              if (err) reject(err);
+          User.create({userId:message.author.id}, handle);
+        });
+      }
 
-              resolve(messages);
-            });
-          }).then(messages => messages.pop().react(reactions.upvote))
-            .then(reaction => reaction.message.react(reactions.downvote))
+      if (command === "color" || command === "colour") {
+        let [, ...color] = message.content.split(" ");
+        var rolename = `color - ${args.join(" ")}`,
+          role;
+        var currentRole;
+
+        if (message.member.roles.has("403126021500567552")) {
+
+          if (role = message.guild.roles.findKey("name", rolename)) {
+            while (currentRole = message.member.roles.find(role => role.name.startsWith("color - "))) {
+              await message.member.removeRole(currentRole)
+            }
+            message.guild.member(message.author.id).addRole(role).then(() => {
+              message.channel.send(`Gave you the color ${color.join(" ")}`)
+            })
+          }
+
+          else {
+            message.channel.send("That color doesn't exist, makes sure you spelled it correctly, or ask Shy or an admin to create it")
+          }
+        }
+        else {
+          message.channel.send('You need the "Daily Fapper" role to use this command')
         }
       }
 
-      message.reply(["I am now listening for your suggestion. Please add `--` to the start of any message you wish for me to include in the suggestion content, and say `--end` to end the suggestion. I will then ask if you wish to add anything else before I add it.", "Suggestions are limited to a maximum of 10,000 characters."]).then(() => {
-        requestCollector = message.channel.createMessageCollector(RequestCommand.messageFilter, /*{time:2000}*/); // write to the created reference
-        requestCollector.on("collect", RequestCommand.collectedMessage);
-        requestCollector.on("end", RequestCommand.collectorCallback);
-      });
-    }
-		
-       
+
+      if (command === "removecolor") {
+        let [, ...color] = message.content.split(" ");
+        var rolename = `color - ${args.join(" ").toLowerCase()}`,
+          role;
+        if (message.member.roles.has("403126021500567552")) {
+          if (role = message.guild.roles.findKey("name", rolename)) {
+            if (message.member.roles.has(role)) {
+              message.guild.member(message.author.id).removeRole(role).then(() => {
+                message.channel.send(`Removed the color ${color.join(" ")}`)
+              })
+            }
+            else {
+              message.channel.send("You don't have that color")
+            }
+          }
+          else {
+            message.channel.send("That color doesn't exist, makes sure you spelled it correctly, or ask Shy or an admin to create it")
+          }
+        }
+        else {
+          message.channel.send('You need the "Daily Fapper" role to use this command')
+        }
+      }
+
+      if (command === "warn") {
+        let [, ...reason] = args;
+
+        reason = reason.join(" ").trim();
+        target = message.mentions.users.first();
+
+        if (!message.member.roles.has(config.adminID)) return message.reply("Does it look like you're an admin?");
+        if (!target) return message.reply("You need to define someone for me to warn.");
+        if (!reason) return message.reply("You cannot warn someone without providing a reason.");
+
+        User.findOne({userId:target.id}, "userId")
+          .then(result => result.warn(message.author.id, reason))
+          .then(() => message.guild.defaultChannel.send(`${target} has been warned by ${message.author} for ${reason}`))
+          .catch(err => {
+            console.error(err.stack || err);
+            return message.guild.defaultChannel.send("An unknown error occurred while warning this user.");
+          })
+          .then(() => message.delete());
+      }
+
+      if (command === "viewwarn") {
+        let target = message.mentions.users.first() || message.author;
+        let limit = args.find(elem => Number.isInteger(+elem) && elem > 0) || 5;
+        limit = Math.min(limit, 10);
+
+        message.channel.startTyping();
+
+        Warn.allForUser(target.id, {
+            active: true,
+            limit: limit,
+            sort: "date",
+            lean: true
+          })
+          .then(({count, warnings}) => {
+            if (!count) return message.author.send(`The user @${target.tag} has no warnings.`)
+              .then(() => message.channel.stopTyping());
+
+            let response = [`The user ${target.tag} has ${count} warnings. Displaying the `
+              + `final ${Math.min(count, limit)} warnings:`];
+            let stack = [];
+
+            for (let warning of warnings.reverse()) {
+              stack.push(function(callback) {
+                User.findById(warning.issuer, "userId")
+                  .then(({userId:issuer}) => bot.fetchUser(issuer))
+                  .then(issuer => {warning.issuer = issuer.tag; return warning})
+                  .then(warning => callback(null, warning))
+                  .catch(callback);
+              });
+            }
+
+            async.series(stack, function(err, warnings) {
+              if (err) {
+                console.error(err.stack || err);
+                return message.reply("There was an unknown error while retrieving this user's warnings.")
+                  .then(m => m.delete(5000))
+                  .then(() => message.delete());
+              }
+
+              for (let warning of warnings) {
+                response.push(`**•** [${warning.date.toUTCString()}] From @${warning.issuer}: ${warning.reason}`);
+              }
+
+              message.author.send(response)
+                .then(() => message.reply("I have sent the requested log to your DMs."))
+                .then(() => message.channel.stopTyping());
+            });
+          });
+      }
+
+      if (command === "clearwarn") {
+        target = message.mentions.users.first();
+
+        if (!message.member.roles.has(config.adminID)) return message.reply("Does it look like you're an admin?");
+        if (!target) return message.reply("You need to define someone for me to remove the warnings on.");
+
+        User.findOne({userId:target.id}, "userId")
+          .then(user => user.removeWarnings())
+          .then(result => message.reply(`${result.reduce((acc, val) => acc + +val.nModified, 0)} warnings were marked as inactive.`))
+          .then(m => m.delete(5000))
+          .then(() => message.delete());
+      }
+
+      if (command === "lb" || command === "leaderboard" || command === "top10") {
+        let [, sort] = message.content.split(" ");
+        sort = (sort === "gems") ? "gem" : sort;
+        sort = (["level", "levels", "lvl"].includes(sort)) ? "lvl" : sort;
+
+        if (!["exp", "gem", "lvl"].includes(sort)) return message.channel.send("You can only sort by `exp`, `lvl`, and `gems`.");
+        User.find({}, `userId ${sort}`, {
+          sort: {[sort]: -1},
+          limit: 10
+        }, function(err, result) {
+          if (err) {
+            console.error(err.stack || err);
+            return message.reply("There was an error when getting statistics for the leaderboard.")
+              .then(() => message.delete(5000));
+          }
+
+          let stack = [];
+          result.map(r => stack.push(callback => {
+            bot.fetchUser(r.userId).then(user => callback(null, {
+              user: user.tag,
+              result: r[sort]
+            }), err => callback(err));
+          }));
+
+          async.series(stack, function (err, result) {
+            if (err) {
+              message.channel.send("ERROR: Unknown");
+              console.error(err.stack || err);
+            }
+
+            let msg = [];
+            msg.push("```");
+            result.forEach((userId, index) => {
+              msg.push(`${index + 1}. ${userId.user} | ${sort} ${userId.result}`)
+            });
+            msg.push("```");
+            message.author.send(`Sorted by ${sort}`);
+            message.author.send(msg);
+            message.delete();
+          });
+        });
+      }
+
+      if (command === "newcmd") {
+        if (message.author.id != config.ownerID) return message.channel.send("ERROR: Only the owner can use this command.");
+        let [cmd, syn, ...desc] = args.join(" ").split(",");
+        announcechan.send("@everyone NEW COMMAND");
+        announcechan.send({
+          embed: {
+            title: `New Command: /${cmd}`,
+            description: desc.join(","),
+            footer: {
+              text: `Syntax: ${syn}`
+            }
+          }
+        });
+        message.delete();
+      }
+
+      if (command === "dblookup"){
+        let [, target] = message.content.split(" ");
+
+        if (target) {
+          User.findOne({userId:target}, "lvl exp nxtlvl gem inv rewardChain lastReward", function handle(err, result) {
+            if (err) {
+              console.error(err.stack || err);
+              return message.reply("There was an unknown error when attempting to retrieve the "
+                + "user. Please wait for confirmation that the problem has been "
+                + "solved, and then try again.");
+            }
+
+            if (result) {
+              return message.channel.send({
+                embed: {
+                  color: message.member.displayColor,
+                  title: `Stats for ${target}:`,
+                  description: `Level: ${result.lvl}\n`
+                    + `EXP/Next LVL: ${result.exp}/${result.nxtlvl}\n`
+                    + `Gems: ${result.gem}\n`
+                    + `Inventory: ${result.inv}\n`
+                    + `Current Chain: ${result.rewardChain}\n`
+                    + `Last Reward: ${result.lastReward.toUTCString()}`,
+                  footer: {text: `Executed by: ${message.author.tag}`, iconURL: message.author.avatarURL}
+                }
+              });
+            }
+
+            message.reply("This user ID was not found in the database.");
+          });
+        }
+        else message.channel.send("ERROR: You need to define an ID")
+      }
+
+      if (command === "msay") {
+        let [, ...msg] = message.content.split(" ");
+        ipc.server.broadcast("music.say", msg.join(" "))
+      }
+
+      if (command === "play") {
+        let [, ...query] = message.content.split(" ");
+        ipc.server.broadcast("music.play", {
+          q: query.join(" "),
+          channel_id: message.channel.id
+        })
+      }
+
+      if (command === "stop") {
+        ipc.server.broadcast("music.stop", "dummy")
+      }
+
+      if (command === "request") {
+        let requestCollector; // create a reference we can use later on
+
+        const RequestCommand = {
+          // data
+          confirmCollector: null,
+          collection: null,
+
+          // functions
+          messageFilter: function messageFilter(capturedMessage) {
+            if (message.author.id !== capturedMessage.author.id) return false;
+            return capturedMessage.content.startsWith("--");
+
+          },
+
+          collectorCallback: function collectorCallback(collection, endCode) {
+            console.log("Collection ended with reason:", endCode);
+
+            switch (endCode) {
+              case "SUGGESTION_END":
+                RequestCommand.confirmSuggestionIsComplete(collection);
+                break;
+              default:
+                message.channel.send("An unknown error occurred. Please re-use `/request` and try again.")
+            }
+          },
+
+          collectedMessage: function collectedMessage(capturedMessage) {
+            console.log(`Collected message with content "${capturedMessage.cleanContent}".`);
+            if ((/end\.?$/i).test(capturedMessage.content)) RequestCommand.endCollector("SUGGESTION_END");
+          },
+
+          endCollector: function endCollector(reason) {
+            requestCollector.stop(reason);
+          },
+
+          confirmSuggestionIsComplete: function confirmSuggestionIsComplete(collection) {
+            RequestCommand.collection = collection;
+
+            message.author.send("Here is the content of your request:").then(({channel}) => {
+              let series = [];
+              let index = 0;
+
+              for (let currentMessage of collection.values()) {
+                if (/^-- *end\.?$/i.test(currentMessage.content)) continue;
+
+                index = index + 1;
+                // noinspection JSUnusedLocalSymbols
+                let cIndex = index;
+
+                series.push(function sendMessage(callback) {
+                  channel.send({
+                    embed: {
+                      author: {
+                        name: message.author.tag,
+                        icon_url: message.author.displayAvatarURL
+                      },
+                      description: currentMessage.cleanContent.replace(/^-- */, ""),
+                      timestamp: currentMessage.createdAt
+                    }
+                  }).then(embed => callback(null, embed), err => callback(err));
+                });
+              }
+
+              return new Promise((resolve, reject) => {
+                async.series(series, function callback(err, messages) {
+                  if (err) reject(err);
+
+                  resolve(channel, messages);
+                });
+              });
+            }).then(channel => {
+              return channel.send(["Is this suggestion correct and final? (`yes` or `no`)", "You have thirty seconds to respond, or `yes` will be assumed."]);
+            }).then(({channel}) => {
+              return RequestCommand.confirmCollector = channel.createMessageCollector(RequestCommand.confirmFilter, {time: 30000});
+            }).then(collector => {
+              collector.on("collect", RequestCommand.gotConfirmationMessage);
+            }).catch(function postError(err) {
+              console.error(err.stack || err);
+              message.reply("I was unable to send (or continue to send) confirmation to your DMs for an unknown reason. You blocked me, didn't you?");
+            });
+          },
+
+          confirmFilter: function confirmFilter(message) {
+            return ["yes", "no"].includes(message.content.trim().toLowerCase());
+          },
+
+          gotConfirmationMessage: function gotConfirmationMessage(capturedMessage) {
+            let content = capturedMessage.content.trim().toLowerCase();
+            RequestCommand.confirmCollector.stop(content);
+
+            switch (content) {
+              case "no":
+                capturedMessage.reply("Very well. Please edit your suggestion as you wish, then re-use /request in the server to re-submit it.");
+                break;
+              case "yes":
+              default: // in case something slipped through;
+                RequestCommand.postRequest();
+            }
+          },
+
+          postRequest: function postRequest() {
+            let series = [];
+            let index = 0;
+
+            for (let currentMessage of RequestCommand.collection.values()) {
+              if (/^-- *end\.?$/i.test(currentMessage.content)) continue;
+
+              index = index + 1;
+              // noinspection JSUnusedLocalSymbols
+              let cIndex = index;
+
+              series.push(function sendMessage(callback) {
+                suggestionsChannel.send({
+                  embed: {
+                    author: {
+                      name: message.author.tag,
+                      icon_url: message.author.displayAvatarURL
+                    },
+                    description: currentMessage.cleanContent.replace(/^-- */, ""),
+                    timestamp: currentMessage.createdAt
+                  }
+                }).then(embed => callback(null, embed), err => callback(err));
+              });
+            }
+
+            new Promise((resolve, reject) => {
+              async.series(series, function callback(err, messages) {
+                if (err) reject(err);
+
+                resolve(messages);
+              });
+            }).then(messages => messages.pop().react(reactions.upvote))
+              .then(reaction => reaction.message.react(reactions.downvote))
+          }
+        };
+
+        message.reply(["I am now listening for your suggestion. Please add `--` to the start of any message you wish for me to include in the suggestion content, and say `--end` to end the suggestion. I will then ask if you wish to add anything else before I add it.", "Suggestions are limited to a maximum of 10,000 characters."]).then(() => {
+          requestCollector = message.channel.createMessageCollector(RequestCommand.messageFilter, /*{time:2000}*/); // write to the created reference
+          requestCollector.on("collect", RequestCommand.collectedMessage);
+          requestCollector.on("end", RequestCommand.collectorCallback);
+        });
+      }
+
 
 //        if (command === "colorlist"){
 //          if (message.member.roles.has("403126021500567552")){
@@ -1539,16 +1749,19 @@ console.log(timeRemaining)
 //          }
 //        }
 
-        // what is this brace, and why is it needed?
-        }
-
+      // what is this brace, and why is it needed?
     }
+
+  }
 
   //These do not need "/" to function
   else {
-    __user.exp += Math.floor(Math.random() * 15);
+    User.findOneAndUpdate({userId: message.author.id},
+      {$inc: {exp: Math.floor(Math.random() * 15)}},
+      {"upsert": true, "setDefaultsOnInsert": true, "new": true})
+      .then(...bindUpdateCallback(message));
 
-    console.log("[" + message.channel.name + "] " + message.author.tag + "> " + message.content)
+    console.log("[" + message.channel.name + "] " + message.author.tag + "> " + message.content);
 
     if (message.content === "bip") {
       message.channel.send("bop")
@@ -1577,61 +1790,20 @@ console.log(timeRemaining)
     if (message.content.toLowerCase().indexOf("corn.") >= 0 && message.author.id === "269952003793354764") {
       message.channel.send("Fuck off, Senpoi.")
     }
-
-    // increment the user's experience
-    while (__user.exp >= __user.nxtlvl) {
-      __user.lvl += 1
-      __user.nxtlvl += (__user.lvl * 100 * 1.3)
-    }
   }
+});
 
-    // overcomplicated rank adding code
-    if (__user.lvl >= 5){
-      if (!message.member.roles.has("403125967939436545")){
-        message.member.addRole("403125967939436545")
-	message.author.send("You've ranked up to `NewCummer`!")
-      }
-    }
-
-    if (__user.lvl >= 10){
-      if (!message.member.roles.has("403126021500567552")){
-        message.member.addRole("403126021500567552")
-	message.author.send("You've ranked up to `Daily Fapper`! \nYou can now use the command `/color`. ")
-      }
-    }
-
-    if (__user.lvl >= 30){
-      if (!message.member.roles.has("403126248487780372")){
-        message.member.addRole("403126248487780372")
-	message.author.send("You've ranked up to `Addicted to Porn`!")
-      }
-    }
-
-    if (__user.lvl >= 60){
-      if (!message.member.roles.has("403126385981521941")){
-        message.member.addRole("403126385981521941")
-	message.author.send("You've ranked up to `Pervert!`")
-      }
-    }
-
-    if (__user.lvl >= 100){
-      if (!message.member.roles.has("403126466210037771")){
-        message.member.addRole("403126466210037771")
-	message.author.send("Holy shit, you've become a `God of Lewdness`.. This is the highest possible rank you can get!")
-      }
-    }
-
-
-  __user.isModified()? __user.save() : void 0 ;
-})
-
-if (config.devmode) {
+if (config.devmode) { // is this even needed still? -Zuris
+  // noinspection JSUnresolvedFunction
   ipc.serveNet()
 } else {
+  // noinspection JSUnresolvedFunction
   ipc.serve()
 }
 
 ipc.server.on("start", () => {
- addons.music = child_process.spawn("node", ["./addons/music.js"], ["ignore", process.stdout, process.stderr])
-})
-bot.login(config.botToken)
+  addons.music = child_process.spawn("node", ["./addons/music.js"], ["ignore", process.stdout, process.stderr])
+});
+
+// Roll back all incomplete transactions before starting the bot
+roller.roll().then(() => bot.login(config.botToken));

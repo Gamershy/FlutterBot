@@ -1,2 +1,2 @@
-const UserSchema = require("../schemas/User")
-var User = db.model('User', UserSchema)
+const UserSchema = require("../schemas/User");
+db.model('User', UserSchema);
