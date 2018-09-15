@@ -12,6 +12,7 @@ var UserSchema = new Schema({
   rewardChain:  {type:Number, default:0}
 });
 
-UserSchema.methods.warn = require("../methods/instance/User/warn.js");
+UserSchema.methods.removeWarnings = require("../methods/instance/User/removeWarnings");
+UserSchema.methods.warn = require("../methods/instance/User/warn");
 
 module.exports = UserSchema;
