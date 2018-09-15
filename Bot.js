@@ -1473,7 +1473,16 @@ bot.on('message', async message => {
       }
 
       if (command === "clearwarn") {
+        target = message.mentions.users.first();
 
+        if (!message.member.roles.has(config.adminID)) return message.reply("Does it look like you're an admin?");
+        if (!target) return message.reply("You need to define someone for me to remove the warnings on.");
+
+        User.findOne({userId:target.id}, "userId")
+          .then(user => user.removeWarnings())
+          .then(result => message.reply(`${result.reduce((acc, val) => acc + +val.nModified, 0)} warnings were marked as inactive.`))
+          .then(m => m.delete(5000))
+          .then(() => message.delete());
       }
 
       if (command === "lb" || command === "leaderboard" || command === "top10") {
