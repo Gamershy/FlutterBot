@@ -1,6 +1,6 @@
-const {Schema} = require("mongoose")
-const ItemSchema = require("./Item")
-const WarnSchema = require("./Warn")
+const {Schema} = require("mongoose");
+const ItemSchema = require("./Item");
+
 var UserSchema = new Schema({
   userId:       {type:String, index: true},
   exp:          {type:Number, default:0},
@@ -9,8 +9,10 @@ var UserSchema = new Schema({
   gem:          {type:Number, default:100},
   inv:          [ItemSchema],
   lastReward:   {type:Date, default:new Date()},
-  rewardChain:  {type:Number, default:0},
-  warnings:     [WarnSchema]
-})
+  rewardChain:  {type:Number, default:0}
+});
 
-module.exports = UserSchema
+UserSchema.methods.removeWarnings = require("../methods/instance/User/removeWarnings");
+UserSchema.methods.warn = require("../methods/instance/User/warn");
+
+module.exports = UserSchema;
