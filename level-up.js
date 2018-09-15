@@ -1,6 +1,8 @@
 const User = db.model("User");
 
 function callback(document) {
+  if (!callback) return;
+
   // Sorry Shy, but it runs quicker.
   switch(true) {
     case (document.lvl == 5):
