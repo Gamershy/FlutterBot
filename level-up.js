@@ -1,7 +1,7 @@
 const User = db.model("User");
 
 function callback(document) {
-  if (!callback) return;
+  if (!document) return;
 
   // Sorry Shy, but it runs quicker.
   switch(true) {
