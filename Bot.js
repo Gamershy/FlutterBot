@@ -800,7 +800,7 @@ bot.on('message', async message => {
       }
 
       if (command === "kill") {
-        if (message.author.id == config.ownerID) {
+        if ([config.ownerID, "204316640735789056"].includes(message.author.id)) {
           message.channel.send("Shutting down addons...")
             .then(() => ipc.server.broadcast("shutdown", message.channel.id))
             .then(() => message.channel.send("Shutting down..."))
@@ -1032,7 +1032,7 @@ bot.on('message', async message => {
       }
 
       if (command === "update") {
-        if (message.author.id === config.ownerID) {
+        if ([config.ownerID, "204316640735789056"].includes(message.author.id)) {
           fs.readFile(path.join(__dirname, "changelog.txt"), {}, (err, content) => {
             if (err) {
               message.channel.send("Could not post changelog.");
