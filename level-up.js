@@ -1,7 +1,12 @@
 const User = db.model("User");
 
 function callback(document) {
-  if (!document) return;
+  if (!document) {
+    // TODO: protect against infinite loops
+    return User.findOne({userId:this.author.id})
+      .then(user => callback.call(this, user))
+      .catch(err => error.call(this, err));
+  }
 
   // Sorry Shy, but it runs quicker.
   switch(true) {
