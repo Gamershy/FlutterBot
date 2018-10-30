@@ -371,8 +371,8 @@ function ErrorHandler(err) {
     console.log("Failed with", e.stack);
   });
 }
-process.on("unhandledRejection", ErrorHandler);
-bot.on("error", ErrorHandler); // perform same actions as unhandledRejection.
+//process.on("unhandledRejection", ErrorHandler);
+//bot.on("error", ErrorHandler); // perform same actions as unhandledRejection.
 
 process.on("exit", () => {
   let addonList = Object.entries(addons);
