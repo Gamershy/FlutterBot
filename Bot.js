@@ -49,6 +49,7 @@ var Suggestion = db.model("Suggestion");
 // you know what, imma just put my shit here -Zuris
 var suggestionsChannel;
 const Reactions = {};
+const Invites = new Discord.Collection();
 
 const porntrigger = [
   "Porn is nice~",
@@ -391,8 +392,24 @@ process.on("exit", () => {
 bot.on("ready", () => {
   console.log("Online~");
   suggestionsChannel = bot.channels.get("469557897513271316");
-  reactions.upvote = bot.guilds.first().emojis.get("469576069314510858");
-  reactions.downvote = bot.guilds.first().emojis.get("469576210368954378");
+
+  Reactions.upvote = bot.guilds.first().emojis.get("469576069314510858");
+  Reactions.downvote = bot.guilds.first().emojis.get("469576210368954378");
+
+  bot.guilds.first().fetchInvites().then(invites => {
+    invites.forEach((invite, code) => {
+      let data = {
+        code,
+        maxAge: invite.maxAge,
+        maxUses: invite.maxUses,
+        uses: invite.uses,
+        userId: invite.inviter && invite.inviter.id || ""
+      };
+
+      Invites.set(code, data);
+    })
+  })
+
   setInterval(() => {
     bot.user.setActivity(playingmsg[Math.floor(Math.random() * playingmsg.length)], {type: "PLAYING"})
   }, 1000 * 60 * 60);
