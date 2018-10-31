@@ -480,8 +480,75 @@ bot.on("ready", () => {
 });
 
 bot.on("guildMemberAdd", member => {
-  member.guild.defaultChannel.send(`Whalecum ${member} to the server! Be sure to read <#249401654003105792> before you post.`);
-  member.guild.channels.get("424870218414948367").send("User: " + member.user.username + "\nID: " + member.id + "\nStatus: " + member.presence.status + "\nAccount Created: " + member.user.createdAt + "\nJoined Server: " + member.joinedAt + "\nAvatar URL: " + "<" + member.user.avatarURL + ">" + "\nBot?: " + member.user.bot)
+  let inviteCache = Invites.clone(); // create a copy of the invite cache
+  let getInvites = member.guild.fetchInvites(); // get all invite codes from the guild in question
+  function mapInviteToUser(invite) {
+    return getUserTagById(invite.userId, false)
+      .then(user => {
+        invite.user = user;
+        return invite;
+      });
+  }
+
+  getInvites
+    .then(invites => invites.filter(invite => invite.uses !== inviteCache.get(invite.code).uses))
+    .then(possibleUsedInvites => {
+      let promises = [];
+
+      if (possibleUsedInvites.size) {
+        possibleUsedInvites.forEach(invite => {
+          promises.push(mapInviteToUser(invite));
+        });
+      }
+      
+      return Promise.all(promises);
+    })
+    .then(invites => {
+      let inviteList = "";
+      console.log(invites);
+
+      invites.forEach(invite => {
+        if (invite.user) {
+          inviteList += `\n• Invite ${invite.code} by @${invite.user}.`;
+        }
+        else {
+          inviteList += `\n• Invite ${invite.code}.`;
+        }
+      });
+
+      return inviteList;
+    })
+    .then(inviteList => {
+      if (inviteList.length) {
+        inviteList = `I believe this user may have joined from one of the following invites:${inviteList}`;
+      }
+      else {
+        inviteList = "I could not determine any invites this user could have joined from.";
+      }
+
+      return member
+        .guild
+        .channels
+        .get("424870218414948367")
+        .send(
+          `User: ${member.user.username}\n`
+          + `ID: ${member.id}\n`
+          + `Account created: ${formatDate(member.user.createdAt)}\n`
+          + `Joined server: ${formatDate(member.joinedAt)}\n`
+          + `Avatar URL: <${member.user.avatarURL}>\n`
+          + `User ${member.user.bot? "is" : "is not"} a bot.\n\n`
+          + inviteList
+        );
+    })
+    .then(() => {
+      return member
+        .guild
+        .defaultChannel
+        .send(
+          `Whalecum ${member} to the server! Be sure to read <#249401654003105792> before you post.`
+        );
+    })
+    .catch(ErrorHandler);
 });
 
 bot.on("guildMemberRemove", member => {
