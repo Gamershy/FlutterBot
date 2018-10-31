@@ -289,6 +289,21 @@ function constrain(minimum, maximum, value) {
   return value
 }
 
+// utility function for easily getting a user from their user ID
+function getUserTagById(userId = "", rejectIfMissingId = true) {
+  if (typeof userId !== "string" && typeof userId !== "number" || userId === "") {
+    if (rejectIfMissingId) return Promise.reject(); // immediately reject this promise
+
+    return Promise.resolve(null); // else just resolve with null
+  }
+
+  return new Promise((resolve, reject) => {
+    bot.fetchUser(userId).then(user => {
+      resolve(user.tag);
+    }, reject);
+  });
+}
+
 //sorting stuff
 function predicatBy(prop) {
   return function (a, b) {
