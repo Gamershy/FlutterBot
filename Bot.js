@@ -289,6 +289,20 @@ function constrain(minimum, maximum, value) {
   return value
 }
 
+// utility function for transforming dates to use a common format
+function formatDate(date = new Date) {
+  return date.toLocaleString("en-GB", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "UTC",
+    timeZoneName: "short"
+  });
+}
+
 // utility function for easily getting a user from their user ID
 function getUserTagById(userId = "", rejectIfMissingId = true) {
   if (typeof userId !== "string" && typeof userId !== "number" || userId === "") {
