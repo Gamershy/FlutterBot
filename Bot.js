@@ -289,6 +289,7 @@ function constrain(minimum, maximum, value) {
   return value
 }
 
+<<<<<<< HEAD
 // utility function for transforming dates to use a common format
 function formatDate(date = new Date) {
   return date.toLocaleString("en-GB", {
@@ -303,6 +304,8 @@ function formatDate(date = new Date) {
   });
 }
 
+=======
+>>>>>>> cfadb35898dfbd1bc35a6dd0a981ce547b5ca3a6
 // utility function for easily getting a user from their user ID
 function getUserTagById(userId = "", rejectIfMissingId = true) {
   if (typeof userId !== "string" && typeof userId !== "number" || userId === "") {
