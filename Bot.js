@@ -48,7 +48,7 @@ var Suggestion = db.model("Suggestion");
 
 // you know what, imma just put my shit here -Zuris
 var suggestionsChannel;
-const reactions = {};
+const Reactions = {};
 
 const porntrigger = [
   "Porn is nice~",
@@ -1727,8 +1727,8 @@ bot.on('message', async message => {
 
                 resolve(messages);
               });
-            }).then(messages => messages.pop().react(reactions.upvote))
-              .then(reaction => reaction.message.react(reactions.downvote))
+            }).then(messages => messages.pop().react(Reactions.upvote))
+              .then(reaction => reaction.message.react(Reactions.downvote))
           }
         };
 
