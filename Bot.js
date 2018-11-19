@@ -289,7 +289,6 @@ function constrain(minimum, maximum, value) {
   return value
 }
 
-<<<<<<< HEAD
 // utility function for transforming dates to use a common format
 function formatDate(date = new Date) {
   return date.toLocaleString("en-GB", {
@@ -304,8 +303,6 @@ function formatDate(date = new Date) {
   });
 }
 
-=======
->>>>>>> cfadb35898dfbd1bc35a6dd0a981ce547b5ca3a6
 // utility function for easily getting a user from their user ID
 function getUserTagById(userId = "", rejectIfMissingId = true) {
   if (typeof userId !== "string" && typeof userId !== "number" || userId === "") {
@@ -1853,6 +1850,45 @@ bot.on('message', async message => {
           requestCollector.on("collect", RequestCommand.collectedMessage);
           requestCollector.on("end", RequestCommand.collectorCallback);
         });
+      }
+
+      if (command === "global-assign") {
+        if (message.member && message.member.roles.has(config.adminID)) {
+          let role = message.mentions.roles.first()
+                  || message.guild.roles.find("name", args.join(" "));
+
+          if (!role) {
+            return message.reply("it doesn't look like this role actually exists. Are you sure you spelled it correctly?")
+              .then(_ => {
+                message.channel.send("(Hint: make sure the capitalisation is correct.)");
+              });
+          }
+
+          message.guild.fetchMembers()
+            .then(guild => {
+              return guild.members;
+            })
+            .then(members => {
+              let count = 0;
+
+              async.eachOfLimit(members, 10, function(member, id, callback) {
+                console.log(`Assigning user ${count + 1} of ${members.size}: @${member[1].user.tag}`);
+
+                member[1].addRole(role).then(() => {count++; callback(null)}, err => callback(err));
+              }, function(err) {
+                if (err) {
+                  return ErrorHandler(err);
+                }
+
+                message.reply(`I have applied the role "${role.name}" to ${count} members.`);
+              });
+            })
+            .catch(ErrorHandler);
+        }
+
+        else {
+          message.reply("does it look like you're an admin?");
+        }
       }
 
 
