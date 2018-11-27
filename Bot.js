@@ -16,7 +16,11 @@ require("./Mongoose/index.js");
 const ipc = require("node-ipc");
 const async = require("async");
 const path = require("path");
-const config = require('./config.js');
+
+// Switched config to non-constant to allow for reloading.
+const configPath = path.resolve(__dirname, "config.js");
+var config = require(configPath);
+
 // noinspection JSCheckFunctionSignatures
 const bot = new Discord.Client({
   fetchAllMembers: true,
@@ -1888,6 +1892,22 @@ bot.on('message', async message => {
 
         else {
           message.reply("does it look like you're an admin?");
+        }
+      }
+
+      // Allows for hot-reloading of the bot's config file.
+      if (command === "reload-config") {
+        if (message.author && (message.author.id === config.ownerID || message.author.id === config.developerID)) {
+          let oldConfig = config;
+          try {
+            delete require.cache[configPath];
+
+            config = require(configPath);
+            message.reply("config reloaded.");
+          } catch (e) {
+            config = oldConfig;
+            message.reply("I couldn't reload the config file. Reverting to old config.");
+          }
         }
       }
 
