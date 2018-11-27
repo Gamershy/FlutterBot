@@ -508,8 +508,28 @@ bot.on("guildMemberAdd", member => {
       });
   }
 
-  getInvites
-    .then(invites => invites.filter(invite => invite.uses !== inviteCache.get(invite.code).uses))
+  let filterInvites = getInvites
+    .then(invites => invites.filter(invite => {
+      let test = inviteCache.get(invite.code);
+
+      if (!test) {
+        let data = {
+          code: invite.code,
+          maxAge: invite.maxAge,
+          maxUses: invite.maxUses,
+          uses: invite.uses,
+          userId: invite.inviter && invite.inviter.id || ""
+        };
+  
+        Invites.set(invite.code, data);
+
+        return true;
+      }
+
+      return invite.uses !== test.uses;
+    }));
+    
+  filterInvites
     .then(possibleUsedInvites => {
       let promises = [];
 
@@ -557,6 +577,20 @@ bot.on("guildMemberAdd", member => {
           + `User ${member.user.bot? "is" : "is not"} a bot.\n\n`
           + inviteList
         );
+    })
+    .then(() => filterInvites)
+    .then(possibleUsedInvites => {
+      possibleUsedInvites.forEach((invite, code) => {
+        let data = {
+          code,
+          maxAge: invite.maxAge,
+          maxUses: invite.maxUses,
+          uses: invite.uses,
+          userId: invite.inviter && invite.inviter.id || ""
+        };
+  
+        Invites.set(code, data);
+      })
     })
     .then(() => {
       return member
