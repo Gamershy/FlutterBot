@@ -16,7 +16,11 @@ require("./Mongoose/index.js");
 const ipc = require("node-ipc");
 const async = require("async");
 const path = require("path");
-const config = require('./config.js');
+
+// Switched config to non-constant to allow for reloading.
+const configPath = path.resolve(__dirname, "config.js");
+var config = require(configPath);
+
 // noinspection JSCheckFunctionSignatures
 const bot = new Discord.Client({
   fetchAllMembers: true,
@@ -48,7 +52,8 @@ var Suggestion = db.model("Suggestion");
 
 // you know what, imma just put my shit here -Zuris
 var suggestionsChannel;
-const reactions = {};
+const Reactions = {};
+const Invites = new Discord.Collection();
 
 const porntrigger = [
   "Porn is nice~",
@@ -288,6 +293,35 @@ function constrain(minimum, maximum, value) {
   return value
 }
 
+// utility function for transforming dates to use a common format
+function formatDate(date = new Date) {
+  return date.toLocaleString("en-GB", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "UTC",
+    timeZoneName: "short"
+  });
+}
+
+// utility function for easily getting a user from their user ID
+function getUserTagById(userId = "", rejectIfMissingId = true) {
+  if (typeof userId !== "string" && typeof userId !== "number" || userId === "") {
+    if (rejectIfMissingId) return Promise.reject(); // immediately reject this promise
+
+    return Promise.resolve(null); // else just resolve with null
+  }
+
+  return new Promise((resolve, reject) => {
+    bot.fetchUser(userId).then(user => {
+      resolve(user.tag);
+    }, reject);
+  });
+}
+
 //sorting stuff
 function predicatBy(prop) {
   return function (a, b) {
@@ -391,8 +425,24 @@ process.on("exit", () => {
 bot.on("ready", () => {
   console.log("Online~");
   suggestionsChannel = bot.channels.get("469557897513271316");
-  reactions.upvote = bot.guilds.first().emojis.get("469576069314510858");
-  reactions.downvote = bot.guilds.first().emojis.get("469576210368954378");
+
+  Reactions.upvote = bot.guilds.first().emojis.get("469576069314510858");
+  Reactions.downvote = bot.guilds.first().emojis.get("469576210368954378");
+
+  bot.guilds.first().fetchInvites().then(invites => {
+    invites.forEach((invite, code) => {
+      let data = {
+        code,
+        maxAge: invite.maxAge,
+        maxUses: invite.maxUses,
+        uses: invite.uses,
+        userId: invite.inviter && invite.inviter.id || ""
+      };
+
+      Invites.set(code, data);
+    })
+  })
+
   setInterval(() => {
     bot.user.setActivity(playingmsg[Math.floor(Math.random() * playingmsg.length)], {type: "PLAYING"})
   }, 1000 * 60 * 60);
@@ -448,8 +498,109 @@ bot.on("ready", () => {
 });
 
 bot.on("guildMemberAdd", member => {
-  member.guild.defaultChannel.send(`Whalecum ${member} to the server! Be sure to read <#249401654003105792> before you post.`);
-  member.guild.channels.get("424870218414948367").send("User: " + member.user.username + "\nID: " + member.id + "\nStatus: " + member.presence.status + "\nAccount Created: " + member.user.createdAt + "\nJoined Server: " + member.joinedAt + "\nAvatar URL: " + "<" + member.user.avatarURL + ">" + "\nBot?: " + member.user.bot)
+  let inviteCache = Invites.clone(); // create a copy of the invite cache
+  let getInvites = member.guild.fetchInvites(); // get all invite codes from the guild in question
+  function mapInviteToUser(invite) {
+    return getUserTagById(invite.userId, false)
+      .then(user => {
+        invite.user = user;
+        return invite;
+      });
+  }
+
+  let filterInvites = getInvites
+    .then(invites => invites.filter(invite => {
+      let test = inviteCache.get(invite.code);
+
+      if (!test) {
+        let data = {
+          code: invite.code,
+          maxAge: invite.maxAge,
+          maxUses: invite.maxUses,
+          uses: invite.uses,
+          userId: invite.inviter && invite.inviter.id || ""
+        };
+  
+        Invites.set(invite.code, data);
+
+        return true;
+      }
+
+      return invite.uses !== test.uses;
+    }));
+    
+  filterInvites
+    .then(possibleUsedInvites => {
+      let promises = [];
+
+      if (possibleUsedInvites.size) {
+        possibleUsedInvites.forEach(invite => {
+          promises.push(mapInviteToUser(invite));
+        });
+      }
+      
+      return Promise.all(promises);
+    })
+    .then(invites => {
+      let inviteList = "";
+      console.log(invites);
+
+      invites.forEach(invite => {
+        if (invite.user) {
+          inviteList += `\n• Invite ${invite.code} by @${invite.user}.`;
+        }
+        else {
+          inviteList += `\n• Invite ${invite.code}.`;
+        }
+      });
+
+      return inviteList;
+    })
+    .then(inviteList => {
+      if (inviteList.length) {
+        inviteList = `I believe this user may have joined from one of the following invites:${inviteList}`;
+      }
+      else {
+        inviteList = "I could not determine any invites this user could have joined from.";
+      }
+
+      return member
+        .guild
+        .channels
+        .get("424870218414948367")
+        .send(
+          `User: ${member.user.username}\n`
+          + `ID: ${member.id}\n`
+          + `Account created: ${formatDate(member.user.createdAt)}\n`
+          + `Joined server: ${formatDate(member.joinedAt)}\n`
+          + `Avatar URL: <${member.user.avatarURL}>\n`
+          + `User ${member.user.bot? "is" : "is not"} a bot.\n\n`
+          + inviteList
+        );
+    })
+    .then(() => filterInvites)
+    .then(possibleUsedInvites => {
+      possibleUsedInvites.forEach((invite, code) => {
+        let data = {
+          code,
+          maxAge: invite.maxAge,
+          maxUses: invite.maxUses,
+          uses: invite.uses,
+          userId: invite.inviter && invite.inviter.id || ""
+        };
+  
+        Invites.set(code, data);
+      })
+    })
+    .then(() => {
+      return member
+        .guild
+        .defaultChannel
+        .send(
+          `Whalecum ${member} to the server! Be sure to read <#249401654003105792> before you post.`
+        );
+    })
+    .catch(ErrorHandler);
 });
 
 bot.on("guildMemberRemove", member => {
@@ -1727,8 +1878,8 @@ bot.on('message', async message => {
 
                 resolve(messages);
               });
-            }).then(messages => messages.pop().react(reactions.upvote))
-              .then(reaction => reaction.message.react(reactions.downvote))
+            }).then(messages => messages.pop().react(Reactions.upvote))
+              .then(reaction => reaction.message.react(Reactions.downvote))
           }
         };
 
@@ -1737,6 +1888,61 @@ bot.on('message', async message => {
           requestCollector.on("collect", RequestCommand.collectedMessage);
           requestCollector.on("end", RequestCommand.collectorCallback);
         });
+      }
+
+      if (command === "global-assign") {
+        if (message.member && message.member.roles.has(config.adminID)) {
+          let role = message.mentions.roles.first()
+                  || message.guild.roles.find("name", args.join(" "));
+
+          if (!role) {
+            return message.reply("it doesn't look like this role actually exists. Are you sure you spelled it correctly?")
+              .then(_ => {
+                message.channel.send("(Hint: make sure the capitalisation is correct.)");
+              });
+          }
+
+          message.guild.fetchMembers()
+            .then(guild => {
+              return guild.members;
+            })
+            .then(members => {
+              let count = 0;
+
+              async.eachOfLimit(members, 10, function(member, id, callback) {
+                console.log(`Assigning user ${count + 1} of ${members.size}: @${member[1].user.tag}`);
+
+                member[1].addRole(role).then(() => {count++; callback(null)}, err => callback(err));
+              }, function(err) {
+                if (err) {
+                  return ErrorHandler(err);
+                }
+
+                message.reply(`I have applied the role "${role.name}" to ${count} members.`);
+              });
+            })
+            .catch(ErrorHandler);
+        }
+
+        else {
+          message.reply("does it look like you're an admin?");
+        }
+      }
+
+      // Allows for hot-reloading of the bot's config file.
+      if (command === "reload-config") {
+        if (message.author && (message.author.id === config.ownerID || message.author.id === config.developerID)) {
+          let oldConfig = config;
+          try {
+            delete require.cache[configPath];
+
+            config = require(configPath);
+            message.reply("config reloaded.");
+          } catch (e) {
+            config = oldConfig;
+            message.reply("I couldn't reload the config file. Reverting to old config.");
+          }
+        }
       }
 
 
