@@ -1172,7 +1172,7 @@ bot.on('message', async message => {
         else {
           var dicesides = 12
         }
-        message.channel.send(`:game_die: ${message.author.tag} rolls ${Math.floor(Math.random() * dicesides)}!`)
+        message.channel.send(`:game_die: ${message.author.tag} rolls ${Math.ceil(Math.random() * dicesides)}!`)
       }
 
       if (command === "img") {
