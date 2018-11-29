@@ -1172,7 +1172,7 @@ bot.on('message', async message => {
         else {
           var dicesides = 12
         }
-        message.channel.send(`:game_die: ${message.author.tag} rolls ${Math.floor(Math.random() * dicesides)}!`)
+        message.channel.send(`:game_die: ${message.author.tag} rolls ${Math.ceil(Math.random() * dicesides)}!`)
       }
 
       if (command === "img") {
@@ -1839,7 +1839,7 @@ bot.on('message', async message => {
 
             switch (content) {
               case "no":
-                capturedMessage.reply("Very well. Please edit your suggestion as you wish, then re-use /request in the server to re-submit it.");
+                capturedMessage.reply("Then edit your suggestion as you wish, then re-use /request in the server to re-submit it.");
                 break;
               case "yes":
               default: // in case something slipped through;
