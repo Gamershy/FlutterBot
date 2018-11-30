@@ -239,7 +239,10 @@ var commands = [
   {"name": "/botwatch", "result": "Get pinged for every major update Flutterbot gets! (@botwatcher, effective in #Flutterbots_changelog)"},
   {"name": "/color", "result": "Get a new color (requires Daily Fapper role)"},
   {"name": "/imtaken", "result": "Mark yourself as being in a relationship"},
-  {"name": "/request", "result": "Make a suggestion for improvements to the server. I will give further details when the command is used. Suggestions are logged to <#469557897513271316>."}
+  {"name": "/request", "result": "Make a suggestion for improvements to the server. I will give further details when the command is used. Suggestions are logged to <#469557897513271316>."},
+  {"name": "/togdm", "result": "Let people know whether to dm you or not. Run again to remove the role"},
+  {"name": "/tradegem <value> <user>", "result": "Give another user some of your gems"},
+  {"name": "/lb <type>", "result": "View the leaderboard for levels, gems, or raw EXP"}
 ];
 var admincmds = [
   {"name": "/mute @user", "result": "Mutes a user as punishment"},
