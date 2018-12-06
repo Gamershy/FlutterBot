@@ -1226,6 +1226,14 @@ bot.on('message', async message => {
           message.guild.member(message.author).removeRole("291399317166751744").then(() => message.channel.send(`${message.author} got too shy to fap for us ;-;`))
         }
       }
+      if (command === "fishlover") {
+        if (!message.guild.member(message.author).roles.has("519806642703826944")) {
+          message.guild.member(message.author).addRole("519806642703826944").then(() => message.channel.send(`${message.author} is now following Sira~`))
+        }
+        else {
+          message.guild.member(message.author).removeRole("519806642703826944").then(() => message.channel.send(`I guess ${message.author} doesn't like seafood anymore`))
+        }
+      }
 
       if (command === "botwatch") {
         if (!message.guild.member(message.author).roles.has("380371674647756800")) {
@@ -1735,6 +1743,8 @@ bot.on('message', async message => {
       if (command === "msay") {
         let [, ...msg] = message.content.split(" ");
         ipc.server.broadcast("music.say", msg.join(" "))
+        message.delete();
+        
       }
 
       if (command === "play") {
@@ -1928,7 +1938,7 @@ bot.on('message', async message => {
         }
 
         else {
-          message.reply("does it look like you're an admin?");
+          message.reply("Does it look like you're an admin?");
         }
       }
 
