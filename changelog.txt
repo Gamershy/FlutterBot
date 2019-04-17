@@ -1,5 +1,2 @@
-Version 4.3.1
-+ Some code optimizations
-+ /roll finally fixed
-+ plans for segmented code in place for better perfomance and stability
-+ music maybe?
+Version 4.4.0
+- Removed references to Neiria
